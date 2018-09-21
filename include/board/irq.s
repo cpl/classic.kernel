@@ -1,0 +1,16 @@
+.set	IRQ_BASIC_PENDING,	0x0
+.set	IRQ_PENDING_1,		0x4
+.set	IRQ_PENDING_2,		0x8
+.set	IRQ_ENABLE_1,		0x10
+.set	IRQ_ENABLE_2,		0x14
+.set	IRQ_ENABLE_BASIC,	0x18
+.set	IRQ_DISABLE_1,		0x1C
+.set	IRQ_DISABLE_2,		0x20
+.set	IRQ_DISABLE_BASIC,	0x24
+
+.set	FIQ_CONTROL,		0xC
+
+.set	IRQ_CLK_SYS_0,	(1<<0)
+.set	IRQ_CLK_SYS_1,	(1<<1)
+.set	IRQ_CLK_SYS_2,	(1<<2)
+.set	IRQ_CLK_SYS_3,	(1<<3)

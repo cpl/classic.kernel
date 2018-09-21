@@ -1,0 +1,9 @@
+.set	MB_POWER,		0
+.set	MB_FRAMEBUFFER,		1
+.set	MB_VUART,		2
+.set	MB_VCHIQ,		3
+.set	MB_LEDS,		4
+.set	MB_BUTTONS,		5
+.set	MB_TOUCH_SCREEN,	6
+.set	MB_PT_ARM_VC,		8
+.set	MB_PT_VC_ARM,		9
