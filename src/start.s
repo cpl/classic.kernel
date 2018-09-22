@@ -34,7 +34,7 @@ _start:
 
 sig_reset:	.word _reset
 sig_undef:	.word _hang
-sig_swi:	.word _hang
+sig_swi:	.word _swi
 sig_prefc:	.word _hang
 sig_datah:	.word _hang
 sig_unuse:	.word _hang
