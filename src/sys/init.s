@@ -31,4 +31,14 @@ sys_init:
 	MOV	R1, #01			@
 	BL	gpio_set		@
 
+	BL	uart_init		@ Initialize mini-UART interface
+
+	MOV	R0, #1280		@ Initialize framebuffer
+	MOV	R1, #1024		@
+	MOV	R2, #16			@
+	BL	fb_init			@
+	TEQ	R0, #0			@ Check for errors
+	BEQ	_hang			@
+	BL	fb_set_addr		@ Save framebuffer address
+
 	B	_main
