@@ -38,7 +38,7 @@ sig_swi:	.word _swi
 sig_prefc:	.word _hang
 sig_datah:	.word _hang
 sig_unuse:	.word _hang
-sig_irq:	.word _hang
+sig_irq:	.word _irq
 sig_fiq:	.word _hang
 
 .globl _start_end

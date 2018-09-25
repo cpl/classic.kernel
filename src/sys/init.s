@@ -41,4 +41,7 @@ sys_init:
 	BEQ	_hang			@
 	BL	fb_set_addr		@ Save framebuffer address
 
+	BL	clk_arm_init		@ Initialize ARM CLK
+	BL	irq_psr_enable		@ Initialize Interrupts
+
 	B	_main
