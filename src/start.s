@@ -40,3 +40,6 @@ sig_datah:	.word _hang
 sig_unuse:	.word _hang
 sig_irq:	.word _hang
 sig_fiq:	.word _hang
+
+.globl _start_end
+_start_end:

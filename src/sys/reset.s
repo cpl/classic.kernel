@@ -24,8 +24,8 @@
 .globl _reset
 _reset:
 
-	LDR	R0, =_init_start		@ Move entry point from 0x8000
-	LDR	R1, =_init_end			@ to 0x0000 where the ARM CPU
+	LDR	R0, =_start			@ Move entry point from 0x8000
+	LDR	R1, =_start_end			@ to 0x0000 where the ARM CPU
 	SUB	R1, R1, R0			@ expects them to be after a
 	MOV	R2, #0				@ restart. On the first run the
 	BL	memcopy				@ GPU enters at 0x8000 (_start)
