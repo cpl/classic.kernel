@@ -55,4 +55,10 @@ _reset:
 
 							@ Stay in SYS MODE
 
-	B	sys_init
+	B	sys_init				@ Initialize system
+							@ - LED
+							@ - UART
+							@ - Framebuffer
+							@ - ARM Clock
+							@ - Interrupts
+							@ - MMU

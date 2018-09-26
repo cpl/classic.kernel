@@ -44,4 +44,7 @@ sys_init:
 	BL	clk_arm_init		@ Initialize ARM CLK
 	BL	irq_psr_enable		@ Initialize Interrupts
 
+	BL	mmu_setup		@ Define MMU sections
+	BL	mmu_init		@ Configure and enable MMU
+
 	B	_main
