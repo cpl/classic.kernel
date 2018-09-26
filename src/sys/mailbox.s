@@ -21,13 +21,13 @@
 .section .text
 
 
-@ mb_write (data, channel)
-@ Writes the input data R0, at the index of the mailbox R1.
+@ mb_write (channel, data)
+@ Writes from the buffer R1 to channel R0.
 .globl mb_write
 mb_write:
-	TST	R0, #0b1111		@ Validate input
+	TST	R1, #0b1111		@ Validate input
 	MOVNE	PC, LR			@ Exit if not valid
-	CMP	R1, #0b1111		@ Validate channel
+	CMP	R0, #0b1111		@ Validate channel
 	MOVHI	PC, LR			@ Exit if out of range
 
 	LDR	R2, =MAILBOX_BASE	@ Load mailbox base address
@@ -43,7 +43,7 @@ mb_write:
 	MOV	PC, LR			@ Return
 
 
-@ mailoxRead (channel) -> data
+@ mb_read (channel) -> data
 @ Reads the data from the mailbox specified channel.
 .globl mb_read
 mb_read:

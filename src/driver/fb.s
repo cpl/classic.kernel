@@ -75,8 +75,8 @@ fb_init:
 	STR	R1, [R4, #12]		@ Update virtual  height
 	STR	R2, [R4, #20]		@ Update bit depth
 
-	ADD	R0, R4, #0x40000000	@ Flush cache (check VC-MMU)
-	MOV	R1, #MB_FRAMEBUFFER	@ GPU channel
+	MOV	R0, #MB_FRAMEBUFFER	@ GPU channel
+	ADD	R1, R4, #0x40000000	@ Flush cache (check VC-MMU)
 	BL	mb_write		@ Write data address
 
 	MOV	R0, #MB_FRAMEBUFFER	@ GPU channel
