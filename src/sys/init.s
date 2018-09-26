@@ -34,12 +34,12 @@ sys_init:
 	BL	uart_init		@ Initialize mini-UART interface
 
 	MOV	R0, #1280		@ Initialize framebuffer
-	MOV	R1, #1024		@
+	MOV	R1, #1024		@ 1280x1024, 16bit depth
 	MOV	R2, #16			@
 	BL	fb_init			@
+
 	TEQ	R0, #0			@ Check for errors
 	BEQ	_hang			@
-	BL	fb_set_addr		@ Save framebuffer address
 
 	BL	clk_arm_init		@ Initialize ARM CLK
 	BL	irq_psr_enable		@ Initialize Interrupts

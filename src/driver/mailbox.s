@@ -21,7 +21,7 @@
 .section .text
 
 
-@ mb_write (channel, data)
+@ mb_write (channel, *data)
 @ Writes from the buffer R1 to channel R0.
 .globl mb_write
 mb_write:
@@ -43,8 +43,8 @@ mb_write:
 	MOV	PC, LR			@ Return
 
 
-@ mb_read (channel) -> data
-@ Reads the data from the mailbox specified channel.
+@ mb_read (channel) -> *data
+@ Reads the *data from the mailbox specified channel.
 .globl mb_read
 mb_read:
 	CMP	R0, #15			@ Validate channel

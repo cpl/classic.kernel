@@ -15,25 +15,16 @@
 */
 
 
+.include "fb.s"
 .include "mailbox.s"
-
-
-.set	MAX_FB_WIDTH,		4096
-.set	MAX_FB_HEIGHT,		4096
-.set	MAX_FB_BIT_DEPTH,	32
-
-.set	DEFAULT_FB_WIDTH,	800
-.set	DEFAULT_FB_HEIGHT,	480
-.set	DEFAULT_FB_BIT_DEPTH,	16
 
 
 .section .data
 
 
-@ DEBUG, TEMPORARY MAILBOX STYLE BUFFER FOR FB MAILBOX!
 .align 4
-.globl fbInfo
-fbInfo:
+.globl fb_mailbox
+fb_mailbox:
 		.int	DEFAULT_FB_WIDTH	@ Physical width
 		.int	DEFAULT_FB_HEIGHT	@ Physical height
 		.int	DEFAULT_FB_WIDTH	@ Virtual width
@@ -44,10 +35,6 @@ fbInfo:
 		.int	0			@ Y
 		.int	0			@ GPU pointer
 		.int	0			@ GPU size
-
-
-.align 2
-fbAddr:		.int 0
 
 
 .section .text
@@ -67,7 +54,7 @@ fb_init:
 
 	PUSH	{R4, LR}
 
-	LDR	R4, =fbInfo		@ Load data address
+	LDR	R4, =fb_mailbox		@ Load data address
 
 	STR	R0, [R4, #0]		@ Update physical width
 	STR	R1, [R4, #4]		@ Update physical height
@@ -75,11 +62,11 @@ fb_init:
 	STR	R1, [R4, #12]		@ Update virtual  height
 	STR	R2, [R4, #20]		@ Update bit depth
 
-	MOV	R0, #MB_FRAMEBUFFER	@ GPU channel
+	MOV	R0, #MB_FRAMEBUFFER	@ FB channel
 	ADD	R1, R4, #0x40000000	@ Flush cache (check VC-MMU)
-	BL	mb_write		@ Write data address
+	BL	mb_write		@ Send data
 
-	MOV	R0, #MB_FRAMEBUFFER	@ GPU channel
+	MOV	R0, #MB_FRAMEBUFFER	@ FB channel
 	BL	mb_read			@ Read response
 
 	TEQ	R0, #0			@ Check OK
@@ -87,26 +74,22 @@ fb_init:
 	POPNE	{R4, PC}		@ Return 0
 
 	MOV	R0, R4			@ OK
-	POP	{R4, PC}		@ Return framebuffer info address
+	POP	{R4, PC}		@ Return framebuffer*
 
 
 @ fb_set_addr (*fb)
-@ Takes a framebuffer address in R0 and stores it at fbAddr label.
+@ Takes a framebuffer address in R0 and stores it at fb_mailbox, #32.
 .globl fb_set_addr
 fb_set_addr:
-	PUSH	{R4}
-
-	LDR	R4, =fbAddr		@ Update framebuffer address
-	STR	R0, [R4]		@
-
-	POP	{R4}			@ Return
-	MOV	PC, LR			@
+	LDR	R1, =fb_mailbox		@ Update framebuffer address
+	STR	R0, [R1, #32]		@
+	MOV	PC, LR			@ Return
 
 
 @ fb_get_addr -> *fb
-@ Loads the fbAddr in R0
+@ Loads from #32 fb_mailbox in R0.
 .globl fb_get_addr
 fb_get_addr:
-	LDR	R0, =fbAddr
-	LDR	R0, [R0]
+	LDR	R0, =fb_mailbox		@
+	LDR	R0, [R0, #32]		@
 	MOV	PC, LR			@ Return
