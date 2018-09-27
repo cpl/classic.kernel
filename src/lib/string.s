@@ -18,26 +18,47 @@
 .section .rodata
 
 
-_str_hang:	.ascii "HANG\n\r\0"
+_str_null:	.ascii "NULL\0"
+
+
+.section .data
 
 
 .section .text
 
 
-.globl _main
-_main:
+@ str_hex
+.globl str_hex
+str_hex:
+	LDR	R0, =_str_null
+	MOV	PC, LR
 
-	NOP
-	NOP
-	NOP
+@ str_16uint
+.globl str_16uint
+str_16uint:
+	LDR	R0, =_str_null
+	MOV	PC, LR
 
-	B	.			@ Stop here
+@ str_32uint
+.globl str_32uint
+str_32uint:
+	LDR	R0, =_str_null
+	MOV	PC, LR
 
+@ str_64uint
+.globl str_64uint
+str_64uint:
+	LDR	R0, =_str_null
+	MOV	PC, LR
 
-.globl _hang
-_hang:
+@ str_32int
+.globl str_32int
+str_32int:
+	LDR	R0, =_str_null
+	MOV	PC, LR
 
-	LDR	R0, =_str_hang
-	BL	uart_send_string
-
-	B .
+@ str_64int
+.globl str_64int
+str_64int:
+	LDR	R0, =_str_null
+	MOV	PC, LR

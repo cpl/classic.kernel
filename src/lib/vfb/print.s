@@ -27,6 +27,9 @@
 @ cursor x and y, wrapping or scrolling until a null terminator is reached.
 .globl vfb_print
 vfb_print:
+	CMP	R0, #0			@ Ignore NULL string
+	MOVEQ	PC, LR			@
+
 	PUSH	{R4-R8, LR}
 
 	curs_x		.req R7
@@ -101,7 +104,7 @@ vfb_print:
 vfb_println:
 	PUSH	{LR}
 
-	BL	vfb_print
+	BL	vfb_print		@ Print string
 
 	LDR	R0, =vfb_data		@ Get vfb data address
 	LDRH	R1, [R0]		@ Load cursor x and y
@@ -116,6 +119,9 @@ vfb_println:
 @ Prints 'len' (R1) bytes starting from a given address (R0).
 .globl vfb_printdump
 vfb_printdump:
+	CMP	R0, #0			@ Don't print NULL string or 0 len
+	CMPNE	R1, #0			@
+	MOVEQ	PC, LR			@
 
 	PUSH	{R4-R9, LR}
 
