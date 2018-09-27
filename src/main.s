@@ -21,9 +21,8 @@
 .globl _main
 _main:
 
-	NOP
-	NOP
-	NOP
+	LDR	R0, =0xF800F800
+	BL	draw_fill_fb
 
 	B	_hang			@ Hang execution
 

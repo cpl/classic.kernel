@@ -35,6 +35,7 @@ memzero:
 
 	MOV	PC, LR			@ Return
 
+
 @ memcopy (*src, len bytes, *dst)
 @ Takes a source addr, copies the first 'len' bytes from *src to *dst.
 .globl memcopy
@@ -54,6 +55,7 @@ memcopy:
 	BNE	_memcopy		@ Repeat
 
 	MOV	PC, LR			@ Return
+
 
 @ memmove (*src, len bytes, *dst)
 @ Takes a source addr, copies the first 'len' bytes from *src to *dst replacing

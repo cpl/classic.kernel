@@ -105,6 +105,24 @@ draw_pixel:
 	.unreq width
 
 
+@ draw_fill_fb (color color - 32 bits)
+@ Fills the framebuffer with a single color.
+.globl draw_fill_fb
+draw_fill_fb:
+	LDR	R1, =fb_mailbox		@ Get fb data address
+	LDR	R2, [R1, #36]		@ Get fb length
+	LDR	R1, [R1, #32]		@ Get fb address
+
+	ADD	R2, R2, R1		@ Compute end address
+
+ _draw_fill_fb:
+	STR	R0, [R1], #4
+	CMP	R1, R2
+	BNE	_draw_fill_fb
+
+	MOV	PC, LR
+
+
 @ draw_char (char, x, y)
 @ Takes the ASCII value of the char in R0, and the x R1, y R2 then
 @ draws the char using the "font.bin" data, colorF for the 1 bits and colorB
