@@ -41,6 +41,8 @@ sys_init:
 	TEQ	R0, #0			@ Check for errors
 	BEQ	_hang			@
 
+	BL	vfb_init		@ Initialize virtual-framebuffer
+
 	BL	clk_arm_init		@ Initialize ARM CLK
 	BL	irq_psr_enable		@ Initialize Interrupts
 

@@ -15,10 +15,6 @@
 */
 
 
-.set FONT_W,	8
-.set FONT_H,	16
-
-
 .section .rodata
 
 
@@ -30,16 +26,16 @@ font:		.incbin "data/font.bin"
 
 
 .align 1
-colorF:		.hword 0xFFFF
+colorF:		.hword 0x0000
 
 .align 1
-colorB:		.hword 0x1111
+colorB:		.hword 0xF800
 
 
 .section .text
 
 
-@ draw_set_color_f (color)
+@ draw_set_color_f (color 16bit)
 @ Sets the foreground color to R0.
 .globl draw_set_color_f
 draw_set_color_f:
@@ -48,7 +44,7 @@ draw_set_color_f:
 	MOV	PC, LR
 
 
-@ draw_set_color_b (color)
+@ draw_set_color_b (color 16bit)
 @ Sets the background color to R0.
 .globl draw_set_color_b
 draw_set_color_b:
@@ -116,11 +112,11 @@ draw_fill_fb:
 	ADD	R2, R2, R1		@ Compute end address
 
  _draw_fill_fb:
-	STR	R0, [R1], #4
-	CMP	R1, R2
-	BNE	_draw_fill_fb
+	STR	R0, [R1], #4		@ Color 2 pixels
+	CMP	R1, R2			@ Check for end address
+	BNE	_draw_fill_fb		@ Repeat if not end
 
-	MOV	PC, LR
+	MOV	PC, LR			@ Return
 
 
 @ draw_char (char, x, y)
