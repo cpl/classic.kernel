@@ -170,6 +170,21 @@ mmu_setup:
 	LDR	R2, =(VMSA_AP_RW_XX)		@
 	BL	mmu_section			@
 
+	BL	fb_get_addr			@ Disable cache and buffer
+	MOV	R1, R0				@ for GPU buffer
+	LDR	R2, =(VMSA_AP_RW_XX)		@
+	BL	mmu_section			@
+	BL	fb_get_addr			@
+	ADD	R0, #0x00100000			@
+	MOV	R1, R0				@
+	LDR	R2, =(VMSA_AP_RW_XX)		@
+	BL	mmu_section			@
+	BL	fb_get_addr			@
+	ADD	R0, #0x00200000			@
+	MOV	R1, R0				@
+	LDR	R2, =(VMSA_AP_RW_XX)		@
+	BL	mmu_section			@
+
 	POP	{R4-R5, PC}			@ Return
 
 
