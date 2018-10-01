@@ -48,17 +48,10 @@ _irq:
 irq_handler:
 	PUSH	{LR}
 
-	@ DEBUG
+	LDR	R0, =INTERRUPTS_BASE		@ Load IRQ base
+	LDR	R0, [R0, #IRQ_BASIC_PENDING]	@ Load IRQ pending
 
-	@ LOAD PENDING IRQ
-	@ TST  IRQ
-	@ GOTO ISR
-	@ TST  IRQ
-	@ GOTO ISR
-	@ ...
-	@ Exit
-
-	@ TST CLK IRQ
-	BL	clk_arm_isr
+	TST	R0, #IRQ_CLK_ARM		@ Check for timer interrupt
+	BLNE	clk_arm_isr			@ Handle    timer interrupt
 
 	POP	{PC}				@ Return

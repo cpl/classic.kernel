@@ -27,7 +27,4 @@
 
 .set	FIQ_CONTROL,		0xC
 
-.set	IRQ_CLK_SYS_0,	(1<<0)
-.set	IRQ_CLK_SYS_1,	(1<<1)
-.set	IRQ_CLK_SYS_2,	(1<<2)
-.set	IRQ_CLK_SYS_3,	(1<<3)
+.set	IRQ_CLK_ARM,		0x1

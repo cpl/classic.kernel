@@ -27,11 +27,13 @@ _str_hang:	.ascii "HANG\n\r\0"
 .globl _main
 _main:
 
-	NOP
-	NOP
-	NOP
+	LDR	R0, =0x100
+	LDR	R1, =0x1000
+	BL	vfb_printdump
 
-	B	.			@ Stop here
+ _main_loop:
+
+	B	_main_loop
 
 
 .globl _hang
