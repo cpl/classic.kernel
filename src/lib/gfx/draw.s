@@ -101,7 +101,7 @@ draw_pixel:
 	.unreq width
 
 
-@ draw_fill_fb (color color - 32 bits)
+@ draw_fill_fb (color 16 bit)
 @ Fills the framebuffer with a single color.
 .globl draw_fill_fb
 draw_fill_fb:
@@ -110,6 +110,8 @@ draw_fill_fb:
 	LDR	R1, [R1, #32]		@ Get fb address
 
 	ADD	R2, R2, R1		@ Compute end address
+
+	ORR	R0, R0, R0, LSL #16	@ Fill word with same color
 
  _draw_fill_fb:
 	STR	R0, [R1], #4		@ Color 2 pixels
