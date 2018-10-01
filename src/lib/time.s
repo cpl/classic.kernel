@@ -15,35 +15,23 @@
 */
 
 
-.section .rodata
-
-
-_str_hang:	.ascii "HANG\n\r\0"
-
-
 .section .text
 
 
-.globl _main
-_main:
+@ wait (microseconds)
+@ Waits the specified number of microseconds in R0, before returning.
+@ [DEBUG ONLY]
+.globl wait
+wait:
+	PUSH	{R4, LR}
 
-	NOP
-	NOP
-	NOP
+	MOV	R4, R0			@ Save delay
+	BL	clk_sys_epoch		@ Get  starting time
+	ADD	R4, R0			@ Save end time (starting time + delay)
 
- _main_loop:
+ _wait:
+	BL	clk_sys_epoch		@ Get current time
+	CMP	R0, R4			@ Check if delay passed
+	BLS	_wait			@ Recheck if not
 
-	NOP
-	NOP
-	NOP
-
-	B	_main_loop
-
-
-.globl _hang
-_hang:
-
-	LDR	R0, =_str_hang
-	BL	uart_send_string
-
-	B .
+	POP	{R4, PC}		@ Return
