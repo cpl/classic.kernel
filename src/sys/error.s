@@ -15,35 +15,22 @@
 */
 
 
-.section .rodata
-
-
-_str_hang:	.ascii "HANG\n\r\0"
-
-
 .section .text
 
 
-.globl _main
-_main:
-
-	LDR	R0, =0x100
-	LDR	R1, =0x1000
-	BL	vfb_printdump
-
- _main_loop:
-
-	NOP
-	NOP
-	NOP
-
-	B	_main_loop
+@ _undef
+.globl _undef
+_undef:
+	MOVS	PC, LR			@ Return
 
 
-.globl _hang
-_hang:
+@ _abort_ins
+.globl _abort_ins
+_abort_ins:
+	MOVS	PC, LR			@ Return
 
-	LDR	R0, =_str_hang
-	BL	uart_send_string
 
-	B .
+@ _abort_dat
+.globl _abort_dat
+_abort_dat:
+	SUBS	PC, LR, #4		@ Return

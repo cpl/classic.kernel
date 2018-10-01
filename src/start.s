@@ -33,10 +33,10 @@ _start:
 	B	_hang
 
 sig_reset:	.word _reset
-sig_undef:	.word _hang
+sig_undef:	.word _undef
 sig_swi:	.word _swi
-sig_prefc:	.word _hang
-sig_datah:	.word _hang
+sig_prefc:	.word _abort_ins
+sig_datah:	.word _abort_dat
 sig_unuse:	.word _hang
 sig_irq:	.word _irq
 sig_fiq:	.word _hang
