@@ -71,8 +71,9 @@ vfb_printf:
 	MOVHS	curs_x, #0		@ Wrap to new line
 	ADDHS	curs_y, #1		@
 	CMP	curs_y, grid_y		@ Check Y out of bounds
-	MOVHS	curs_x, #0		@ Wrap to top of screen
-	MOVHS	curs_y, #0		@ TODO: Scroll one line
+	MOVHS	curs_x, #0		@ Wrap to new line
+	SUBHS	curs_y, #1		@ Keep line
+	BLHS	vfb_scroll		@ Scroll vfb
 
 	TEQ	R0, #'%'		@ Check for arg flag
 	BEQ	_vfb_printf_fmt		@ Parse arg

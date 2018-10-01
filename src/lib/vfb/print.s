@@ -51,14 +51,16 @@ vfb_print:
 	AND	R7, R1, #0xFF		@
 
  _vfb_print_loop:
-	LDRB	R0, [R4], #1		@ Load char
 
 	CMP	curs_x, grid_x		@ Check X out of bounds
 	MOVHS	curs_x, #0		@ Wrap to new line
 	ADDHS	curs_y, #1		@
 	CMP	curs_y, grid_y		@ Check Y out of bounds
-	MOVHS	curs_x, #0		@ Wrap to top of screen
-	MOVHS	curs_y, #0		@ TODO: Scroll one line
+	MOVHS	curs_x, #0		@ Wrap to new line
+	SUBHS	curs_y, #1		@ Keep line
+	BLHS	vfb_scroll		@ Scroll vfb
+
+	LDRB	R0, [R4], #1		@ Load char
 
 	TEQ	R0, #ASCII_LF		@ Check for line feed
 	ADDEQ	curs_y, #1		@
@@ -152,8 +154,9 @@ vfb_printdump:
 	MOVHS	curs_x, #0		@ Wrap to new line
 	ADDHS	curs_y, #1		@
 	CMP	curs_y, grid_y		@ Check Y out of bounds
-	MOVHS	curs_x, #0		@ Wrap to top of screen
-	MOVHS	curs_y, #0		@ TODO: Scroll one line
+	MOVHS	curs_x, #0		@ Wrap to new line
+	SUBHS	curs_y, #1		@ Keep line
+	BLHS	vfb_scroll		@ Scroll vfb
 
 	LSL	R1, curs_x, #3		@ Transform grid space X to pixel space
 	LSL	R2, curs_y, #4		@ Transform grid space Y to pixel space

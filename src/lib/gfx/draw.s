@@ -29,7 +29,7 @@ font:		.incbin "data/font.bin"
 colorF:		.hword 0x0000
 
 .align 1
-colorB:		.hword 0xF800
+colorB:		.hword 0xFFFF
 
 
 .section .text
@@ -50,6 +50,15 @@ draw_set_color_f:
 draw_set_color_b:
 	LDR	R1, =colorB
 	STRH	R0, [R1]
+	MOV	PC, LR
+
+
+@ draw_get_color_b -> (color 16bit)
+@ Gets the background color to R0.
+.globl draw_get_color_b
+draw_get_color_b:
+	LDR	R0, =colorB
+	LDRH	R0, [R0]
 	MOV	PC, LR
 
 

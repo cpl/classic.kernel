@@ -81,3 +81,43 @@ vfb_get_data:
 
 	POP	{R4}			@ Return
 	MOV	PC, LR			@
+
+
+@ vfb_scroll
+.globl vfb_scroll
+vfb_scroll:
+	PUSH	{R4}
+
+	LDR	R0, =fb_mailbox		@ Get fb data
+	LDR	R1, [R0, #0]		@ Get fb width
+	LDR	R2, [R0, #36]		@ Get fb len
+	LDR	R0, [R0, #32]		@ Get fb adr
+
+	ADD	R2, R0, R2		@ Compute fb end adr
+
+	MOV	R3, #FONT_H		@ Compute number of bytes
+	MUL	R1, R3, R1		@ in a vfb line (width*font_h*2)
+	LSL	R1, #1			@
+
+	ADD	R3, R0, R1		@ Copy start adr
+
+ _vfb_scroll:
+	LDR	R4, [R3], #4		@ Copy pixels
+	STR	R4, [R0], #4		@ Move pixels
+
+	CMP	R3, R2			@ Check for end of fb
+	BNE	_vfb_scroll		@ Repeat until end
+
+
+	SUB	R3, R2, R1		@ Compute end minus last line
+	MOV	R0, #0
+
+ _vfb_scroll_fin:
+
+	STR	R0, [R3], #4		@ Fill final line with background color
+
+	CMP	R3, R2			@ Check for end of fb
+	BNE	_vfb_scroll_fin		@ Repeat until end
+
+	POP	{R4}			@ Return
+	MOV	PC, LR			@
