@@ -24,9 +24,13 @@ BUILD	= build
 DIST	= dist
 INCLD	= include
 
+# Libraries
+LIBDIR	= libs
+LIBS	:= csud
+
 # Intermediary
 LIST	= kernel.list
-MAP		= kernel.map
+MAP	= kernel.map
 
 # Final binary
 TARGET	= kernel.img
@@ -52,7 +56,7 @@ $(TARGET) : $(BUILD)/output.elf
 # Generate - ELF
 $(BUILD)/output.elf : $(OBJECTS) $(LINKER)
 	@echo "==== Generating ELF output"
-	@$(COMPILER)-ld --no-undefined $(OBJECTS) -Map $(MAP) -o $(BUILD)/output.elf -T $(LINKER)
+	@$(COMPILER)-ld --no-undefined $(OBJECTS) -L$(LIBDIR) $(patsubst %,-l %,$(LIBS)) -Map $(MAP) -o $(BUILD)/output.elf -T $(LINKER)
 
 # Generate - Objects
 $(BUILD)/%.o: $(SOURCE)/%.s
