@@ -7,3 +7,7 @@ printdump
 
 sleep
 wait
+
+
+clk_arm
+clk_sys
