@@ -23,4 +23,7 @@ SECTIONS {
 	_bss_start = .;
 	.bss : { *(.bss) } > sys
 	_bss_end = .;
+
+    /* Kernel heap */
+    _KERNEL_HEAP_ = ABSOLUTE(0x000FFFF0);
 }

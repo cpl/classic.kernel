@@ -125,38 +125,26 @@ vfb_printf:
 
 	TEQ	R0, #'i'		@ Case '%i'
 	LDREQ	R0, [args], #4		@
-	LDREQ	R0, [R0]		@
-	LDREQ	R2, =str_32int		@
-	BEQ	_vfb_printf_cnv		@
-
-	TEQ	R0, #'d'		@ Case '%d'
-	LDREQ	R0, [args], #4		@
-	LDREQD	R0, R1, [R0]		@
-	LDREQ	R2, =str_64int		@
+	LDREQ	R2, [R0]		@
+	LDREQ	R3, =str_conv_32int	@
 	BEQ	_vfb_printf_cnv		@
 
 	TEQ	R0, #'h'		@ Case '%h'
 	LDREQ	R0, [args], #4		@
-	LDREQH	R0, [R0]		@
-	LDREQ	R2, =str_16uint		@
+	LDREQH	R2, [R0]		@
+	LDREQ	R3, =str_conv_16uint	@
 	BEQ	_vfb_printf_cnv		@
 
 	TEQ	R0, #'u'		@ Case '%u'
 	LDREQ	R0, [args], #4		@
-	LDREQ	R0, [R0]		@
-	LDREQ	R2, =str_32uint		@
-	BEQ	_vfb_printf_cnv		@
-
-	TEQ	R0, #'l'		@ Case '%l'
-	LDREQ	R0, [args], #4		@
-	LDREQD	R0, R1, [R0]		@
-	LDREQ	R2, =str_64uint		@
+	LDREQ	R2, [R0]		@
+	LDREQ	R3, =str_conv_32uint	@
 	BEQ	_vfb_printf_cnv		@
 
 	TEQ	R0, #'x'		@ Case '%x'
 	LDREQ	R0, [args], #4		@
-	LDREQ	R0, [R0]		@
-	LDREQ	R2, =str_hex		@
+	LDREQ	R2, [R0]		@
+	LDREQ	R3, =str_conv_hex	@
 	BEQ	_vfb_printf_cnv		@
 
 	TEQ	R0, #'s'		@ Case '%s'
@@ -169,9 +157,19 @@ vfb_printf:
 	STRB	curs_x, [R10, #0]	@ Save new curs x
 	STRB	curs_y, [R10, #1]	@ Save new curs y
 
-	MOV	LR, PC			@ BL R2
-	MOV	PC, R2			@
+	LDR	R0, =_KERNEL_HEAP_	@ malloc location
+	MOV	R1, #0x40		@ malloc size
+	BL	malloc			@ malloc string conversion buffer
+	PUSH	{R0}
+
+	MOV	R1, R2			@ Get value
+	MOV	LR, PC			@ Return to vfb_print
+	MOV	PC, R3			@ BL str_conv_
+
 	BL	vfb_print		@ Print converted string
+
+	POP	{R0}			@ free
+	BL	free			@ malloc conversion buffer
 
 	LDRB	curs_x, [R10, #0]	@ Load new curs x
 	LDRB	curs_y,	[R10, #1]	@ Load new curs y

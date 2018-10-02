@@ -27,38 +27,29 @@ _str_null:	.ascii "NULL\0"
 .section .text
 
 
-@ str_hex
-.globl str_hex
-str_hex:
+@ str_conv_hex (*mem, value) -> *str
+.globl str_conv_hex
+str_conv_hex:
 	LDR	R0, =_str_null
 	MOV	PC, LR
 
-@ str_16uint
-.globl str_16uint
-str_16uint:
+
+@ str_conv_16uint (*mem, value) -> *str
+.globl str_conv_16uint
+str_conv_16uint:
 	LDR	R0, =_str_null
 	MOV	PC, LR
 
-@ str_32uint
-.globl str_32uint
-str_32uint:
+
+@ str_conv_32uint (*mem, value) -> *str
+.globl str_conv_32uint
+str_conv_32uint:
 	LDR	R0, =_str_null
 	MOV	PC, LR
 
-@ str_64uint
-.globl str_64uint
-str_64uint:
-	LDR	R0, =_str_null
-	MOV	PC, LR
 
-@ str_32int
-.globl str_32int
-str_32int:
-	LDR	R0, =_str_null
-	MOV	PC, LR
-
-@ str_64int
-.globl str_64int
-str_64int:
+@ str_conv_32int (*mem, value) -> *str
+.globl str_conv_32int
+str_conv_32int:
 	LDR	R0, =_str_null
 	MOV	PC, LR

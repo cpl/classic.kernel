@@ -15,39 +15,16 @@
 */
 
 
-.section .rodata
-
-
-_str_hang:	.ascii "HANG\n\r\0"
-
-
 .section .text
 
 
-.globl _main
-_main:
-
-	NOP
-	NOP
-	NOP
-
-	LDR	R0, =_KERNEL_HEAP_
-	BL	strtmp_hex
-	BL	vfb_println
-
- _main_loop:
-
-	NOP
-	NOP
-	NOP
-
-	B	_main_loop
+@ malloc (*mem, size_words)
+.globl malloc
+malloc:
+	MOV	PC, LR
 
 
-.globl _hang
-_hang:
-
-	LDR	R0, =_str_hang
-	BL	uart_send_string
-
-	B .
+@ free (*mem)
+.globl free
+free:
+	MOV	PC, LR

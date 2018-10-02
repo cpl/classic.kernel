@@ -50,10 +50,6 @@ arm_mem:
 
 	LDR	R4, =_arm_mem_start
  _mem_loop_0:
-	LDR	R0, [R4]
-	BL	str_hex
-	BL	uart_send_string
-	BL	uart_clrf
 
 	LDR	R0, =_arm_mem_end
 	CMP	R4, R0
@@ -73,10 +69,6 @@ arm_mem:
 
 	LDR	R4, =_arm_mem_start
  _mem_loop_1:
-	LDR	R0, [R4]
-	BL	str_hex
-	BL	uart_send_string
-	BL	uart_clrf
 
 	LDR	R0, =_arm_mem_end
 	CMP	R4, R0
