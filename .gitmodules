@@ -1,0 +1,3 @@
+[submodule "libraries/csud"]
+	path = libraries/csud
+	url = git@github.com:Chadderz121/csud.git
