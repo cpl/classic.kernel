@@ -58,6 +58,7 @@ dkms.conf
 .vscode
 .idea
 src/temp/
+*.0
 
 # Generated
 build/
