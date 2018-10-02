@@ -49,4 +49,6 @@ sys_init:
 	BL	mmu_setup		@ Define MMU sections
 	BL	mmu_init		@ Configure and enable MMU
 
+	BL	rand_init		@ Initialize RNG
+
 	B	_main
