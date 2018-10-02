@@ -1,3 +1,3 @@
-[submodule "libraries/csud"]
-	path = libraries/csud
+[submodule "external/csud"]
+	path = external/csud
 	url = git@github.com:Chadderz121/csud.git
