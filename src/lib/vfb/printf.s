@@ -65,8 +65,6 @@ vfb_printf:
 	AND	R7, R1, #0xFF		@
 
  _vfb_printf_loop:
-	LDRB	R0, [fmts], #1		@ Load char from format string
-
 	CMP	curs_x, grid_x		@ Check X out of bounds
 	MOVHS	curs_x, #0		@ Wrap to new line
 	ADDHS	curs_y, #1		@
@@ -74,6 +72,8 @@ vfb_printf:
 	MOVHS	curs_x, #0		@ Wrap to new line
 	SUBHS	curs_y, #1		@ Keep line
 	BLHS	vfb_scroll		@ Scroll vfb
+
+	LDRB	R0, [fmts], #1		@ Load char from format string
 
 	TEQ	R0, #'%'		@ Check for arg flag
 	BEQ	_vfb_printf_fmt		@ Parse arg

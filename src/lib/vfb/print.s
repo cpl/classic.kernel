@@ -147,9 +147,6 @@ vfb_printdump:
 	AND	R7, R1, #0xFF		@
 
  _vfb_printdump:
-
-	LDRB	R0, [R4], #1		@ Load char
-
 	CMP	curs_x, grid_x		@ Check X out of bounds
 	MOVHS	curs_x, #0		@ Wrap to new line
 	ADDHS	curs_y, #1		@
@@ -157,6 +154,8 @@ vfb_printdump:
 	MOVHS	curs_x, #0		@ Wrap to new line
 	SUBHS	curs_y, #1		@ Keep line
 	BLHS	vfb_scroll		@ Scroll vfb
+
+	LDRB	R0, [R4], #1		@ Load char
 
 	LSL	R1, curs_x, #3		@ Transform grid space X to pixel space
 	LSL	R2, curs_y, #4		@ Transform grid space Y to pixel space
