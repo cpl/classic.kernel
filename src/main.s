@@ -39,11 +39,11 @@ _main:
 	NOP
 	NOP
 
-	BL	UsbInitialise
+	BL	csudUsbInitialise
 	BL	strtmp_hex
 	BL	vfb_println
 
-	BL	KeyboardCount
+	BL	csudKeyboardCount
 	BL	strtmp_hex
 	BL	vfb_println
 
