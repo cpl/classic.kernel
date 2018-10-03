@@ -15,22 +15,45 @@
 */
 
 
+.section .rodata
+
+
+_str_undef:		.asciz "ERR: UNDEF INS\n\r"
+_str_abort_ins:		.asciz "ERR: ABORT INS\n\r"
+_str_abort_dat:		.asciz "ERR: ABORT DAT\n\r"
+
+
 .section .text
 
 
 @ _undef
 .globl _undef
 _undef:
+	PUSH	{LR}
+	LDR	R0, =_str_undef
+	BL	uart_send_string
+	POP	{LR}
+
 	MOVS	PC, LR			@ Return
 
 
 @ _abort_ins
 .globl _abort_ins
 _abort_ins:
+	PUSH	{LR}
+	LDR	R0, =_str_abort_ins
+	BL	uart_send_string
+	POP	{LR}
+
 	MOVS	PC, LR			@ Return
 
 
 @ _abort_dat
 .globl _abort_dat
 _abort_dat:
+	PUSH	{LR}
+	LDR	R0, =_str_abort_dat
+	BL	uart_send_string
+	POP	{LR}
+
 	SUBS	PC, LR, #4		@ Return
