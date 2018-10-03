@@ -23,6 +23,7 @@ SOURCE	= src
 BUILD	= build
 DIST	= dist
 INCLD	= include
+BOOT	= boot
 
 # Libraries
 LIBDIR	= libs
@@ -64,7 +65,13 @@ $(BUILD)/%.o: $(SOURCE)/%.s
 	@mkdir -p $(@D)
 	@$(COMPILER)-as --reduce-memory-overheads -I $(INCLD)/ $< -o $@
 
+# Deploy firmware to SD card
+firmware:
+	@make -C "boot"
+
+# Deploy kernel image to SD card
 deploy: $(TARGET)
+	@echo "==== SCANNING FOR SD CARD"
 	@while [ ! -f /Volumes/CLASSIC/$(TARGET) ]; do sleep 1; echo "..." ; done
 	@echo found
 	@sum /Volumes/CLASSIC/$(TARGET)
@@ -75,7 +82,8 @@ deploy: $(TARGET)
 
 # Clean generated files & directories
 clean :
-	-rm -rf $(BUILD)
-	-rm -f $(TARGET)
-	-rm -f $(LIST)
-	-rm -f $(MAP)
+	@rm -rf $(BUILD)
+	@rm -f $(TARGET)
+	@rm -f $(LIST)
+	@rm -f $(MAP)
+	@echo "==== CLEAN: KERNEL"
