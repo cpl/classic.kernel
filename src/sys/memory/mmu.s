@@ -154,7 +154,7 @@ mmu_setup:
  _mmu_setup:
 	MOV	R0, R5				@ Map virtual to physical
 	MOV	R1, R5				@ with cache and buffer enabled
-	LDR	R2, =(VMSA_C | VMSA_B | VMSA_AP_RW_XX)
+	LDR	R2, =(/*VMSA_C | VMSA_B |*/ VMSA_AP_RW_XX)
 	BL	mmu_section
 
 	CMP	R5, R4				@ Check for end address

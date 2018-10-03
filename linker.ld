@@ -13,6 +13,7 @@ SECTIONS {
 		*(.init)
 		_init_end = .;
 	} > sys
+	. = ALIGN(4);
 
     /* Kernel code */
 	.text   : {
@@ -20,16 +21,19 @@ SECTIONS {
 		*(.text)
 	} > sys
 	.rodata : { *(.rodata) } > sys
+	. = ALIGN(4);
 
     /* Kernel data */
 	.data   : {
 		*(.data)
 		*.c.o(*)
 	} > sys
+	. = ALIGN(4);
 
 	_bss_start = .;
 	.bss : { *(.bss) } > sys
 	_bss_end = .;
+	. = ALIGN(4);
 
     /* DISCARD EVERYTHING ELSE */
 	/DISCARD/ : {
