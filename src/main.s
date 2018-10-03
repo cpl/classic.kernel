@@ -19,7 +19,8 @@
 
 
 _str_hang:	.ascii "HANG\n\r\0"
-
+_str_knl_heap:	.ascii "KERNEL HEAP: \0"
+_str_main:	.ascii "\n\r\n\r_main_loop()\n\r\0"
 
 .section .text
 
@@ -27,13 +28,27 @@ _str_hang:	.ascii "HANG\n\r\0"
 .globl _main
 _main:
 
+	LDR	R0, =_str_knl_heap
+	BL	vfb_print
+	LDR	R0, =_KERNEL_HEAP_
+	BL	strtmp_hex
+	BL	vfb_println
+	BL	vfb_println
+
 	NOP
 	NOP
 	NOP
 
-	LDR	R0, =_KERNEL_HEAP_
+	BL	UsbInitialise
 	BL	strtmp_hex
 	BL	vfb_println
+
+	BL	KeyboardCount
+	BL	strtmp_hex
+	BL	vfb_println
+
+	LDR	R0, =_str_main
+	BL	vfb_print
 
  _main_loop:
 
