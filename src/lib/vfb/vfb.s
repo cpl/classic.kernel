@@ -91,15 +91,15 @@ vfb_scroll:
 	LDR	R0, =fb_mailbox		@ Get fb data
 	LDR	R1, [R0, #0]		@ Get fb width
 	LDR	R2, [R0, #36]		@ Get fb len
-	LDR	R0, [R0, #32]		@ Get fb adr
+	LDR	R0, [R0, #32]		@ Get fb addr
 
-	ADD	R2, R0, R2		@ Compute fb end adr
+	ADD	R2, R0, R2		@ Compute fb end addr
 
 	MOV	R3, #FONT_H		@ Compute number of bytes
 	MUL	R1, R3, R1		@ in a vfb line (width*font_h*2)
 	LSL	R1, #1			@
 
-	ADD	R3, R0, R1		@ Copy start adr
+	ADD	R3, R0, R1		@ Copy start addr
 
  _vfb_scroll:
 	LDR	R4, [R3], #4		@ Copy pixels
