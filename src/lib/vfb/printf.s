@@ -37,7 +37,7 @@
 @ s - *string
 .globl vfb_printf
 vfb_printf:
-	CMP	R0, #0			@ Ignore NULL string
+	TEQ	R0, #0			@ Ignore NULL string
 	MOVEQ	PC, LR			@
 
 	PUSH	{R4-R10, LR}
