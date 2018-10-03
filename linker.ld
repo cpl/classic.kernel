@@ -15,15 +15,27 @@ SECTIONS {
 	} > sys
 
     /* Kernel code */
-	.text   : { *(.text) }   > sys
+	.text   : {
+		*.c.o(.text)
+		*(.text)
+	} > sys
 	.rodata : { *(.rodata) } > sys
 
     /* Kernel data */
-	.data   : { *(.data) }   > sys
+	.data   : {
+		*(.data)
+		*.c.o(*)
+	} > sys
+
 	_bss_start = .;
 	.bss : { *(.bss) } > sys
 	_bss_end = .;
 
+    /* DISCARD EVERYTHING ELSE */
+	/DISCARD/ : {
+		*(*)
+	}
+
     /* Kernel heap */
-    _KERNEL_HEAP_ = ABSOLUTE(0x000FFFF0);
+	_KERNEL_HEAP_ = ABSOLUTE(0x000FFFF0);
 }
