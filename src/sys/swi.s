@@ -68,6 +68,11 @@ _swi:
 _swi_unknown:
 	PUSH	{R0-R3, LR}			@ Save R0-R3
 
+	MOV	R0, R4
+	BL	strtmp_hex
+	BL	uart_send_string
+	BL	uart_clrf
+
 	LDR	R0, =_str_swi_unknown		@ Display error msg over UART
 	BL	uart_send_string		@ DEBUG
 
