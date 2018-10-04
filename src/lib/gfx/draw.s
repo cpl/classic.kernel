@@ -15,6 +15,9 @@
 */
 
 
+.include "font.s"
+
+
 .section .rodata
 
 
@@ -187,3 +190,28 @@ draw_char:
 	.unreq cAddr
 
 	POP	{R4-R8, PC}		@ Return
+
+
+@ draw_string (*str, x, y)
+@ Draw a given string starting from given X and Y, does not wrap or scroll
+@ the framebuffer when the screen edge is reached.
+.globl draw_string
+draw_string:
+	PUSH	{R4-R6, LR}
+
+	MOV	R4, R0			@ Save arguments
+	MOV	R5, R1			@
+	MOV	R6, R2			@
+
+ _draw_string:
+	LDRB	R0, [R4], #1		@ Load char
+
+	TEQ	R0, #0			@ Exit if NULL terminator
+	POPEQ	{R4-R6, PC}		@
+
+	MOV	R1, R5			@ Set X
+	MOV	R2, R6			@ Set Y
+	BL	draw_char		@ Draw char
+
+	ADD	R5, #FONT_W		@ Increment X
+	BL	_draw_string		@ Loop
