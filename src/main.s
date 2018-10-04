@@ -39,22 +39,46 @@ _main:
 	NOP
 	NOP
 
-	BL	csudUsbInitialise
-	BL	strtmp_hex
-	BL	vfb_println
+	@ BL	csudUsbInitialise
+	@ BL	strtmp_hex
+	@ BL	vfb_println
 
-	BL	csudKeyboardCount
-	BL	strtmp_hex
-	BL	vfb_println
+	@ BL	csudKeyboardCount
+	@ BL	strtmp_hex
+	@ BL	vfb_println
 
 	LDR	R0, =_str_main
 	BL	vfb_print
 
  _main_loop:
 
-	NOP
-	NOP
-	NOP
+	BL	clk_sys_epoch
+	BL	strtmp_hex
+	MOV	R1, #10
+	MOV	R2, #1000
+	BL	draw_string
+
+	MOV	R0, SP
+	BL	strtmp_hex
+	MOV	R1, #200
+	MOV	R2, #1000
+	BL	draw_string
+
+	MOV	R0, PC
+	BL	strtmp_hex
+	MOV	R1, #400
+	MOV	R2, #1000
+	BL	draw_string
+
+	@ BL	KeyboardUpdate
+	@ BL	KeyboardGetChar
+
+	@ TEQ	R0, #0
+	@ BEQ	_main_loop
+
+	@ MOV	R1, #400
+	@ MOV	R2, #10
+	@ BL	draw_char
 
 	B	_main_loop
 
