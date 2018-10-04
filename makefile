@@ -57,7 +57,7 @@ $(TARGET) : $(BUILD)/output.elf
 # Generate - ELF
 $(BUILD)/output.elf : $(OBJECTS) $(LINKER)
 	@echo "==== Generating ELF output"
-	@$(COMPILER)-ld --no-undefined $(OBJECTS) -L$(LIBDIR) $(patsubst %,-l %,$(LIBS)) -Map $(MAP) -o $(BUILD)/output.elf -T $(LINKER)
+	@$(COMPILER)-ld --no-undefined --warn-common --print-memory-usage $(OBJECTS) -L$(LIBDIR) $(patsubst %,-l %,$(LIBS)) -Map $(MAP) -o $(BUILD)/output.elf -T $(LINKER)
 
 # Generate - Objects
 $(BUILD)/%.o: $(SOURCE)/%.s

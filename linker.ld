@@ -16,22 +16,32 @@ SECTIONS {
 	. = ALIGN(4);
 
     /* Kernel code */
+	.text.c : { *.c.o(.text) } > sys
+	. = ALIGN(4);
+
 	.text   : {
-		*.c.o(.text)
 		*(.text)
 	} > sys
 	.rodata : { *(.rodata) } > sys
 	. = ALIGN(4);
 
     /* Kernel data */
-	.data   : {
+	.data.vc : { build/driver/vc.o (.data) } > sys
+	. = ALIGN(4);
+
+	.data.c  : { *.c.o(*) } > sys
+	. = ALIGN(4);
+
+	.data    : {
 		*(.data)
-		*.c.o(*)
 	} > sys
 	. = ALIGN(4);
 
 	_bss_start = .;
-	.bss : { *(.bss) } > sys
+	.bss : {
+		*(.bss)
+		*(COMMON)
+	} > sys
 	_bss_end = .;
 	. = ALIGN(4);
 
