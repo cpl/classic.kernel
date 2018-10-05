@@ -15,8 +15,22 @@
 */
 
 
-#include "clsstd.h"
+#include "clstdlib.h"
 
 
-void* cls_malloc(u32 size);
-void  cls_free(void* addr);
+typedef struct mem_block {
+	u32			size;
+	void*			addr;
+	struct mem_block*	next;
+} mem_block;
+
+
+extern void* 		_KERNEL_HEAP;
+extern mem_block*	_KERNEL_ALOC;
+
+
+void* kmalloc(u32 size);
+void  kfree(void* addr);
+
+void* malloc(u32 size);
+void  free(void* addr);

@@ -14,7 +14,8 @@
    limitations under the License.
 */
 
-#include "clsstd.h"
+
+#include "clstdlib.h"
 #include "asm.h"
 #include "vfb.h"
 
