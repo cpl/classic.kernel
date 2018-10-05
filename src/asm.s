@@ -15,6 +15,37 @@
 */
 
 
-extern const void vfb_print(char* str);
-extern const void vfb_println(char* str);
-extern const void vfb_printdump(char* str, u32 len);
+@ PUT32 (R0)
+.globl PUT32
+	STR	R1, [R0]
+	BX	LR
+
+
+@ PUT16 (R0)
+.globl PUT16
+	STRH	R1, [R0]
+	BX	LR
+
+
+@ PUT08 (R0)
+.globl PUT08
+	STRB	R1, [R0]
+	BX	LR
+
+
+@ GET32 (R0) -> (R0)
+.globl GET32
+	LDR	R0, [R0]
+	BX	LR
+
+
+@ GET16 (R0)-> (R0)
+.globl GET16
+	LDRH	R0, [R0]
+	BX	LR
+
+
+@ GET08 (R0) -> (R0)
+.globl GET08
+	LDRB	R0, [R0]
+	BX	LR

@@ -15,6 +15,10 @@
 */
 
 
-extern const void vfb_print(char* str);
-extern const void vfb_println(char* str);
-extern const void vfb_printdump(char* str, u32 len);
+extern void PUT32 (u32 addr, u32 val);
+extern void PUT16 (u32 addr, u16 val);
+extern void PUT08 (u32 addr, u8  val);
+
+extern u32 GET32 (u32 addr);
+extern u16 GET16 (u32 addr);
+extern u8  GET08 (u32 addr);
