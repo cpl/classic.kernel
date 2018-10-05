@@ -15,5 +15,8 @@
 */
 
 
+#include "clsstd.h"
+
+
 void* cls_malloc(u32 size);
 void  cls_free(void* addr);

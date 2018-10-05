@@ -15,6 +15,9 @@
 */
 
 
+#include "clsstd.h"
+
+
 typedef struct mem_allocation {
 	u32			size;
 	void*			addr;

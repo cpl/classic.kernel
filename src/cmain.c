@@ -14,14 +14,18 @@
    limitations under the License.
 */
 
-
 #include "clsstd.h"
+#include "asm.h"
+#include "vfb.h"
 
 
-extern void PUT32 (u32 addr, u32 val);
-extern void PUT16 (u32 addr, u16 val);
-extern void PUT08 (u32 addr, u8  val);
+extern void* _KERNEL_HEAP;
+extern void* _KERNEL_ALOC;
 
-extern u32 GET32 (u32 addr);
-extern u16 GET16 (u32 addr);
-extern u8  GET08 (u32 addr);
+void cmain(void) {
+
+
+    vfb_println(strtmp_hex((u32)&_KERNEL_HEAP));
+    vfb_println(strtmp_hex((u32)&_KERNEL_ALOC));
+    vfb_println(strtmp_hex((u32)&_KERNEL_HEAP+1));
+}

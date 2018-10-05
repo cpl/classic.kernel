@@ -14,7 +14,12 @@
    limitations under the License.
 */
 
+#include "clsstd.h"
 
-extern const void vfb_print(char* str);
-extern const void vfb_println(char* str);
-extern const void vfb_printdump(char* str, u32 len);
+
+extern void vfb_print(char* str);
+extern void vfb_println(char* str);
+extern void vfb_printdump(char* str, u32 len);
+
+// DEBUG
+extern char* strtmp_hex(u32 val);

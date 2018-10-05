@@ -27,6 +27,8 @@ _str_hang:	.ascii "HANG\n\r\0"
 .globl _main
 _main:
 
+	BL	cmain
+
  _main_loop:
 
 	BL	clk_sys_epoch
