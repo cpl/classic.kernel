@@ -30,7 +30,7 @@ _main:
 
 	LDR	R0, =_str_knl_heap
 	BL	vfb_print
-	LDR	R0, =_KERNEL_HEAP_
+	LDR	R0, =_KERNEL_HEAP
 	BL	strtmp_hex
 	BL	vfb_println
 	BL	vfb_println

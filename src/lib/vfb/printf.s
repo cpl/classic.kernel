@@ -157,9 +157,9 @@ vfb_printf:
 	STRB	curs_x, [R10, #0]	@ Save new curs x
 	STRB	curs_y, [R10, #1]	@ Save new curs y
 
-	LDR	R0, =_KERNEL_HEAP_	@ malloc location
-	MOV	R1, #0x40		@ malloc size
-	BL	malloc			@ malloc string conversion buffer
+	@ LDR	R0, =_KERNEL_HEAP	@ malloc location
+	@ MOV	R1, #0x40		@ malloc size
+	@ BL	malloc			@ malloc string conversion buffer
 	PUSH	{R0}
 
 	MOV	R1, R2			@ Get value
@@ -169,7 +169,7 @@ vfb_printf:
 	BL	vfb_print		@ Print converted string
 
 	POP	{R0}			@ free
-	BL	free			@ malloc conversion buffer
+	@ BL	free			@ malloc conversion buffer
 
 	LDRB	curs_x, [R10, #0]	@ Load new curs x
 	LDRB	curs_y,	[R10, #1]	@ Load new curs y
