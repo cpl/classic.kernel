@@ -19,36 +19,13 @@
 
 
 _str_hang:	.ascii "HANG\n\r\0"
-_str_knl_heap:	.ascii "KERNEL HEAP: \0"
-_str_main:	.ascii "\n\r\n\r_main_loop()\n\r\0"
+
 
 .section .text
 
 
 .globl _main
 _main:
-
-	LDR	R0, =_str_knl_heap
-	BL	vfb_print
-	LDR	R0, =_KERNEL_HEAP
-	BL	strtmp_hex
-	BL	vfb_println
-	BL	vfb_println
-
-	NOP
-	NOP
-	NOP
-
-	@ BL	csudUsbInitialise
-	@ BL	strtmp_hex
-	@ BL	vfb_println
-
-	@ BL	csudKeyboardCount
-	@ BL	strtmp_hex
-	@ BL	vfb_println
-
-	LDR	R0, =_str_main
-	BL	vfb_print
 
  _main_loop:
 
@@ -69,16 +46,6 @@ _main:
 	MOV	R1, #400
 	MOV	R2, #1000
 	BL	draw_string
-
-	@ BL	KeyboardUpdate
-	@ BL	KeyboardGetChar
-
-	@ TEQ	R0, #0
-	@ BEQ	_main_loop
-
-	@ MOV	R1, #400
-	@ MOV	R2, #10
-	@ BL	draw_char
 
 	B	_main_loop
 

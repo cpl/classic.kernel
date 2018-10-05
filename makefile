@@ -38,6 +38,11 @@ TARGET	= kernel.img
 
 # Objects
 OBJECTS := $(patsubst $(SOURCE)/%.s, $(BUILD)/%.o, $(shell find $(SOURCE) -type f -name '*.s'))
+OBJECTS += $(patsubst $(SOURCE)/%.c, $(BUILD)/%.o, $(shell find $(SOURCE) -type f -name '*.c'))
+
+# C FLAGS
+CFLAGS := -std=c99 -fpack-struct -Wno-packed-bitfield-compat -fshort-wchar -Wall -c
+
 
 # Make all
 all: $(TARGET) $(LIST)
@@ -59,11 +64,17 @@ $(BUILD)/output.elf : $(OBJECTS) $(LINKER)
 	@echo "==== Generating ELF output"
 	@$(COMPILER)-ld --no-undefined --warn-common --print-memory-usage $(OBJECTS) -L$(LIBDIR) $(patsubst %,-l %,$(LIBS)) -Map $(MAP) -o $(BUILD)/output.elf -T $(LINKER)
 
-# Generate - Objects
+# Generate - Objects - ASM
 $(BUILD)/%.o: $(SOURCE)/%.s
-	@echo "==== Generating object: $@"
+	@echo "==== Generating ASM object: $@"
 	@mkdir -p $(@D)
 	@$(COMPILER)-as --reduce-memory-overheads -I $(INCLD)/ $< -o $@
+
+# Generate - Objects - C
+$(BUILD)/%.o: $(SOURCE)/%.c
+	@echo "==== Generating C   object: $@"
+	@mkdir -p $(@D)
+	@$(COMPILER)-gcc $(CFLAGS) -I $(INCLD)/c/ $< -o $@
 
 # Deploy firmware to SD card
 firmware:
