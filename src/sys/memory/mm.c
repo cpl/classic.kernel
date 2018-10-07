@@ -14,25 +14,35 @@
    limitations under the License.
 */
 
-
+#include "mm.h"
 #include "clstdlib.h"
 
 
-typedef struct mem_block {
-	u32			size;
-	void*			addr;
-	struct mem_block*	next;
-} mem_block;
+void* kmalloc(u32 size) {
+    return NULL;
+}
 
 
-extern void* 		_KERNEL_HEAP;
-extern mem_block*	_KERNEL_ALOC;
+void kfree(void* ptr) {
+    return;
+}
 
 
-void* kmalloc(u32 size);
-void  kfree(void*  ptr);
+void* malloc(u32 size) {
+    return NULL;
+}
 
-void* malloc(u32 size);
-void  free(void*  ptr);
-void* calloc(u32 size);
-void* realloc(void* ptr, u32 size);
+
+void free(void* ptr) {
+    return;
+}
+
+
+void* calloc(u32 size) {
+    return NULL;
+};
+
+
+void* realloc(void* ptr, u32 size) {
+    return NULL;
+};
