@@ -23,30 +23,27 @@
 
 void cmain(void) {
     vfb_println(strtmp_hex(0xDEADBEEF));
-
-    vfb_print("sizeof(mem_block) = ");
-    vfb_println(strtmp_hex((u32)sizeof(mem_block)));
-
-    mem_block_print(&_KERNEL_ALOC);
     vfb_println(NULL);
 
     kheap_init();
 
-    mem_block_print(&_KERNEL_ALOC);
-    mem_block_print(_KERNEL_ALOC.next);
-    vfb_println(NULL);
-
-
-    void* p = NULL;
-    void* q = NULL;
-
     kmalloc(0x39);
-    p = kmalloc(0x71);
-    q = kmalloc(0x20);
-    kmalloc(0x1);
+    kmalloc(0x10);
+    kmalloc(0x20);
+    kmalloc(0x30);
+    void* p = kmalloc(0x40);
+    void* a = kmalloc(0x20);
+    void* b = kmalloc(0x50);
+    void* f = kmalloc(0x20);
+    void* l = kmalloc(0x10);
+
+    kfree(l);
     kfree(p);
 
-    kfree(p);
+    kfree(a);
+    kfree(b);
+
+
     kfree((void*)0xF0F0F0F0);
     vfb_println(NULL);
 
@@ -57,8 +54,9 @@ void cmain(void) {
     }
     mem_block_print(c);
 
-    kfree(q);
+
     vfb_println(NULL);
+    kfree(f);
 
     c = &_KERNEL_ALOC;
     while (c -> next != NULL) {
@@ -67,4 +65,19 @@ void cmain(void) {
     }
     mem_block_print(c);
 
+
+    vfb_println(NULL);
+    kmalloc(0x10);
+    p = kmalloc(0x40);
+    kmalloc(0x20);
+
+    kfree(p);
+    kmalloc(0x40);
+
+    c = &_KERNEL_ALOC;
+    while (c -> next != NULL) {
+        mem_block_print(c);
+        c = c -> next;
+    }
+    mem_block_print(c);
 }

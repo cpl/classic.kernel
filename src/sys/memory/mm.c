@@ -26,18 +26,29 @@ void mem_block_print(mem_block* block) {
         return;
     }
 
-    vfb_print("BLOCK: SIZE: ");
+    vfb_print("BLOCK ");
+    vfb_print(strtmp_hex((u32)block));
+    vfb_print(": SIZE: ");
     vfb_print(strtmp_hex((u32)block -> size));
     vfb_print(" ADDR: ");
     vfb_print(strtmp_hex((u32)block -> addr));
     vfb_print(" NEXT: ");
     vfb_print(strtmp_hex((u32)block -> next));
 
-    if ((u32)(block -> addr) & 1 || block -> size == 0) {
-        vfb_println(" free");
+    if (mem_block_isfree(block) || block -> size == 0) {
+        vfb_print(" free");
     } else {
-        vfb_println(" alct");
+        vfb_print(" alct");
     }
+
+    if (block == _KERNEL_ALOC_LAST) {
+        vfb_print(" <--L");
+    }
+    if (block == _KERNEL_ALOC_TAIL) {
+        vfb_print(" <--T");
+    }
+
+    vfb_println(NULL);
 }
 
 
@@ -46,7 +57,26 @@ void kheap_init() {
     _KERNEL_ALOC.size = 0;
     _KERNEL_ALOC.next = NULL;
 
-    _KERNEL_ALOC_FREE[0] = &_KERNEL_ALOC;
+    _KERNEL_ALOC_LAST = &_KERNEL_ALOC;
+    _KERNEL_ALOC_TAIL = &_KERNEL_ALOC;
+}
+
+
+mem_block* mem_block_spawn(mem_block* next, u32 size) {
+    mem_block* ret = _KERNEL_ALOC_LAST;
+
+    ret -> size = size;
+    ret -> next = ret + sizeof(mem_block);
+    ret -> next -> addr = ret -> addr - size;
+    ret -> next -> next = next;
+    ret -> next -> size = 0;
+
+    _KERNEL_ALOC_LAST = ret -> next;
+    if (next == NULL) {
+        _KERNEL_ALOC_TAIL = ret -> next;
+    }
+
+    return ret;
 }
 
 
@@ -56,68 +86,64 @@ void* kmalloc(u32 size) {
     size += (4 - (size & 3)) & 3;
 
 
-    // Find last block
     mem_block* current = &_KERNEL_ALOC;
-    while(current -> next != NULL) {
-        current = current -> next;
-    }
+    while (current -> next != NULL) {
+        if (mem_block_isfree(current)) {
+            u32 csize = current -> size;
 
-    // Allocate last block
-    current -> size = size;
-    current -> next = current + sizeof(mem_block);
+            if (csize == size) {
+                mem_block_aloc(current);
+                return current -> addr;
+            } else if (csize > size) {
 
-    // Write next empty block
-    current -> next -> size = 0;
-    current -> next -> addr = current -> addr - size;
-    current -> next -> next = NULL;
-
-    // Return allocated address
-    return current -> addr;
-}
-
-
-void kfree(void* ptr) {
-
-    mem_block* current = &_KERNEL_ALOC;
-    while (current -> addr != ptr) {
-        if (current -> next == NULL) {
-            vfb_println("SEGFAULT");
-            return;
+            }
         }
 
         current = current -> next;
     }
 
-    mem_block* next = current -> next;
+    return mem_block_spawn(NULL, size) -> addr;
+}
 
-    if (next -> size == 0) {
-        current -> size = 0;
-        current -> next = NULL;
-        return;
-    } else if ((u32)(next -> addr) & 1) {
-        current -> size += next -> size;
-        current -> next  = next -> next;
+
+void kfree(void* ptr) {
+
+    // Search for block to free
+    mem_block* current = &_KERNEL_ALOC;
+    while (current -> addr != ptr) {
+        // Check next
+        current = current -> next;
+
+        // Reached end of heap aloc chain
+        if (current == NULL) {
+            vfb_println("SEGFAULT");
+            return;
+        }
     }
 
-    current -> addr = (void*)((u32)(current -> addr) | 1);
+    // [A]->[A]->[A]->[F]->[0]->NULL
+    if (current -> next == _KERNEL_ALOC_LAST) {
+        mem_block* prev = current - sizeof(mem_block);
+
+        // [A]->[F]->[F]->[F]->[0]->NULL
+        while (prev -> next == current) {
+            if (mem_block_isfree(prev)) {
+                current = prev;
+                prev = current - sizeof(mem_block);
+            } else {
+                break;
+            }
+        }
+
+        // [A]->[0]->NULL
+        current -> size = 0;
+        current -> next = NULL;
+        mem_block_aloc(current);
+
+        _KERNEL_ALOC_LAST = current;
+        _KERNEL_ALOC_TAIL = current;
+        return;
+    }
+
+    mem_block_free(current);
 }
-
-
-void* malloc(u32 size) {
-    return NULL;
-}
-
-
-void free(void* ptr) {
-    return;
-}
-
-
-void* calloc(u32 size) {
-    return NULL;
-};
-
-
-void* realloc(void* ptr, u32 size) {
-    return NULL;
-};

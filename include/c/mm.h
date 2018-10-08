@@ -25,19 +25,21 @@ typedef struct mem_block {
 } mem_block;
 
 void mem_block_print(mem_block* block);
+// mem_block* mem_block_spawn(mem_block* prev, mem_block* next, u32 size);
+
+#define mem_block_isfree(block) (((u32)(block -> addr) & 1) ? 1 : 0)
+#define mem_block_islast(block) ((block == _KERNEL_ALOC_LAST) ? 1 : 0)
+#define mem_block_free(block) ((block -> addr) = (void*)((u32)(block -> addr) | 1))
+#define mem_block_aloc(block) ((block -> addr) = (void*)((u32)(block -> addr) & (u32)(-2)))
+#define mem_block_dead(block) ()
 
 
 extern void*        _KERNEL_HEAP;
 extern mem_block    _KERNEL_ALOC;
+mem_block*          _KERNEL_ALOC_LAST;
+mem_block*          _KERNEL_ALOC_TAIL;
 
-
-mem_block*          _KERNEL_ALOC_FREE[0xFF];
 
 void  kheap_init(void);
 void* kmalloc(u32 size);
 void  kfree(void*  ptr);
-
-void* malloc(u32 size);
-void  free(void*  ptr);
-void* calloc(u32 size);
-void* realloc(void* ptr, u32 size);
