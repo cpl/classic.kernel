@@ -41,7 +41,7 @@ OBJECTS := $(patsubst $(SOURCE)/%.s, $(BUILD)/%.o, $(shell find $(SOURCE) -type 
 OBJECTS += $(patsubst $(SOURCE)/%.c, $(BUILD)/%.o, $(shell find $(SOURCE) -type f -name '*.c'))
 
 # C FLAGS
-CFLAGS := -std=c99 -fpack-struct -Wno-packed-bitfield-compat -fshort-wchar -Wall -c
+CFLAGS := -std=c99 -fpack-struct -fno-builtin -Wno-packed-bitfield-compat -fshort-wchar -Wall -c
 
 
 # Make all

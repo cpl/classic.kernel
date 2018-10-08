@@ -15,7 +15,7 @@
 */
 
 
-#include "clstdlib.h"
+#include "cls.stdlib.h"
 
 
 extern void PUT32 (u32 addr, u32 val);
