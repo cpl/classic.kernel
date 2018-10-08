@@ -19,16 +19,21 @@
 
 
 typedef struct mem_block {
-	u32			size;
-	void*			addr;
-	struct mem_block*	next;
+    u32                 size;
+    void*               addr;
+    struct mem_block*   next;
 } mem_block;
 
-
-extern void* 		_KERNEL_HEAP;
-extern mem_block*	_KERNEL_ALOC;
+void mem_block_print(mem_block* block);
 
 
+extern void*        _KERNEL_HEAP;
+extern mem_block    _KERNEL_ALOC;
+
+
+mem_block*          _KERNEL_ALOC_FREE[0xFF];
+
+void  kheap_init(void);
 void* kmalloc(u32 size);
 void  kfree(void*  ptr);
 

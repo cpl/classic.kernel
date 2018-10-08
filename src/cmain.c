@@ -18,15 +18,53 @@
 #include "cls.stdlib.h"
 #include "asm.h"
 #include "vfb.h"
+#include "mm.h"
 
-
-extern void* _KERNEL_HEAP;
-extern void* _KERNEL_ALOC;
 
 void cmain(void) {
+    vfb_println(strtmp_hex(0xDEADBEEF));
+
+    vfb_print("sizeof(mem_block) = ");
+    vfb_println(strtmp_hex((u32)sizeof(mem_block)));
+
+    mem_block_print(&_KERNEL_ALOC);
+    vfb_println(NULL);
+
+    kheap_init();
+
+    mem_block_print(&_KERNEL_ALOC);
+    mem_block_print(_KERNEL_ALOC.next);
+    vfb_println(NULL);
 
 
-    vfb_println(strtmp_hex((u32)&_KERNEL_HEAP));
-    vfb_println(strtmp_hex((u32)&_KERNEL_ALOC));
-    vfb_println(strtmp_hex((u32)&_KERNEL_HEAP+1));
+    void* p = NULL;
+    void* q = NULL;
+
+    kmalloc(0x39);
+    p = kmalloc(0x71);
+    q = kmalloc(0x20);
+    kmalloc(0x1);
+    kfree(p);
+
+    kfree(p);
+    kfree((void*)0xF0F0F0F0);
+    vfb_println(NULL);
+
+    mem_block* c = &_KERNEL_ALOC;
+    while (c -> next != NULL) {
+        mem_block_print(c);
+        c = c -> next;
+    }
+    mem_block_print(c);
+
+    kfree(q);
+    vfb_println(NULL);
+
+    c = &_KERNEL_ALOC;
+    while (c -> next != NULL) {
+        mem_block_print(c);
+        c = c -> next;
+    }
+    mem_block_print(c);
+
 }
