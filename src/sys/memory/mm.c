@@ -106,7 +106,15 @@ void* cls_knl_malloc(u32 size) {
                 mem_block_aloc(current);
                 return current -> addr;
             } else if ((csize > size) && ((csize - size) >= _MIN_ALOC_SIZE)) {
-                mem_block_spawn(current, current -> next, csize-size);
+                mem_block* next = current + sizeof(mem_block);
+                if (mem_block_isdead(next)) {
+                    next -> size = (csize - size);
+                    next -> next = current -> next;
+                    next -> addr = (current -> addr) - (current -> size);
+                } else {
+                    mem_block_spawn(current, current -> next, csize-size);
+                }
+
                 mem_block_aloc(current);
                 current -> size = size;
                 return current -> addr;
@@ -134,10 +142,20 @@ void* cls_knl_malloc(u32 size) {
     current -> next -> next = NULL;
     current -> next -> size = 0;
     current -> next -> addr = (current -> addr) - size;
+
     _KERNEL_ALOC_LAST = current -> next;
     _KERNEL_ALOC_TAIL = current -> next;
 
     return current -> addr;
+}
+
+
+void* cls_knl_falloc(u32 size) {
+    _KERNEL_ALOC_LAST = _KERNEL_ALOC_LAST + sizeof(mem_block);
+    _KERNEL_ALOC_TAIL -> next = _KERNEL_ALOC_LAST;
+    _KERNEL_ALOC_TAIL -> size = size;
+
+    return _KERNEL_ALOC_TAIL -> addr;
 }
 
 
@@ -167,7 +185,7 @@ void cls_knl_free(void* ptr) {
 
         // [A]->[F]->[F]->[F]->[0]->NULL
         while (prev -> next == current) {
-            if (mem_block_isfree(prev)) {
+            if (mem_block_isfd(prev)) {
                 current = prev;
                 prev = current - sizeof(mem_block);
             } else {
@@ -186,4 +204,14 @@ void cls_knl_free(void* ptr) {
     }
 
     mem_block_free(current);
+    if (mem_block_isfree(current -> next)) {
+        current -> size += current -> next -> size;
+
+        mem_block_dead(current -> next);
+        if (_KERNEL_ALOC_DEAD == &_KERNEL_ALOC || _KERNEL_ALOC_DEAD > current -> next) {
+            _KERNEL_ALOC_DEAD = current -> next;
+        }
+
+        current -> next = current -> next -> next;
+    }
 }

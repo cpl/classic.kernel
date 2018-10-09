@@ -25,15 +25,18 @@ void cmain(void) {
     vfb_println(NULL);
 
     cls_knl_heap_init();
+
     mem_block* p = NULL;
+    mem_block* q = NULL;
 
     cls_knl_malloc(0x1);
     cls_knl_malloc(0x40);
-    p = cls_knl_malloc(0xDF);
-    cls_knl_malloc(0x20);
+    q = cls_knl_malloc(0xDF);
+    p = cls_knl_malloc(0x20);
     cls_knl_malloc(0x50);
+
     cls_knl_free(p);
-    cls_knl_malloc(0x80);
+    cls_knl_free(q);
 
 
     mem_block* c = &_KERNEL_ALOC;

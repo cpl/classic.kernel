@@ -34,6 +34,7 @@ void        mem_block_print(mem_block*);
 #define     mem_block_aloc(b) ((b -> addr) = (void*)((u32)(b -> addr) & (u32)(-2)))
 #define     mem_block_isfree(b) (((u32)(b -> addr) & 1) ? 1 : 0)
 #define     mem_block_isdead(b) (((u32)(b -> addr) & 2) ? 1 : 0)
+#define     mem_block_isfd(b)   (((u32)(b -> addr) & 3) ? 1 : 0)
 #define     mem_block_islast(b) ((b == _KERNEL_ALOC_LAST) ? 1 : 0)
 
 
@@ -44,3 +45,4 @@ extern mem_block    _KERNEL_ALOC;
 void  cls_knl_heap_init(void);
 void* cls_knl_malloc(u32 size);
 void  cls_knl_free(void*  ptr);
+void* cls_knl_falloc(u32 size);
