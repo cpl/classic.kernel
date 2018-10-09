@@ -25,3 +25,7 @@ extern void PUT08 (u32 addr, u8  val);
 extern u32 GET32 (u32 addr);
 extern u16 GET16 (u32 addr);
 extern u8  GET08 (u32 addr);
+
+extern u32 GETPC (void);
+extern u32 GETSP (void);
+extern u32 GETLR (void);

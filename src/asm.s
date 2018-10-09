@@ -55,3 +55,24 @@ GET16:
 GET08:
 	LDRB	R0, [R0]
 	BX	LR
+
+
+@ GETPC -> (R0)
+.globl GETPC
+GETPC:
+	MOV	R0, PC
+	BX	LR
+
+
+@ GETSP -> (R0)
+.globl GETSP
+GETSP:
+	MOV	R0, SP
+	BX	LR
+
+
+@ GETLR -> (R0)
+.globl GETLR
+GETLR:
+	MOV	R0, LR
+	BX	LR
