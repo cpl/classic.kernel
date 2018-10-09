@@ -30,11 +30,10 @@ typedef struct mem_block {
 
 void        mem_block_print(mem_block*);
 #define     mem_block_free(b) ((b -> addr) = (void*)((u32)(b -> addr) | 1))
-#define     mem_block_dead(b) ((b -> addr) = (void*)((u32)(b -> addr) | 2))
-#define     mem_block_aloc(b) ((b -> addr) = (void*)((u32)(b -> addr) & (u32)(-2)))
+#define     mem_block_dead(b) ((b -> addr) = NULL)
+#define     mem_block_aloc(b) ((b -> addr) = (void*)((u32)(b -> addr) & ~1))
 #define     mem_block_isfree(b) (((u32)(b -> addr) & 1) ? 1 : 0)
-#define     mem_block_isdead(b) (((u32)(b -> addr) & 2) ? 1 : 0)
-#define     mem_block_isfd(b)   (((u32)(b -> addr) & 3) ? 1 : 0)
+#define     mem_block_isdead(b) ((b -> addr) == NULL)
 #define     mem_block_islast(b) ((b == _KERNEL_ALOC_LAST) ? 1 : 0)
 
 
@@ -44,7 +43,6 @@ static mem_block*   _KERNEL_ALOC = (void*)0x000FFFFF;
 
 mem_block*          _KERNEL_ALOC_LAST;
 mem_block*          _KERNEL_ALOC_TAIL;
-mem_block*          _KERNEL_ALOC_DEAD;
 
 
 void  cls_knl_heap_init(void);
