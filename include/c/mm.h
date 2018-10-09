@@ -49,3 +49,4 @@ void  cls_knl_heap_init(void);
 void* cls_knl_malloc(u32 size);
 void  cls_knl_free(void* addr);
 void* cls_knl_falloc(u32 size);
+void* cls_knl_calloc(u32 size);
