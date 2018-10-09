@@ -19,6 +19,7 @@
 #include "mm.h"
 #include "vfb.h"
 #include "asm.h"
+#include "memutils.h"
 
 
 void mem_block_print(mem_block* block) {
@@ -179,6 +180,49 @@ void* cls_knl_malloc(u32 size) {
     // return pointer to allocated block
     mem_block_aloc(current);
     return current -> addr;
+}
+
+
+void* cls_knl_falloc(u32 size) {
+
+    // align malloc request size to 0x40 bytes (16 words)
+    size += ((_MIN_ALOC_SIZE-(size&(_MIN_ALOC_SIZE-1)))&(_MIN_ALOC_SIZE-1));
+
+    // create new end block
+    _KERNEL_ALOC_LAST -= sizeof(mem_block);
+
+    // alloc wanted memory at the tail block
+    _KERNEL_ALOC_TAIL -> size = size;
+    _KERNEL_ALOC_TAIL -> next = _KERNEL_ALOC_LAST;
+
+    // create ew tail block at the end block
+    _KERNEL_ALOC_LAST -> addr = (_KERNEL_ALOC_TAIL -> addr) + size;
+    _KERNEL_ALOC_LAST -> next = NULL;
+    _KERNEL_ALOC_LAST -> size = 0;
+
+    // update tail to end
+    _KERNEL_ALOC_TAIL = _KERNEL_ALOC_LAST;
+
+    return _KERNEL_ALOC_TAIL -> addr;
+}
+
+
+void* cls_knl_calloc(u32 size) {
+    // perform normal malloc
+    mem_block* block = cls_knl_malloc(size);
+
+    // avoid memzero wrong region
+    if (block == NULL) {
+        vfb_print("SEGFAULT: ");
+        vfb_println(strtmp_hex(GETPC()));
+        return NULL;
+    }
+
+    // zero memory
+    memzero(block, size);
+
+    // return addr
+    return block -> addr;
 }
 
 
