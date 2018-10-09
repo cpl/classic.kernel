@@ -22,27 +22,35 @@
 
 void cmain(void) {
     vfb_println(strtmp_hex(0xDEADBEEF));
+    vfb_print("sizeof(mem_block) = ");
+    vfb_println(strtmp_hex(sizeof(mem_block)));
     vfb_println(NULL);
 
     cls_knl_heap_init();
 
     mem_block* p = NULL;
-    mem_block* q = NULL;
 
     cls_knl_malloc(0x1);
     cls_knl_malloc(0x40);
-    q = cls_knl_malloc(0xDF);
-    p = cls_knl_malloc(0x20);
-    cls_knl_malloc(0x50);
-
+    cls_knl_malloc(0xDF);
+    cls_knl_malloc(0x20);
+    p = cls_knl_malloc(0x50);
     cls_knl_free(p);
-    cls_knl_free(q);
+    cls_knl_malloc(0x30);
 
-
-    mem_block* c = &_KERNEL_ALOC;
+    mem_block* c = _KERNEL_ALOC;
     while (c -> next != NULL) {
         mem_block_print(c);
         c = c -> next;
+    }
+    mem_block_print(c);
+    vfb_println(NULL);
+
+
+    c = _KERNEL_ALOC;
+    while (c != _KERNEL_ALOC_LAST) {
+        mem_block_print(c);
+        c -= sizeof(mem_block);
     }
     mem_block_print(c);
     vfb_println(NULL);

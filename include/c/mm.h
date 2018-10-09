@@ -39,10 +39,15 @@ void        mem_block_print(mem_block*);
 
 
 extern void*        _KERNEL_HEAP;
-extern mem_block    _KERNEL_ALOC;
+static mem_block*   _KERNEL_ALOC = (void*)0x000FFFFF;
+
+
+mem_block*          _KERNEL_ALOC_LAST;
+mem_block*          _KERNEL_ALOC_TAIL;
+mem_block*          _KERNEL_ALOC_DEAD;
 
 
 void  cls_knl_heap_init(void);
 void* cls_knl_malloc(u32 size);
-void  cls_knl_free(void*  ptr);
+void  cls_knl_free(void* addr);
 void* cls_knl_falloc(u32 size);

@@ -7,7 +7,7 @@ MEMORY {
 }
 
 SECTIONS {
-    /* .init includes initialization code, exceptions, reset routines, etc. */
+	/* .init includes initialization code, exceptions, reset routines, etc. */
 	.init : {
 		_init_start = .;
 		*(.init)
@@ -15,7 +15,7 @@ SECTIONS {
 	} > sys
 	. = ALIGN(4);
 
-    /* Kernel code */
+	/* Kernel code */
 	.text.c : { *.c.o(.text) } > sys
 	. = ALIGN(4);
 
@@ -25,7 +25,7 @@ SECTIONS {
 	.rodata : { *(.rodata) } > sys
 	. = ALIGN(4);
 
-    /* Kernel data */
+	/* Kernel data */
 	.data.vc : { build/driver/vc.o (.data) } > sys
 	. = ALIGN(4);
 
@@ -45,12 +45,11 @@ SECTIONS {
 	_bss_end = .;
 	. = ALIGN(4);
 
-    /* DISCARD EVERYTHING ELSE */
+	/* DISCARD EVERYTHING ELSE */
 	/DISCARD/ : {
 		*(*)
 	}
 
-    /* Kernel heap */
-	_KERNEL_ALOC = ALIGN(12);
-	_KERNEL_HEAP = ABSOLUTE(0x000FFFF0);
+	/* Kernel heap */
+	_KERNEL_HEAP = ALIGN(0x40);
 }

@@ -18,11 +18,7 @@
 #include "cls.stdlib.h"
 #include "mm.h"
 #include "vfb.h"
-
-
-mem_block*          _KERNEL_ALOC_LAST;
-mem_block*          _KERNEL_ALOC_TAIL;
-mem_block*          _KERNEL_ALOC_DEAD;
+#include "asm.h"
 
 
 void mem_block_print(mem_block* block) {
@@ -57,8 +53,8 @@ void mem_block_print(mem_block* block) {
     if (block == _KERNEL_ALOC_DEAD) {
         vfb_print(" <--D");
     }
-    if (block == &_KERNEL_ALOC) {
-        vfb_print(" <--A");
+    if (block == _KERNEL_ALOC) {
+        vfb_print(" <--H");
     }
 
     vfb_println(NULL);
@@ -66,152 +62,119 @@ void mem_block_print(mem_block* block) {
 
 
 void cls_knl_heap_init() {
-    _KERNEL_ALOC.addr = &_KERNEL_HEAP;
-    _KERNEL_ALOC.size = 0;
-    _KERNEL_ALOC.next = NULL;
+    _KERNEL_ALOC -> addr = (void*)((u32)(&_KERNEL_HEAP)+1);
+    _KERNEL_ALOC -> size = 0;
+    _KERNEL_ALOC -> next = NULL;
 
-    _KERNEL_ALOC_LAST = &_KERNEL_ALOC;
-    _KERNEL_ALOC_TAIL = &_KERNEL_ALOC;
-    _KERNEL_ALOC_DEAD = &_KERNEL_ALOC;
-}
-
-
-void mem_block_spawn(mem_block* prev, mem_block* next, u32 size) {
-
-    // MUST handle dead block finding by walking from _KERNEL_ALOC_DEAD
-    // to _KERNEL_ALOC_LAST, if _KERNEL_ALOC_DEAD is a dead block then
-    // allocate it, else find the next DEAD block, aloc it, and set the
-    // DEAD pointer to it
-
-    _KERNEL_ALOC_LAST = _KERNEL_ALOC_LAST + sizeof(mem_block);
-
-    _KERNEL_ALOC_LAST -> size = size;
-    _KERNEL_ALOC_LAST -> next = next;
-    _KERNEL_ALOC_LAST -> addr = (prev -> addr) - (prev -> size);
-
-    prev -> next = _KERNEL_ALOC_LAST;
+    _KERNEL_ALOC_LAST = _KERNEL_ALOC;
+    _KERNEL_ALOC_TAIL = _KERNEL_ALOC;
+    _KERNEL_ALOC_DEAD = _KERNEL_ALOC;
 }
 
 
 void* cls_knl_malloc(u32 size) {
 
-    size += ((_MIN_ALOC_SIZE - (size & (_MIN_ALOC_SIZE-1))) & (_MIN_ALOC_SIZE-1));
+    // align malloc request size to 0x40 bytes (16 words)
+    size += ((_MIN_ALOC_SIZE-(size&(_MIN_ALOC_SIZE-1)))&(_MIN_ALOC_SIZE-1));
 
-    mem_block* current = &_KERNEL_ALOC;
+    // iterate memory blocks
+    mem_block* current = _KERNEL_ALOC;
     while (current -> next != NULL) {
+
+        // if block is free
         if (mem_block_isfree(current)) {
-            u32 csize = current -> size;
+            // get free block size
+            u32 fsize = current -> size;
 
-            if (csize == size) {
+            // if requested size, matches free block size, mark block as aloc
+            if (fsize == size) {
                 mem_block_aloc(current);
                 return current -> addr;
-            } else if ((csize > size) && ((csize - size) >= _MIN_ALOC_SIZE)) {
-                mem_block* next = current + sizeof(mem_block);
-                if (mem_block_isdead(next)) {
-                    next -> size = (csize - size);
-                    next -> next = current -> next;
-                    next -> addr = (current -> addr) - (current -> size);
-                } else {
-                    mem_block_spawn(current, current -> next, csize-size);
-                }
 
-                mem_block_aloc(current);
-                current -> size = size;
-                return current -> addr;
+            // else if free block size is larger than requested size
+            // aloc the current free block to requested size and create
+            // a new free block with the remaining size
+            } else if (fsize > size) {
+                vfb_println("ERR (fsize > size)");
+                return NULL;
+
+            // else while next blocks are free, calculate total free size
+            // and allocate a single block, setting the other as dead/free
             } else {
-                // while(next block is free)
-                // add size
-                // keep new pointer for sub-blockchain
-                // if enough space, alloc first block, and set other as dead
-                // or free, modify address of each to fit new space
-
-                // else, break and continue checking main block, reseting csize
+                vfb_println("ERR (fsize else)");
+                return NULL;
             }
         }
 
+        // walk to next block
         current = current -> next;
     }
 
-    if (current -> size != 0) {
-        vfb_println("SEGFAULT");
+    // reached end
+    // if end block size is not 0, SEGFAULT
+    // if end block addr + requested alloc size, goes over aloc list, SEGFAULT
+    if (current -> size != 0 || (mem_block*)((current -> addr) + size) > _KERNEL_ALOC_LAST ) {
+        vfb_print("SEGFAULT: ");
+        vfb_println(strtmp_hex(GETPC()));
         return NULL;
     }
 
+    // allocate end block
     current -> size = size;
-    current -> next = _KERNEL_ALOC_LAST + sizeof(mem_block);
+
+    // create new end block
+    current -> next = _KERNEL_ALOC_LAST - sizeof(mem_block);
     current -> next -> next = NULL;
     current -> next -> size = 0;
-    current -> next -> addr = (current -> addr) - size;
+    current -> next -> addr = (current -> addr) + size;
 
+    // set allocations end
     _KERNEL_ALOC_LAST = current -> next;
     _KERNEL_ALOC_TAIL = current -> next;
 
+    // return pointer to allocated block
+    mem_block_aloc(current);
     return current -> addr;
 }
 
 
-void* cls_knl_falloc(u32 size) {
-    _KERNEL_ALOC_LAST = _KERNEL_ALOC_LAST + sizeof(mem_block);
-    _KERNEL_ALOC_TAIL -> next = _KERNEL_ALOC_LAST;
-    _KERNEL_ALOC_TAIL -> size = size;
+void cls_knl_free(void* addr) {
 
-    return _KERNEL_ALOC_TAIL -> addr;
-}
-
-
-void cls_knl_free(void* ptr) {
-
-    // CONSIDERING doing free block merges
-    // this would speed up malloc and detect some
-    // extra DEAD blocks at the cost of more
-    // heap_aloc fragmentation
-
-    // Search for block to free
-    mem_block* current = &_KERNEL_ALOC;
-    while (current -> addr != ptr) {
-        // Check next
+    // iterate memory blocks, until block is found
+    mem_block* current = _KERNEL_ALOC;
+    while (current -> addr != addr) {
+        // check next
         current = current -> next;
 
-        // Reached end of heap aloc chain
+        // if end is reached, SEGFAULT
         if (current == NULL) {
-            vfb_println("SEGFAULT");
+            vfb_print("SEGFAULT: ");
+            vfb_println(strtmp_hex(GETPC()));
             return;
         }
     }
 
-    // [A]->[A]->[A]->[F]->[0]->NULL
-    if (current -> next == _KERNEL_ALOC_LAST) {
-        mem_block* prev = current - sizeof(mem_block);
+    // if next block is the tail block, set the current to be freed block
+    // to be the tail block
+    if (current -> next == _KERNEL_ALOC_TAIL) {
 
-        // [A]->[F]->[F]->[F]->[0]->NULL
-        while (prev -> next == current) {
-            if (mem_block_isfd(prev)) {
-                current = prev;
-                prev = current - sizeof(mem_block);
-            } else {
-                break;
-            }
+        // if tail block is also last aloc block
+        // set the last aloc block to the new tail block
+        if (_KERNEL_ALOC_LAST == _KERNEL_ALOC_TAIL) {
+            _KERNEL_ALOC_LAST = current;
+        } else {
+            mem_block_dead(current -> next);
         }
 
-        // [A]->[0]->NULL
+        // set as tail block
         current -> size = 0;
         current -> next = NULL;
-        mem_block_aloc(current);
 
-        _KERNEL_ALOC_LAST = current;
+        // set pointer to new tail
         _KERNEL_ALOC_TAIL = current;
-        return;
     }
 
+    // free block by setting the flag in the block -> addr
     mem_block_free(current);
-    if (mem_block_isfree(current -> next)) {
-        current -> size += current -> next -> size;
-
-        mem_block_dead(current -> next);
-        if (_KERNEL_ALOC_DEAD == &_KERNEL_ALOC || _KERNEL_ALOC_DEAD > current -> next) {
-            _KERNEL_ALOC_DEAD = current -> next;
-        }
-
-        current -> next = current -> next -> next;
-    }
+    return;
 }
