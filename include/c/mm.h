@@ -18,28 +18,29 @@
 #include "cls.stdlib.h"
 
 
+#define _MIN_ALOC_SIZE 16*4
+
+
 typedef struct mem_block {
     u32                 size;
     void*               addr;
     struct mem_block*   next;
 } mem_block;
 
-void mem_block_print(mem_block* block);
-// mem_block* mem_block_spawn(mem_block* prev, mem_block* next, u32 size);
 
-#define mem_block_isfree(block) (((u32)(block -> addr) & 1) ? 1 : 0)
-#define mem_block_islast(block) ((block == _KERNEL_ALOC_LAST) ? 1 : 0)
-#define mem_block_free(block) ((block -> addr) = (void*)((u32)(block -> addr) | 1))
-#define mem_block_aloc(block) ((block -> addr) = (void*)((u32)(block -> addr) & (u32)(-2)))
-#define mem_block_dead(block) ()
+void        mem_block_print(mem_block*);
+#define     mem_block_free(b) ((b -> addr) = (void*)((u32)(b -> addr) | 1))
+#define     mem_block_dead(b) ((b -> addr) = (void*)((u32)(b -> addr) | 2))
+#define     mem_block_aloc(b) ((b -> addr) = (void*)((u32)(b -> addr) & (u32)(-2)))
+#define     mem_block_isfree(b) (((u32)(b -> addr) & 1) ? 1 : 0)
+#define     mem_block_isdead(b) (((u32)(b -> addr) & 2) ? 1 : 0)
+#define     mem_block_islast(b) ((b == _KERNEL_ALOC_LAST) ? 1 : 0)
 
 
 extern void*        _KERNEL_HEAP;
 extern mem_block    _KERNEL_ALOC;
-mem_block*          _KERNEL_ALOC_LAST;
-mem_block*          _KERNEL_ALOC_TAIL;
 
 
-void  kheap_init(void);
-void* kmalloc(u32 size);
-void  kfree(void*  ptr);
+void  cls_knl_heap_init(void);
+void* cls_knl_malloc(u32 size);
+void  cls_knl_free(void*  ptr);
