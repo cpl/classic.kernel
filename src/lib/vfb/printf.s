@@ -81,12 +81,9 @@ vfb_printf:
 	TEQ	R0, #'\\'		@ Check for escape flag
 	BEQ	_vfb_printf_esc		@ Parse escape
 
-	TEQ	R0, #ASCII_LF		@ Check for line feed
-	ADDEQ	curs_y, #1		@
-	BEQ	_vfb_printf_loop	@
-
-	TEQ	R0, #ASCII_CR		@ Check for carriage return
+	TEQ	R0, #ASCII_LF		@ Check for new line
 	MOVEQ	curs_x, #0		@
+	ADDEQ	curs_y, #1		@
 	BEQ	_vfb_printf_loop	@
 
 	TEQ	R0, #ASCII_HT		@ Check for horizontal tab
