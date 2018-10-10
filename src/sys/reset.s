@@ -55,6 +55,8 @@ _reset:
 
 							@ Stay in SYS MODE
 
+	BL	cls_knl_heap_init			@ Initialize knl heap
+
 	B	sys_init				@ Initialize system
 							@ - LED
 							@ - UART

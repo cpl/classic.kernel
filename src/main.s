@@ -20,6 +20,13 @@
 
 _str_hang:	.ascii "HANG\n\r\0"
 
+.align 4
+_str_char:
+	.byte 0
+	.byte 0
+	.byte 0
+	.byte 0
+
 
 .section .text
 
@@ -29,7 +36,24 @@ _main:
 
 	BL	cmain
 
+	BL	csudUsbInitialise
+	LDR	R4, =_str_char
+
+	BL	KeyboardUpdate
+	BL	KeyboardGetChar
+
+	BL	mem_block_printall
+	BL	mem_block_printmem
+
  _main_loop:
+
+	BL	KeyboardUpdate
+	BL	KeyboardGetChar
+
+	CMP R0, #0
+	STRNEB	R0, [R4]
+	MOVNE	R0, R4
+	BLNE	vfb_print
 
 	BL	clk_sys_epoch
 	BL	strtmp_hex

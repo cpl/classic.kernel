@@ -63,6 +63,28 @@ void mem_block_print(mem_block* block) {
 }
 
 
+void mem_block_printall() {
+    mem_block* c = _KERNEL_ALOC;
+    while (c != _KERNEL_ALOC_TAIL) {
+        mem_block_print(c);
+        c = c -> next;
+    }
+    mem_block_print(c);
+    vfb_println(NULL);
+}
+
+
+void mem_block_printmem() {
+    mem_block* c = _KERNEL_ALOC;
+    while (c != _KERNEL_ALOC_LAST) {
+        mem_block_print(c);
+        c -= sizeof(mem_block);
+    }
+    mem_block_print(c);
+    vfb_println(NULL);
+}
+
+
 mem_block* mem_block_spawn(mem_block* next, u32 size, void* addr) {
 
     // search for first dead block
@@ -163,8 +185,7 @@ void* cls_knl_malloc(u32 size) {
 
     // reached end
     if (current != _KERNEL_ALOC_TAIL) {
-        vfb_print("SEGFAULT: ");
-        vfb_println(strtmp_hex(GETPC()));
+        vfb_println("SEGFAULT: none maching end");
         return NULL;
     }
 
@@ -217,8 +238,7 @@ void* cls_knl_calloc(u32 size) {
 
     // avoid memzero wrong region
     if (block == NULL) {
-        vfb_print("SEGFAULT: ");
-        vfb_println(strtmp_hex(GETPC()));
+        vfb_println("SEGFAULT: failed malloc for calloc");
         return NULL;
     }
 
@@ -240,8 +260,7 @@ void cls_knl_free(void* addr) {
 
         // if end is reached, SEGFAULT
         if (current == NULL) {
-            vfb_print("SEGFAULT: ");
-            vfb_println(strtmp_hex(GETPC()));
+            vfb_println("SEGFAULT: no such pointer found");
             return;
         }
     }
