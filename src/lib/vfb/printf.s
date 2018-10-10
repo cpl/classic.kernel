@@ -123,19 +123,19 @@ vfb_printf:
 	TEQ	R0, #'i'		@ Case '%i'
 	LDREQ	R0, [args], #4		@
 	LDREQ	R2, [R0]		@
-	LDREQ	R3, =str_conv_32int	@
+	LDREQ	R3, =str_conv_s32	@
 	BEQ	_vfb_printf_cnv		@
 
 	TEQ	R0, #'h'		@ Case '%h'
 	LDREQ	R0, [args], #4		@
 	LDREQH	R2, [R0]		@
-	LDREQ	R3, =str_conv_16uint	@
+	LDREQ	R3, =str_conv_u16	@
 	BEQ	_vfb_printf_cnv		@
 
 	TEQ	R0, #'u'		@ Case '%u'
 	LDREQ	R0, [args], #4		@
 	LDREQ	R2, [R0]		@
-	LDREQ	R3, =str_conv_32uint	@
+	LDREQ	R3, =str_conv_u32	@
 	BEQ	_vfb_printf_cnv		@
 
 	TEQ	R0, #'x'		@ Case '%x'
@@ -154,19 +154,18 @@ vfb_printf:
 	STRB	curs_x, [R10, #0]	@ Save new curs x
 	STRB	curs_y, [R10, #1]	@ Save new curs y
 
-	@ LDR	R0, =_KERNEL_HEAP	@ malloc location
-	@ MOV	R1, #0x40		@ malloc size
-	@ BL	malloc			@ malloc string conversion buffer
-	PUSH	{R0}
+	MOV	R1, #0x40		@ malloc size
+	BL	cls_knl_malloc		@ malloc string conversion buffer
+	PUSH	{R0}			@ Store malloc pointer
 
 	MOV	R1, R2			@ Get value
 	MOV	LR, PC			@ Return to vfb_print
 	MOV	PC, R3			@ BL str_conv_
 
-	BL	vfb_print		@ Print converted string
+	BL	vfb_print		@ Print converted string from buffer
 
-	POP	{R0}			@ free
-	@ BL	free			@ malloc conversion buffer
+	POP	{R0}			@ Get malloc pointer and free it
+	BL	cls_knl_free		@
 
 	LDRB	curs_x, [R10, #0]	@ Load new curs x
 	LDRB	curs_y,	[R10, #1]	@ Load new curs y

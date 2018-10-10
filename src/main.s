@@ -36,6 +36,13 @@ _main:
 
 	BL	cmain
 
+	MOV	R0, #0x40
+	BL	cls_knl_malloc
+	PUSH	{R0}
+	MOV	R1, #-3
+	BL	str_conv_
+
+
 	BL	csudUsbInitialise
 	LDR	R4, =_str_char
 

@@ -15,10 +15,10 @@
 */
 
 
-/* asm.h - Assembly single line commands
+/* conv.h - Type conversion
 
-These functions are used to quickly perform operations at the ASM level which
-may not be avaiable in standard C.
+Convert primitive types to strings and back. This library depends on string
+buffers being passed as routine arguments.
 
 */
 
@@ -26,14 +26,6 @@ may not be avaiable in standard C.
 #include "types.h"
 
 
-extern void PUT32 (u32 addr, u32 val);
-extern void PUT16 (u32 addr, u16 val);
-extern void PUT08 (u32 addr, u8  val);
-
-extern u32 GET32 (u32 addr);
-extern u16 GET16 (u32 addr);
-extern u8  GET08 (u32 addr);
-
-extern u32 GETPC (void);
-extern u32 GETSP (void);
-extern u32 GETLR (void);
+extern conv_hex_str(void* bufr, u32 value);
+extern conv_u32_str(void* bufr, u32 value);
+extern conv_s32_str(void* bufr, s32 value);

@@ -15,25 +15,15 @@
 */
 
 
-/* asm.h - Assembly single line commands
+/* bool.h - Boolean type
 
-These functions are used to quickly perform operations at the ASM level which
-may not be avaiable in standard C.
+Provide a typdef of unsigned char to bool and two constants TRUE and FALSE
+which are 1 and 0.
 
 */
 
 
-#include "types.h"
+typedef unsigned char bool;
 
-
-extern void PUT32 (u32 addr, u32 val);
-extern void PUT16 (u32 addr, u16 val);
-extern void PUT08 (u32 addr, u8  val);
-
-extern u32 GET32 (u32 addr);
-extern u16 GET16 (u32 addr);
-extern u8  GET08 (u32 addr);
-
-extern u32 GETPC (void);
-extern u32 GETSP (void);
-extern u32 GETLR (void);
+static const bool TRUE = (0==0);
+static const bool FALSE = !TRUE;

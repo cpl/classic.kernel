@@ -15,9 +15,22 @@
 */
 
 
+/* memutils.h - Memory handling functions
+
+Utility functions that zero, move, copy and handle memory in general. Used by
+many other libraries.
+
+*/
+
+
 #include "types.h"
 
 
 extern void memzero(void*, u32);
 extern void memcopy(void*, u32, void*);
 extern void memmove(void*, u32, void*);
+extern void memcomp(void*, void*);
+
+extern void memset_b(void*, u8 );
+extern void memset_h(void*, u16);
+extern void memset_w(void*, u32);

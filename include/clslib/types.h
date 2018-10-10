@@ -15,15 +15,20 @@
 */
 
 
-#define NULL ((void*)0)
+/* types.h - Standard definitions of types and default/constant values
 
-#define TRUE (0==0)
-#define FALSE !TRUE
+Define most known primitives as u/s (un/signed) 8/16/32 (byte, hword, word).
+NULL must be defined as a pointer to 0.
+
+*/
+
+
+#define NULL ((void*)0)
 
 typedef unsigned char	 u8;
 typedef unsigned short	u16;
 typedef unsigned int	u32;
 
-typedef signed char	 s8;
+typedef signed char	    s8;
 typedef signed short	s16;
-typedef signed int	s32;
+typedef signed int	    s32;

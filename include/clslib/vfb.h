@@ -15,10 +15,18 @@
 */
 
 
+/* vfb.h - Virtual Framebuffer
+
+Functions to print and control the virtual framebuffer.
+
+*/
+
+
 #include "types.h"
 
 
 extern void vfb_print(char* str);
+extern void vfb_printf(char* str, void**);
 extern void vfb_println(char* str);
 extern void vfb_printdump(void* addr, u32 len);
 

@@ -15,6 +15,13 @@
 */
 
 
+/* mm.h - Memory Manager header
+
+Define the types, functions, macros and pointers used by the memory allocator.
+
+*/
+
+
 #include "types.h"
 
 
