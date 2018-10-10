@@ -15,12 +15,6 @@
 */
 
 
-#include "cls.stdlib.h"
-
-
-extern void vfb_print(char* str);
-extern void vfb_println(char* str);
-extern void vfb_printdump(void* addr, u32 len);
-
-// DEBUG
-extern char* strtmp_hex(u32 val);
+.set FONT_W,		8		@ Font width
+.set FONT_H,		16		@ Font height
+.set FONT_TAB_SIZE,	4		@ Font tab size

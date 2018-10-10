@@ -15,7 +15,7 @@
 */
 
 
-#include "cls.stdlib.h"
+#include "types.h"
 
 
 #define _MIN_ALOC_SIZE 16*4
@@ -29,20 +29,18 @@ typedef struct mem_block {
 
 
 void        mem_block_print(mem_block*);
+
 #define     mem_block_free(b) ((b -> addr) = (void*)((u32)(b -> addr) | 1))
 #define     mem_block_dead(b) ((b -> addr) = NULL)
 #define     mem_block_aloc(b) ((b -> addr) = (void*)((u32)(b -> addr) & ~1))
+
 #define     mem_block_isfree(b) (((u32)(b -> addr) & 1) ? 1 : 0)
 #define     mem_block_isdead(b) ((b -> addr) == NULL)
-#define     mem_block_islast(b) ((b == _KERNEL_ALOC_LAST) ? 1 : 0)
+#define     mem_block_islast(b) (b == _KERNEL_ALOC_LAST)
 
 
 extern void*        _KERNEL_HEAP;
 static mem_block*   _KERNEL_ALOC = (void*)0x000FFFFF;
-
-
-mem_block*          _KERNEL_ALOC_LAST;
-mem_block*          _KERNEL_ALOC_TAIL;
 
 
 void  cls_knl_heap_init(void);

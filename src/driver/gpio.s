@@ -16,7 +16,7 @@
 
 
 .include "board/gpio.s"
-.include "gpio.s"
+.include "asm/gpio.s"
 
 
 .section .text

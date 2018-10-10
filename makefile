@@ -23,6 +23,7 @@ SOURCE	= src
 BUILD	= build
 DIST	= dist
 INCLD	= include
+INCLDC	= $(INCLD)/clslib
 BOOT	= boot
 
 # Libraries
@@ -74,7 +75,7 @@ $(BUILD)/%.o: $(SOURCE)/%.s
 $(BUILD)/%.o: $(SOURCE)/%.c
 	@echo "==== Generating C   object: $@"
 	@mkdir -p $(@D)
-	@$(COMPILER)-gcc $(CFLAGS) -I $(INCLD)/c/ $< -o $@
+	@$(COMPILER)-gcc $(CFLAGS) -I $(INCLDC) $< -o $@
 
 # Deploy firmware to SD card
 firmware:

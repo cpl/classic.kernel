@@ -15,17 +15,9 @@
 */
 
 
-#include "cls.stdlib.h"
+#include "types.h"
 
 
-extern void PUT32 (u32 addr, u32 val);
-extern void PUT16 (u32 addr, u16 val);
-extern void PUT08 (u32 addr, u8  val);
-
-extern u32 GET32 (u32 addr);
-extern u16 GET16 (u32 addr);
-extern u8  GET08 (u32 addr);
-
-extern u32 GETPC (void);
-extern u32 GETSP (void);
-extern u32 GETLR (void);
+extern void memzero(void*, u32);
+extern void memcopy(void*, u32, void*);
+extern void memmove(void*, u32, void*);

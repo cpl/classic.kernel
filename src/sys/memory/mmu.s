@@ -16,7 +16,7 @@
 
 
 .include "board/base.s"
-.include "mmu.s"
+.include "asm/mmu.s"
 
 
 .section .text

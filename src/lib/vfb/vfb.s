@@ -15,8 +15,8 @@
 */
 
 
-.include "font.s"
-.include "ascii.s"
+.include "asm/font.s"
+.include "asm/ascii.s"
 
 
 .section .data

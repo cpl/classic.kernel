@@ -15,7 +15,7 @@
 */
 
 
-.include "swi.s"
+.include "asm/swi.s"
 
 
 .section .rodata

@@ -15,7 +15,7 @@
 */
 
 
-.include "gpio.s"
+.include "asm/gpio.s"
 .include "board/bsc.s"
 
 

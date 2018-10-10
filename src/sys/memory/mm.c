@@ -15,11 +15,15 @@
 */
 
 
-#include "cls.stdlib.h"
+#include "types.h"
 #include "mm.h"
 #include "vfb.h"
-#include "asm.h"
 #include "memutils.h"
+#include "asm.h"
+
+
+mem_block*          _KERNEL_ALOC_LAST;
+mem_block*          _KERNEL_ALOC_TAIL;
 
 
 void mem_block_print(mem_block* block) {

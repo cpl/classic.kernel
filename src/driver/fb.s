@@ -15,8 +15,8 @@
 */
 
 
-.include "fb.s"
-.include "mailbox.s"
+.include "asm/fb.s"
+.include "asm/mailbox.s"
 
 
 .section .data

@@ -19,7 +19,7 @@
 .include "board/gpio.s"
 .include "board/aux.s"
 .include "board/irq.s"
-.include "ascii.s"
+.include "asm/ascii.s"
 
 
 .section .text

@@ -15,7 +15,7 @@
 */
 
 
-.include "gpio.s"
+.include "asm/gpio.s"
 
 
 .section .init

@@ -15,7 +15,7 @@
 */
 
 
-.include "font.s"
+.include "asm/font.s"
 
 
 .section .rodata

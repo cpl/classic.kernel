@@ -15,7 +15,7 @@
 */
 
 
-.include "psr.s"
+.include "asm/psr.s"
 
 
 .section .init

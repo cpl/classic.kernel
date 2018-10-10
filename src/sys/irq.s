@@ -17,7 +17,7 @@
 
 .include "board/base.s"
 .include "board/irq.s"
-.include "psr.s"
+.include "asm/psr.s"
 
 
 .section .text

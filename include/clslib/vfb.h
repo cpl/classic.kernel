@@ -15,9 +15,12 @@
 */
 
 
-#include "vfb.h"
+#include "types.h"
 
 
-void cmain(void) {
-    vfb_println(strtmp_hex(0xDEADBEEF));
-}
+extern void vfb_print(char* str);
+extern void vfb_println(char* str);
+extern void vfb_printdump(void* addr, u32 len);
+
+// DEBUG
+extern char* strtmp_hex(u32 val);
