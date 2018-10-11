@@ -15,49 +15,58 @@
 */
 
 
+/*
+
+void memcpy (void* src, void* dst, u32 len)
+	if (src < dst)
+		// normal memcpy
+	if ()
+
+
+*/
+
+
 .section .text
 
 
-@ memzero (*src, len bytes)
+@ void memzero (void* src, u32 len)
 @ Takes a source addr, replaces the next 'len' bytes with 0.
 .globl memzero
 memzero:
-	CMP	R1, #0			@ Check for len=0
-	MOVEQ	PC, LR			@ Exit
-
-	MOV	R2, #0			@ Prepare zero
-	ADD	R1, R0			@ Compute end addr
-
- _memzero:
-	STRB	R2, [R0], #1		@ Zero memory
-	CMP	R0, R1			@ Check for end addr
-	BNE	_memzero		@ Repeat
-
-	BX	LR			@ Return
+	MOV	R2, #0			@ Set value to 0
+	B	memsetb			@ Set memory
 
 
-@ memcopy (*src, len bytes, *dst)
-@ Takes a source addr, copies the first 'len' bytes from *src to *dst.
+@ memcopy (void* src, u32 len, void* dst)
+@ Takes a source addr, copies the first 'len' bytes from src to dst.
 .globl memcopy
 memcopy:
-	CMP	R1, #0			@ Check for len==0
-	MOVEQ	PC, LR			@ Exit
+	TEQ	R1, #0			@ Check invalid arguments
+	TEQNE	R0, R2			@
+	BXEQ	LR			@
 
-	CMP	R0, R2			@ Check *src==*dst
-	MOVEQ	PC, LR			@ Exit
+	ADD	R3, R0, R1		@ R3 = src+len
+	CMP	R2, R3			@ if (src+len) > dst
+	BHI	_memcopy_0		@  special case
+	ADD	R1, R0			@ else
+	B	_memcopy_1		@  normal  case
 
-	ADD	R1, R0			@ Compute end addr
+ _memcopy_0:
+	LDRB	R3, [R0, R2]		@ Load byte from src + len
+	STRB	R3, [R1, R2]		@ Save byte at   dst + len
+	SUBS	R3, #1			@ Decrement len
+	BNE	_memcopy_0		@ Check for end, repeat
+	BX	LR			@ Return
 
- _memcopy:
-	LDRB	R3, [R0], #1		@ Load  byte
-	STRB	R3, [R2], #1		@ Store byte
+ _memcopy_1:
+	LDRB	R3, [R0], #1		@ Load byte from src
+	STRB	R3, [R2], #1		@ Save byte at   dst
 	CMP	R0, R1			@ Check for end
-	BNE	_memcopy		@ Repeat
-
+	BNE	_memcopy_1		@ Repeat
 	BX	LR			@ Return
 
 
-@ memmove (*src, len bytes, *dst)
+@ void memmove (*src, len bytes, *dst)
 @ Takes a source addr, copies the first 'len' bytes from *src to *dst replacing
 @ the bytes with 0.
 .globl memmove
@@ -78,7 +87,7 @@ memmove:
 	BX	LR			@ Return
 
 
-@ memsetb (void* addr, u32 len, u8 value)
+@ void memsetb (void* addr, u32 len, u8 value)
 @ Set the next `len` bytes to to value.
 .globl memsetb
 memsetb:
@@ -87,6 +96,17 @@ memsetb:
 	TEQNE	R2, #0			@
 	BXEQ	LR			@
 
+	TST	R0, #2			@ Check if 4 byte aligned
+	LSREQ	R1, #2			@ Transform byte len to word len
+	ORREQ	R2, R2, R2, LSL #8	@ Fill word with 4xbyte
+	ORREQ	R2, R2, R2, LSL #16	@
+	BEQ	_memsetw		@ Fill space as words
+
+	TST	R0, #1			@ Check if 2 byte aligned
+	LSREQ	R1, #1			@ Transform byte len to hword len
+	ORREQ	R2, R2, R2, LSL #8	@ Fill hword with 2xbyte
+	BEQ	_memseth		@ Fill space as words
+
  _memsetb:
 	STRB	R2, [R0], #1		@ Write byte
 	SUBS	R1, #1			@ Decrement
@@ -94,7 +114,7 @@ memsetb:
 	BX	LR			@ Return
 
 
-@ memseth (void* addr, u32 len, u16 value)
+@ void memseth (void* addr, u32 len, u16 value)
 @ Set the next `len` hwords to to value.
 .globl memseth
 memseth:
@@ -102,6 +122,11 @@ memseth:
 	TEQNE	R1, #0			@
 	TEQNE	R2, #0			@
 	BXEQ	LR			@
+
+	TST	R0, #2			@ Check if 4 byte aligned
+	LSREQ	R1, #1			@ Transform hword len to word len
+	ORREQ	R2, R2, R2, LSL #16	@ Fill word with 2xhword
+	BEQ	_memsetw		@ Fill space as words
 
  _memseth:
 	STRH	R2, [R0], #2		@ Write hword
@@ -112,7 +137,7 @@ memseth:
 	BX	LR			@ Return
 
 
-@ memsetw (void* addr, u32 len, u32 value)
+@ void memsetw (void* addr, u32 len, u32 value)
 @ Set the next `len` words to to value.
 .globl memsetw
 memsetw:

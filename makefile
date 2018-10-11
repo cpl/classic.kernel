@@ -79,10 +79,20 @@ $(BUILD)/%.o: $(SOURCE)/%.c
 
 # Deploy firmware to SD card
 firmware:
+	@echo "==== SCANNING FOR SD CARD"
+	@while [ ! -f /Volumes/CLASSIC/$(TARGET) ]; do sleep 1; echo "..." ; done
+	@echo found
 	@make -C "boot"
 
+
+# Build external libraries
+ext:
+	@echo "==== BUILDING EXTERNALS"
+	@cd external/csud && ./clsbuild.sh
+
+
 # Deploy kernel image to SD card
-deploy: $(TARGET)
+deploy: ext $(TARGET)
 	@echo "==== SCANNING FOR SD CARD"
 	@while [ ! -f /Volumes/CLASSIC/$(TARGET) ]; do sleep 1; echo "..." ; done
 	@echo found
@@ -98,4 +108,5 @@ clean :
 	@rm -f $(TARGET)
 	@rm -f $(LIST)
 	@rm -f $(MAP)
+	@rm -f $(LIBS)/*
 	@echo "==== CLEAN: KERNEL"
