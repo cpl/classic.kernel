@@ -28,7 +28,6 @@ many other libraries.
 
 extern void memzero(void* src, u32 len);
 extern void memcopy(void* src, u32 len, void* dst);
-extern void memmove(void* src, u32 len, void* dst);
 extern void memcomp(void* src, u32 len, void* dst);
 
 extern void memsetb(void* addr, u32 len, u8  value);

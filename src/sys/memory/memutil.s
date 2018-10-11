@@ -15,17 +15,6 @@
 */
 
 
-/*
-
-void memcpy (void* src, void* dst, u32 len)
-	if (src < dst)
-		// normal memcpy
-	if ()
-
-
-*/
-
-
 .section .text
 
 
@@ -47,9 +36,9 @@ memcopy:
 
 	ADD	R3, R0, R1		@ R3 = src+len
 	CMP	R2, R3			@ if (src+len) > dst
-	BHI	_memcopy_0		@  special case
+	BHI	_memcopy_0		@   special case
 	ADD	R1, R0			@ else
-	B	_memcopy_1		@  normal  case
+	B	_memcopy_1		@   normal  case
 
  _memcopy_0:
 	LDRB	R3, [R0, R2]		@ Load byte from src + len
@@ -63,27 +52,6 @@ memcopy:
 	STRB	R3, [R2], #1		@ Save byte at   dst
 	CMP	R0, R1			@ Check for end
 	BNE	_memcopy_1		@ Repeat
-	BX	LR			@ Return
-
-
-@ void memmove (*src, len bytes, *dst)
-@ Takes a source addr, copies the first 'len' bytes from *src to *dst replacing
-@ the bytes with 0.
-.globl memmove
-memmove:
-	CMP	R1, #0			@ Check for len=0
-	MOVEQ	PC, LR			@ Exit
-
-	MOV	R2, #0			@ Prepare zero
-	ADD	R1, R0			@ Compute end addr
-
- _memmove:
-	LDRB	R3, [R0]		@ Load  byte
-	STRB	R2, [R0], #1		@ Zero  byte
-	STRB	R3, [R2], #1		@ Store byte
-	CMP	R0, R1			@ Check for end
-	BNE	_memmove		@ Repeat
-
 	BX	LR			@ Return
 
 
