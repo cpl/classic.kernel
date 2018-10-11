@@ -42,7 +42,7 @@ mmu_enable:
 	ORR	R2, R2, R1			@ Enable MMU + Caches
 	MCR	P15, 0, R2, C1, C0, 0		@ Set  MMU Control REG
 
-	MOV	PC, LR				@ Return
+	BX	LR				@ Return
 
 
 @ mmu_disable
@@ -54,7 +54,7 @@ mmu_disable:
 	BIC	R0, R0, R1			@ Disable MMU + Caches
 	MCR	P15, 0, R0, C1, C0, 0		@ Set  MMU Control REG
 
-	MOV	PC, LR				@ Return
+	BX	LR				@ Return
 
 
 @ mmu_invalidate_tlb
@@ -63,7 +63,7 @@ mmu_invalidate_tlb:
 	MOV	R0, #0
 	MCR	P15, 0, R0, C8, C7, 0		@ Invalidate TLB
 	MCR	P15, 0, R0, C7, C10, 4		@ Data Synchronization Barrier
-	MOV	PC, LR				@ Return
+	BX	LR				@ Return
 
 
 @ mmu_section (v_addr, p_addr, flags)
@@ -83,7 +83,7 @@ mmu_section:
 
 	STR	R1, [R0]			@ Update TLB
 
-	MOV	PC, LR				@ Return
+	BX	LR				@ Return
 
 /*
 
@@ -115,7 +115,7 @@ mmu_coarse:
 
 	STR	R1, [R0]			@ Update TLB
 
-	MOV	PC, LR				@ Return
+	BX	LR				@ Return
 
 
 @ mmu_page (v_addr, p_addr, flags, mmu_base)
@@ -139,7 +139,7 @@ mmu_page:
 	STR	R1, [R0]			@ Update coarse TLB
 
 	POP	{R4}				@ Return
-	MOV	PC, LR				@
+	BX	LR				@
 
 
 @ mmu_setup

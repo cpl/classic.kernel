@@ -56,25 +56,25 @@ conv_hex_str:
 	STRB	R1, [R0]		@ of the string
 
 	MOV	R0, R4			@ Load original pointer
-	MOV	PC, LR			@ Return
+	BX	LR			@ Return
 
 
 @ conv_u16_str (*str_buffer, value)
 .globl conv_u16_str
 conv_u16_str:
 	LDR	R0, =_str_null
-	MOV	PC, LR
+	BX	LR
 
 
 @ conv_u32_str (*str_buffer, value)
 .globl conv_u32_str
 conv_u32_str:
 	LDR	R0, =_str_null
-	MOV	PC, LR
+	BX	LR
 
 
 @ conv_s32_str (*str_buffer, value)
 .globl conv_s32_str
 conv_s32_str:
 	LDR	R0, =_str_null
-	MOV	PC, LR
+	BX	LR

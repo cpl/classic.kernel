@@ -30,7 +30,7 @@ irq_psr_enable:
 	MRS	R0, CPSR			@ Read  CPSR
 	BIC	R0, #(PSR_IRQ)			@ Clear IRQ bit to enable IRQ
 	MSR	CPSR_c, R0			@ Write CPSR
-	MOV	PC, LR				@ Return
+	BX	LR				@ Return
 
 @ irq
 @ IRQ signal.

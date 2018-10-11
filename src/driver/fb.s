@@ -83,7 +83,7 @@ fb_init:
 fb_set_addr:
 	LDR	R1, =fb_mailbox		@ Update framebuffer address
 	STR	R0, [R1, #32]		@
-	MOV	PC, LR			@ Return
+	BX	LR			@ Return
 
 
 @ fb_get_addr -> *fb
@@ -92,4 +92,4 @@ fb_set_addr:
 fb_get_addr:
 	LDR	R0, =fb_mailbox		@
 	LDR	R0, [R0, #32]		@
-	MOV	PC, LR			@ Return
+	BX	LR			@ Return

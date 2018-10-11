@@ -57,7 +57,7 @@ i2c_wait:
 	TST	R1, #BSC_S_DONE
 	BEQ	_i2c_wait
 
-	MOV	PC, LR
+	BX	LR
 
 
 @ i2c_set_slave (slave_addr)
@@ -66,4 +66,4 @@ i2c_wait:
 i2c_set_slave:
 	LDR	R1, =BSC_BASE_0
 	STRB	R0, [R1, #BSC_A]
-	MOV	PC, LR
+	BX	LR

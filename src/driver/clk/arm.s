@@ -30,7 +30,7 @@
 clk_arm_epoch:
 	LDR	R0, =CLK_ARM_BASE		@ Load timer base
 	LDR	R0, [R0, #CLK_ARM_VAL]		@ Load timer value
-	MOV	PC, LR				@ Return
+	BX	LR				@ Return
 
 
 @ clk_arm_init
@@ -63,7 +63,7 @@ clk_arm_init:
 	LDR	R1, =0x000000AA			@ Enable timer with interrupts
 	STR	R1, [R0, #CLK_ARM_CTL]		@
 
-	MOV	PC, LR				@ Return
+	BX	LR				@ Return
 
 
 @ clk_arm_isr

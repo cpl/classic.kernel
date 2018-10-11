@@ -28,4 +28,4 @@
 clk_sys_epoch:
 	LDR	R0, =CLK_SYS_BASE		@ Get timer address
 	LDRD	R0, R1, [R0, #CLK_SYS_CLO]	@ Get timer value (64 bits)
-	MOV	PC, LR				@ Return
+	BX	LR				@ Return

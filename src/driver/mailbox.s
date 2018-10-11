@@ -40,7 +40,7 @@ mb_write:
 	ADD	R0, R1			@ Append channel to input data
 	STR	R0, [R2, #0x20]		@ Write
 
-	MOV	PC, LR			@ Return
+	BX	LR			@ Return
 
 
 @ mb_read (channel) -> *data
@@ -64,4 +64,4 @@ mb_read:
 
 	BIC	R0, R2, #0xF		@ Move answer to top 28 bits
 
-	MOV	PC, LR			@ Return
+	BX	LR			@ Return

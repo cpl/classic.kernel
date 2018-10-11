@@ -33,7 +33,7 @@ memzero:
 	CMP	R0, R1			@ Check for end addr
 	BNE	_memzero		@ Repeat
 
-	MOV	PC, LR			@ Return
+	BX	LR			@ Return
 
 
 @ memcopy (*src, len bytes, *dst)
@@ -54,7 +54,7 @@ memcopy:
 	CMP	R0, R1			@ Check for end
 	BNE	_memcopy		@ Repeat
 
-	MOV	PC, LR			@ Return
+	BX	LR			@ Return
 
 
 @ memmove (*src, len bytes, *dst)
@@ -75,4 +75,4 @@ memmove:
 	CMP	R0, R1			@ Check for end
 	BNE	_memmove		@ Repeat
 
-	MOV	PC, LR			@ Return
+	BX	LR			@ Return

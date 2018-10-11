@@ -80,7 +80,7 @@ vfb_get_data:
 	AND	R2, R4, #0xFF		@
 
 	POP	{R4}			@ Return
-	MOV	PC, LR			@
+	BX	LR			@
 
 
 @ vfb_scroll
@@ -120,4 +120,4 @@ vfb_scroll:
 	BNE	_vfb_scroll_fin		@ Repeat until end
 
 	POP	{R4}			@ Return
-	MOV	PC, LR			@
+	BX	LR			@

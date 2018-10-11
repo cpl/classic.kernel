@@ -69,7 +69,7 @@ uart_init:
 	MOV	R1, #3
 	STR	R1, [R0, #AUX_MU_CNTL_REG]	@ Enable receiver, transmitter
 
-	MOV	PC, LR				@ Return
+	BX	LR				@ Return
 
 
 @ uart_recv -> R0
@@ -85,7 +85,7 @@ uart_recv:
 
 	LDRB	R0, [R0, #AUX_MU_IO_REG]	@ Read
 
-	MOV	PC, LR				@ Return
+	BX	LR				@ Return
 
 
 @ uart_send (byte)
@@ -101,7 +101,7 @@ uart_send:
 
 	STRB	R0, [R1, #AUX_MU_IO_REG]	@ Write
 
-	MOV	PC, LR				@ Return
+	BX	LR				@ Return
 
 
 @ uart_send_string (*str)

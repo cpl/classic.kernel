@@ -44,7 +44,7 @@ colorB:		.hword 0xFFFF
 draw_set_color_f:
 	LDR	R1, =colorF
 	STRH	R0, [R1]
-	MOV	PC, LR
+	BX	LR
 
 
 @ draw_set_color_b (color 16bit)
@@ -53,7 +53,7 @@ draw_set_color_f:
 draw_set_color_b:
 	LDR	R1, =colorB
 	STRH	R0, [R1]
-	MOV	PC, LR
+	BX	LR
 
 
 @ draw_get_color_b -> (color 16bit)
@@ -62,7 +62,7 @@ draw_set_color_b:
 draw_get_color_b:
 	LDR	R0, =colorB
 	LDRH	R0, [R0]
-	MOV	PC, LR
+	BX	LR
 
 
 @ draw_pixel (color, x, y)
@@ -103,7 +103,7 @@ draw_pixel:
 	STRH	color, [addr]		@ Write pixel
 
 	POP	{R4-R5}			@ Return
-	MOV	PC, LR			@
+	BX	LR			@
 
 	.unreq addr
 	.unreq pixelX
@@ -130,7 +130,7 @@ draw_fill_fb:
 	CMP	R1, R2			@ Check for end address
 	BNE	_draw_fill_fb		@ Repeat if not end
 
-	MOV	PC, LR			@ Return
+	BX	LR			@ Return
 
 
 @ draw_char (char, x, y)

@@ -71,4 +71,4 @@ gpio_set:
 	STRNE	R0, [R2, #40]		@ ON
 	STREQ	R0, [R2, #28]		@ OFF
 
-	MOV	PC, LR			@ Return
+	BX	LR			@ Return

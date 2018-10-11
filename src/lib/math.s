@@ -37,4 +37,4 @@ math_div:
 	MOV	R1, R2			@ Move remainder in R1 for return
 					@ R0 holds the quotient
 
-	MOV	PC, LR			@ Return
+	BX	LR			@ Return
