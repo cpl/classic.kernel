@@ -76,3 +76,55 @@ memmove:
 	BNE	_memmove		@ Repeat
 
 	BX	LR			@ Return
+
+
+@ memsetb (void* addr, u32 len, u8 value)
+@ Set the next `len` bytes to to value.
+.globl memsetb
+memsetb:
+	TEQ	R0, #0			@ Check for invalid arguments
+	TEQNE	R1, #0			@
+	TEQNE	R2, #0			@
+	BXEQ	LR			@
+
+ _memsetb:
+	STRB	R2, [R0], #1		@ Write byte
+	SUBS	R1, #1			@ Decrement
+	BNE	_memsetb		@ Repeat
+	BX	LR			@ Return
+
+
+@ memseth (void* addr, u32 len, u16 value)
+@ Set the next `len` hwords to to value.
+.globl memseth
+memseth:
+	TEQ	R0, #0			@ Check for invalid arguments
+	TEQNE	R1, #0			@
+	TEQNE	R2, #0			@
+	BXEQ	LR			@
+
+ _memseth:
+	STRH	R2, [R0], #2		@ Write hword
+	SUBS	R1, #1			@ Decrement
+	BNE	_memseth		@ Repeat
+	BX	LR			@ Return
+
+	BX	LR			@ Return
+
+
+@ memsetw (void* addr, u32 len, u32 value)
+@ Set the next `len` words to to value.
+.globl memsetw
+memsetw:
+	TEQ	R0, #0			@ Check for invalid arguments
+	TEQNE	R1, #0			@
+	TEQNE	R2, #0			@
+	BXEQ	LR			@
+
+ _memsetw:
+	STR	R2, [R0], #4		@ Write hword
+	SUBS	R1, #1			@ Decrement
+	BNE	_memsetw		@ Repeat
+	BX	LR			@ Return
+
+	BX	LR			@ Return

@@ -39,5 +39,5 @@ extern bool isspace(char c);    // Check if char is white-space
 extern bool isupper(char c);    // Check if char is uppercase
 extern bool ishexad(char c);    // Check if char is hexadecimal digit
 
-extern char tolower(char);      // Convert uppercase letter to lowercase
-extern char toupper(char);      // Convert lowercase letter to uppercase
+extern char tolower(char c);    // Convert uppercase letter to lowercase
+extern char toupper(char c);    // Convert lowercase letter to uppercase

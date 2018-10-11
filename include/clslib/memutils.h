@@ -26,11 +26,11 @@ many other libraries.
 #include "types.h"
 
 
-extern void memzero(void*, u32);
-extern void memcopy(void*, u32, void*);
-extern void memmove(void*, u32, void*);
-extern void memcomp(void*, void*);
+extern void memzero(void* src, u32 len);
+extern void memcopy(void* src, u32 len, void* dst);
+extern void memmove(void* src, u32 len, void* dst);
+extern void memcomp(void* src, u32 len, void* dst);
 
-extern void memset_b(void*, u8 );
-extern void memset_h(void*, u16);
-extern void memset_w(void*, u32);
+extern void memsetb(void* addr, u32 len, u8  value);
+extern void memseth(void* addr, u32 len, u16 value);
+extern void memsetw(void* addr, u32 len, u32 value);

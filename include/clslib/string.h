@@ -28,5 +28,5 @@ Support functions to work with `char*` also known as strings.
 
 extern void strcpy(char* src, char* dst);
 extern u32  strlen(char* str);
-extern bool strcmp(char* str0, char* str1);
-extern u32  strchr(char* str, char);
+extern bool strcmp(char* str, char* _str);
+extern u32  strchr(char* str,  char c);
