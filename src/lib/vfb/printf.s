@@ -123,25 +123,25 @@ vfb_printf:
 	TEQ	R0, #'i'		@ Case '%i'
 	LDREQ	R0, [args], #4		@
 	LDREQ	R2, [R0]		@
-	LDREQ	R3, =str_conv_s32	@
+	LDREQ	R3, =conv_s32_str	@
 	BEQ	_vfb_printf_cnv		@
 
 	TEQ	R0, #'h'		@ Case '%h'
 	LDREQ	R0, [args], #4		@
 	LDREQH	R2, [R0]		@
-	LDREQ	R3, =str_conv_u16	@
+	LDREQ	R3, =conv_u32_str	@
 	BEQ	_vfb_printf_cnv		@
 
 	TEQ	R0, #'u'		@ Case '%u'
 	LDREQ	R0, [args], #4		@
 	LDREQ	R2, [R0]		@
-	LDREQ	R3, =str_conv_u32	@
+	LDREQ	R3, =conv_u32_str	@
 	BEQ	_vfb_printf_cnv		@
 
 	TEQ	R0, #'x'		@ Case '%x'
 	LDREQ	R0, [args], #4		@
 	LDREQ	R2, [R0]		@
-	LDREQ	R3, =str_conv_hex	@
+	LDREQ	R3, =conv_hex_str	@
 	BEQ	_vfb_printf_cnv		@
 
 	TEQ	R0, #'s'		@ Case '%s'

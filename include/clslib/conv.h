@@ -26,6 +26,6 @@ buffers being passed as routine arguments.
 #include "types.h"
 
 
-extern conv_hex_str(void* bufr, u32 value);
-extern conv_u32_str(void* bufr, u32 value);
-extern conv_s32_str(void* bufr, s32 value);
+extern void conv_hex_str(void* bufr, u32 value);
+extern void conv_u32_str(void* bufr, u32 value);
+extern void conv_s32_str(void* bufr, s32 value);

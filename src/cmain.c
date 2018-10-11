@@ -16,12 +16,13 @@
 
 
 #include "vfb.h"
-#include "string.h"
 #include "mm.h"
+#include "conv.h"
 
 void cmain(void) {
 
     void* bufr = cls_knl_malloc(0x40);
-    vfb_println(str_conv_hex(bufr, 0xDEADBEEF));
+    conv_hex_str(bufr, 0xDEADBEEF);
+    vfb_println(bufr);
     cls_knl_free(bufr);
 }
