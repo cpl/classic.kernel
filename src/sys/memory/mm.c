@@ -22,6 +22,7 @@
 #include "asm.h"
 
 
+static mem_block*   _KERNEL_ALOC = (void*)0x000FFFFF;
 mem_block*          _KERNEL_ALOC_LAST;
 mem_block*          _KERNEL_ALOC_TAIL;
 

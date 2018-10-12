@@ -47,7 +47,6 @@ void        mem_block_print(mem_block*);
 
 
 extern void*        _KERNEL_HEAP;
-static mem_block*   _KERNEL_ALOC = (void*)0x000FFFFF;
 
 
 void  cls_knl_heap_init(void);
