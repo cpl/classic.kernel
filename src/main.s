@@ -42,8 +42,7 @@ _main:
 	BL	KeyboardUpdate
 	BL	KeyboardGetChar
 
-	BL	mem_block_printall
-	BL	mem_block_printmem
+	@ BL	mem_block_printmem
 
  _main_loop:
 
@@ -57,19 +56,19 @@ _main:
 
 	BL	clk_sys_epoch
 	BL	strtmp_hex
-	MOV	R1, #10
-	MOV	R2, #1000
+	MOV	R1, #1000
+	MOV	R2, #960
 	BL	draw_string
 
 	MOV	R0, SP
 	BL	strtmp_hex
-	MOV	R1, #200
-	MOV	R2, #1000
+	MOV	R1, #1000
+	MOV	R2, #980
 	BL	draw_string
 
 	MOV	R0, PC
 	BL	strtmp_hex
-	MOV	R1, #400
+	MOV	R1, #1000
 	MOV	R2, #1000
 	BL	draw_string
 
