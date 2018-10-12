@@ -30,28 +30,26 @@ memzero:
 @ Takes a source addr, copies the first 'len' bytes from src to dst.
 .globl memcopy
 memcopy:
-	TEQ	R1, #0			@ Check invalid arguments
-	TEQNE	R0, R2			@
+	CMP	R1, #0			@ Check invalid arguments
 	BXEQ	LR			@
 
-	ADD	R3, R0, R1		@ R3 = src+len
-	CMP	R2, R3			@ if (src+len) > dst
-	BHI	_memcopy_0		@   special case
-	ADD	R1, R0			@ else
-	B	_memcopy_1		@   normal  case
+	CMP	R2, R0			@ If src > dst
+	ADDHI	R0, R1			@  dst += len
+	ADDHI	R2, R1			@  src += len
+	BHI	_memcopy_1		@
 
- _memcopy_0:
-	LDRB	R3, [R0, R2]		@ Load byte from src + len
-	STRB	R3, [R1, R2]		@ Save byte at   dst + len
-	SUBS	R3, #1			@ Decrement len
-	BNE	_memcopy_0		@ Check for end, repeat
+ _memcopy_0:				@ Bottom to top
+	LDRB	R3, [R0], #1		@ dst++ = src++
+	STRB	R3, [R2], #1		@
+	SUBS	R1, #1			@ while (len-- > 0)
+	BNE	_memcopy_0		@   repeat
 	BX	LR			@ Return
 
- _memcopy_1:
-	LDRB	R3, [R0], #1		@ Load byte from src
-	STRB	R3, [R2], #1		@ Save byte at   dst
-	CMP	R0, R1			@ Check for end
-	BNE	_memcopy_1		@ Repeat
+ _memcopy_1:				@ Top to bottom
+	LDRB	R3, [R0, #-1]!		@ --dst = --src
+	STRB	R3, [R2, #-1]!		@
+	SUBS	R1, #1			@ while (len-- > 0)
+	BNE	_memcopy_1		@   repeat
 	BX	LR			@ Return
 
 
@@ -59,9 +57,7 @@ memcopy:
 @ Set the next `len` bytes to to value.
 .globl memsetb
 memsetb:
-	TEQ	R0, #0			@ Check for invalid arguments
-	TEQNE	R1, #0			@
-	TEQNE	R2, #0			@
+	TEQ	R1, #0			@ Check for invalid arguments
 	BXEQ	LR			@
 
 	TST	R0, #2			@ Check if 4 byte aligned
@@ -86,9 +82,7 @@ memsetb:
 @ Set the next `len` hwords to to value.
 .globl memseth
 memseth:
-	TEQ	R0, #0			@ Check for invalid arguments
-	TEQNE	R1, #0			@
-	TEQNE	R2, #0			@
+	TEQ	R1, #0			@ Check for invalid arguments
 	BXEQ	LR			@
 
 	TST	R0, #2			@ Check if 4 byte aligned
@@ -109,9 +103,7 @@ memseth:
 @ Set the next `len` words to to value.
 .globl memsetw
 memsetw:
-	TEQ	R0, #0			@ Check for invalid arguments
-	TEQNE	R1, #0			@
-	TEQNE	R2, #0			@
+	TEQ	R1, #0			@ Check for invalid arguments
 	BXEQ	LR			@
 
  _memsetw:
