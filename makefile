@@ -92,7 +92,7 @@ ext:
 
 
 # Deploy kernel image to SD card
-deploy: ext $(TARGET)
+deploy: $(TARGET)
 	@echo "==== SCANNING FOR SD CARD"
 	@while [ ! -f /Volumes/CLASSIC/$(TARGET) ]; do sleep 1; echo "..." ; done
 	@echo found
