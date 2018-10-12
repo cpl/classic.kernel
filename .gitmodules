@@ -1,3 +1,6 @@
 [submodule "external/csud"]
 	path = external/csud
 	url = git@github.com:thee-engineer/classic.csud.git
+[submodule "external/clslib"]
+	path = external/clslib
+	url = git@github.com:thee-engineer/classic.clslib.git
