@@ -37,24 +37,6 @@ void _memdump(void* ptr, u32 len) {
     cls_knl_free(bufr);
 }
 
-
-
-void multi_args(int n, ...) {
-    va_list vl;
-    VA_STA(vl, n);
-    VA_SKI(vl, 1);
-
-    void* bufr = cls_knl_malloc(0x80);
-    for (int index = 0; index < n; index++) {
-        conv_hex_str(bufr, VA_ARG(vl, u32));
-        vfb_println(bufr);
-    }
-    cls_knl_free(bufr);
-
-    VA_END(vl);
-}
-
-
 void print_stack() {
     vfb_print("STACK: ");
     void* bufr = cls_knl_malloc(0x40);
@@ -71,4 +53,8 @@ void cmain(void) {
     vfb_println(bufr);
     cls_knl_free(bufr);
 
+    vfb_printf(" | IRQ PENDING | %x | %x | %x |\n",
+        GET32(0x20000000+0xB200+0x0),
+        GET32(0x20000000+0xB200+0x4),
+        GET32(0x20000000+0xB200+0x8));
 }
