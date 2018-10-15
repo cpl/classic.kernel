@@ -19,6 +19,8 @@
 #include "mm.h"
 #include "conv.h"
 #include "memutils.h"
+#include "varg.h"
+#include "asm.h"
 
 
 void _memdump(void* ptr, u32 len) {
@@ -36,40 +38,58 @@ void _memdump(void* ptr, u32 len) {
 
 
 
+void multi_args(int n, ...) {
+    va_list vl;
+    VA_STA(vl, n);
+    VA_SKI(vl, 1);
+
+    void* bufr = cls_knl_malloc(0x80);
+    for (int index = 0; index < n; index++) {
+        conv_hex_str(bufr, VA_ARG(vl, u32));
+        vfb_println(bufr);
+    }
+    cls_knl_free(bufr);
+
+    VA_END(vl);
+}
+
+
+void print_stack() {
+    vfb_print("STACK: ");
+    void* bufr = cls_knl_malloc(0x40);
+    conv_hex_str(bufr, GETSP());
+    vfb_println(bufr);
+    cls_knl_free(bufr);
+}
+
+
 void cmain(void) {
+
+    print_stack();
 
     void* bufr = cls_knl_malloc(0x40);
     conv_hex_str(bufr, 0xDEADBEEF);
     vfb_println(bufr);
     cls_knl_free(bufr);
 
-    void* playground = cls_knl_malloc(0x100);
-    u8* p = (u8*) playground;
+    print_stack();
 
-    memzero(playground, 0x400);
+    vfb_printf("\nHello, world!\n");
+    vfb_printf("Testing printf: %% \t _-.\n");
+    vfb_printf("Print a char %c <--- '7'?\n", '7');
+    vfb_printf("Printing 42 as hex: %x <--- right there\n", 42, 0);
 
-    p[10] = 0x11;
-    p[11] = 0x12;
-    p[12] = 0x13;
-    p[13] = 0x14;
-    p[14] = 0x15;
-    p[15] = 0x16;
-    p[16] = 0x17;
-    p[17] = 0x18;
-    p[18] = 0x19;
-    p[19] = 0x1A;
-    p[20] = 0x1B;
+    vfb_println(NULL);
+    vfb_println(NULL);
+    vfb_println(NULL);
 
-    memcopy(p+10, 7, p+30);
-
-    memcopy(p+10, 11, p+0x30);
-    memcopy(p+10, 11, p+0x50);
-
-    memcopy(p+0x30, 10, p+0x34);
-    memcopy(p+0x50, 10, p+0x50-0x8);
+    vfb_printf("PRINTF MULTI\tARG: %x |+|  |c| %x |+| %x |---| |E| %%\n", 0xDEADBEEF, -1, 0x0);
+    vfb_printf("HOW MUCH WOOD WOULD A WOOD CHUCK CHUCK IF A WOULD A WOOD CHUCK CHUCK IF A WOULD A WOOD CHUCK CHUCK IF A WOULD CHUCK COULD CHUCK WOOD, LARGE STRING TEST DISPLAY WRAP TEST LOREM IPSUM ... BLA");
 
 
+    print_stack();
 
-    _memdump(playground, 60);
+    multi_args(6, 1, 2, 3, 4, 5, 6);
 
+    print_stack();
 }

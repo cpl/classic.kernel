@@ -29,8 +29,6 @@ _str_null:	.ascii "NULL\0"
 .globl conv_hex_str
 conv_hex_str:
 
-	MOV	R4, R0			@ Save original pointer
-
 	MOV	R2, #'0'		@ Pre-padd string with "0x"
 	ORR	R2, R2, #('x'<<8)	@
 	STR	R2, [R0], #2		@
@@ -55,7 +53,6 @@ conv_hex_str:
 	MOV	R1, #0			@ Write NULL terminator at the end
 	STRB	R1, [R0]		@ of the string
 
-	MOV	R0, R4			@ Load original pointer
 	BX	LR			@ Return
 
 
