@@ -26,7 +26,7 @@
 .globl mb_write
 mb_write:
 	TST	R1, #0b1111		@ Validate input
-	MOVNE	PC, LR			@ Exit if not valid
+	BXNE	LR			@ Exit if not valid
 	CMP	R0, #0b1111		@ Validate channel
 	BXHI	LR			@ Exit if out of range
 
