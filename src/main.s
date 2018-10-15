@@ -34,18 +34,6 @@ _str_char:
 .globl _main
 _main:
 
-
-	MOV	R0, #0xA1
-	MOV	R1, #0xB2
-	MOV	R2, #0xC3
-	MOV	R3, #0xD4
-	PUSH	{R0-R3}
-
-	MOV	R0, SP
-	MOV	R1, #0x20
-	BL	_memdump
-
-
 	BL	cmain
 
 	BL	csudUsbInitialise

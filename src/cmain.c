@@ -66,31 +66,9 @@ void print_stack() {
 
 void cmain(void) {
 
-    print_stack();
-
     void* bufr = cls_knl_malloc(0x40);
     conv_hex_str(bufr, 0xDEADBEEF);
     vfb_println(bufr);
     cls_knl_free(bufr);
 
-    print_stack();
-
-    vfb_printf("\nHello, world!\n");
-    vfb_printf("Testing printf: %% \t _-.\n");
-    vfb_printf("Print a char %c <--- '7'?\n", '7');
-    vfb_printf("Printing 42 as hex: %x <--- right there\n", 42, 0);
-
-    vfb_println(NULL);
-    vfb_println(NULL);
-    vfb_println(NULL);
-
-    vfb_printf("PRINTF MULTI\tARG: %x |+|  |c| %x |+| %x |---| |E| %%\n", 0xDEADBEEF, -1, 0x0);
-    vfb_printf("HOW MUCH WOOD WOULD A WOOD CHUCK CHUCK IF A WOULD A WOOD CHUCK CHUCK IF A WOULD A WOOD CHUCK CHUCK IF A WOULD CHUCK COULD CHUCK WOOD, LARGE STRING TEST DISPLAY WRAP TEST LOREM IPSUM ... BLA");
-
-
-    print_stack();
-
-    multi_args(6, 1, 2, 3, 4, 5, 6);
-
-    print_stack();
 }

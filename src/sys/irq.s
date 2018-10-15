@@ -47,12 +47,12 @@ _irq:
 @ The interrupts handler checks which interrupt bits are active and runs the
 @ assigned service routine.
 irq_handler:
-	PUSH	{LR}
+	PUSH	{R4, LR}
 
-	LDR	R0, =INTERRUPTS_BASE		@ Load IRQ base
-	LDR	R0, [R0, #IRQ_BASIC_PENDING]	@ Load IRQ pending
+	LDR	R4, =INTERRUPTS_BASE		@ Load IRQ base
+	LDR	R4, [R4, #IRQ_BASIC_PENDING]	@ Load IRQ pending
 
-	TST	R0, #IRQ_CLK_ARM		@ Check for timer interrupt
+	TST	R4, #IRQ_CLK_ARM		@ Check for timer interrupt
 	BLNE	clk_arm_isr			@ Handle    timer interrupt
 
-	POP	{PC}				@ Return
+	POP	{R4, PC}			@ Return
