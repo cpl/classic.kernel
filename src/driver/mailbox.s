@@ -28,7 +28,7 @@ mb_write:
 	TST	R1, #0b1111		@ Validate input
 	MOVNE	PC, LR			@ Exit if not valid
 	CMP	R0, #0b1111		@ Validate channel
-	MOVHI	PC, LR			@ Exit if out of range
+	BXHI	LR			@ Exit if out of range
 
 	LDR	R2, =MAILBOX_BASE	@ Load mailbox base address
 
@@ -48,7 +48,7 @@ mb_write:
 .globl mb_read
 mb_read:
 	CMP	R0, #15			@ Validate channel
-	MOVHI	PC, LR			@ Exit if out of range
+	BXHI	LR			@ Exit if out of range
 
 	LDR	R1, =MAILBOX_BASE	@ Load mailbox address
 

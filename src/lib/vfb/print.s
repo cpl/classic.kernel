@@ -28,7 +28,7 @@
 .globl vfb_print
 vfb_print:
 	TEQ	R0, #0			@ Ignore NULL string
-	MOVEQ	PC, LR			@
+	BXEQ	LR			@
 
 	PUSH	{R4-R8, LR}
 
@@ -120,7 +120,7 @@ vfb_println:
 vfb_printdump:
 	TEQ	R0, #0			@ Don't print NULL string or 0 len
 	TEQNE	R1, #0			@
-	MOVEQ	PC, LR			@
+	BXEQ	LR			@
 
 	PUSH	{R4-R9, LR}
 

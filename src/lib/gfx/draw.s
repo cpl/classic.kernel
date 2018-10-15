@@ -86,14 +86,14 @@ draw_pixel:
 	SUB	height, #1
 	CMP	pixelY, height		@ Make sure pixel is in range
 	POPHI	{R4-R5}			@ Exit if not
-	MOVHI	PC, LR
+	BXHI	LR
 
 	width	.req R5
 	LDR	width, [addr, #0]	@ Get framebuffer width
 	SUB	width, #1
 	CMP	pixelX, width		@ Make sure pixel is in range
 	POPHI	{R4-R5}			@ Exit if not
-	MOVHI	PC, LR			@
+	BXHI	LR			@
 
 	LDR	addr, [addr, #32]	@ Get framebuffer write address
 	ADD	width, #1		@ Get right row
@@ -142,7 +142,7 @@ draw_fill_fb:
 .globl draw_char
 draw_char:
 	CMP	R0, #127		@ Check char is ASCII 0-127
-	MOVHI	PC, LR			@ Exit if not ASCII
+	BXHI	LR			@ Exit if not ASCII
 
 	PUSH	{R4-R8, LR}
 

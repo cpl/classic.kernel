@@ -50,7 +50,7 @@ fb_init:
 	CMPLS	R2, #MAX_FB_BIT_DEPTH	@ Check max bit depth
 
 	MOVHI	R0, #0			@ Return if invalid arguments
-	MOVHI	PC, LR			@
+	BXHI	LR			@
 
 	PUSH	{R4, LR}
 

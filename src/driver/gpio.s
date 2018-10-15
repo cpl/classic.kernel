@@ -27,7 +27,7 @@
 gpio_fsel:
 	CMP	R0, #MAX_GPIO_PIN	@ Check that the PIN is 0-53
 	CMPLS	R1, #MAX_GPIO_CMD	@ Check that the CMD is 0-7
-	MOVHI	PC, LR			@ Exit if not
+	BXHI	LR			@ Exit if not
 
 	PUSH	{R4-R5, LR}
 
@@ -56,7 +56,7 @@ gpio_fsel:
 .globl gpio_set
 gpio_set:
 	CMP	R0, #MAX_GPIO_PIN	@ Check that the PIN is 0-53
-	MOVHI	PC, LR			@ Exit if not
+	BXHI	LR			@ Exit if not
 
 	CMP	R0, #31			@ Select register bank
 	LDRLS	R2, =GPIO_BANK_0	@ 0

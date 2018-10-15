@@ -30,7 +30,7 @@
 .globl vfb_printf
 vfb_printf:
 	TEQ	R0, #0			@ Ignore NULL string
-	MOVEQ	PC, LR			@
+	BXEQ	LR			@
 
 	char	.req R0			@ Alias registers to make
 	fmts	.req R4			@ the function a little bit
