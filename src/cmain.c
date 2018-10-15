@@ -24,6 +24,9 @@
 #include "asm.h"
 
 
+extern void* KeyboardOldDown;
+
+
 void _memdump(void* ptr, u32 len) {
     u32* p = (u32*)ptr;
     void* bufr = cls_knl_malloc(0x40);
@@ -47,14 +50,5 @@ void print_stack() {
 
 
 void cmain(void) {
-
-    void* bufr = cls_knl_malloc(0x40);
-    conv_hex_str(bufr, 0xDEADBEEF);
-    vfb_println(bufr);
-    cls_knl_free(bufr);
-
-    vfb_printf(" | IRQ PENDING | %x | %x | %x |\n",
-        GET32(0x20000000+0xB200+0x0),
-        GET32(0x20000000+0xB200+0x4),
-        GET32(0x20000000+0xB200+0x8));
+    _memdump(KeyboardOldDown, 3);
 }

@@ -34,8 +34,6 @@ _str_char:
 .globl _main
 _main:
 
-	BL	cmain
-
 	BL	csudUsbInitialise
 	LDR	R4, =_str_char
 
@@ -50,9 +48,16 @@ _main:
 	BL	KeyboardGetChar
 
 	CMP R0, #0
-	STRNEB	R0, [R4]
-	MOVNE	R0, R4
-	BLNE	vfb_print
+	BEQ _dontprint
+
+	STRB	R0, [R4]
+	MOV	R0, R4
+	BL	vfb_print
+
+	MOV	R0, #0
+	BL	vfb_println
+	BL	cmain
+ _dontprint:
 
 	BL	clk_sys_epoch
 	BL	strtmp_hex
