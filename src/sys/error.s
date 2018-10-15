@@ -21,7 +21,7 @@
 _str_undef:		.asciz "ERR: UNDEF INS\n\r"
 _str_abort_ins:		.asciz "ERR: ABORT INS\n\r"
 _str_abort_dat:		.asciz "ERR: ABORT DAT\n\r"
-_str_buffer:		.zero 0x40
+
 
 .section .text
 

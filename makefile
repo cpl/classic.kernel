@@ -28,7 +28,7 @@ BOOT	= boot
 
 # Libraries
 LIBDIR	= libs
-LIBS	:= csud
+LIBS	:= csud cls
 
 # Intermediary
 LIST	= kernel.list
@@ -85,12 +85,6 @@ firmware:
 	@make -C "boot"
 
 
-# Build external libraries
-ext:
-	@echo "==== BUILDING EXTERNALS"
-	@cd external/csud && ./clsbuild.sh
-
-
 # Deploy kernel image to SD card
 deploy: $(TARGET)
 	@echo "==== SCANNING FOR SD CARD"
@@ -108,5 +102,4 @@ clean :
 	@rm -f $(TARGET)
 	@rm -f $(LIST)
 	@rm -f $(MAP)
-	@rm -f $(LIBS)/*
 	@echo "==== CLEAN: KERNEL"

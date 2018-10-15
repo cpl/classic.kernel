@@ -32,6 +32,7 @@ irq_psr_enable:
 	MSR	CPSR_c, R0			@ Write CPSR
 	BX	LR				@ Return
 
+
 @ irq
 @ IRQ signal.
 .globl _irq
