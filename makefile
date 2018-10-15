@@ -23,7 +23,7 @@ SOURCE	= src
 BUILD	= build
 DIST	= dist
 INCLD	= include
-INCLDC	= $(INCLD)/clslib
+INCLDC	= $(INCLD)/c
 BOOT	= boot
 
 # Libraries
@@ -69,13 +69,13 @@ $(BUILD)/output.elf : $(OBJECTS) $(LINKER)
 $(BUILD)/%.o: $(SOURCE)/%.s
 	@echo "==== Generating ASM object: $@"
 	@mkdir -p $(@D)
-	@$(COMPILER)-as --reduce-memory-overheads -I $(INCLD)/ $< -o $@
+	@$(COMPILER)-as --reduce-memory-overheads -I$(INCLD)/ $< -o $@
 
 # Generate - Objects - C
 $(BUILD)/%.o: $(SOURCE)/%.c
 	@echo "==== Generating C   object: $@"
 	@mkdir -p $(@D)
-	@$(COMPILER)-gcc $(CFLAGS) -I $(INCLDC) $< -o $@
+	@$(COMPILER)-gcc $(CFLAGS) -I$(INCLDC) $< -o $@ -I$(LIBDIR) -I./external/clslib/include
 
 # Deploy firmware to SD card
 firmware:

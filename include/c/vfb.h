@@ -15,21 +15,17 @@
 */
 
 
-/* memutils.h - Memory handling functions
+#ifndef _INC_VFB_H
+#define _INC_VFB_H
 
-Utility functions that zero, move, copy and handle memory in general. Used by
-many other libraries.
+extern void vfb_print(const char* str);
+extern void vfb_printf(const char* fmt, ...);
+extern void vfb_println(const char* str);
+extern void vfb_printdump(void* addr, unsigned int len);
 
-*/
+#define print vfb_print
+#define println vfb_println
+#define printf vfb_printf
+#define printdump vfb_printdump
 
-
-#include "types.h"
-
-
-extern void memzero(void* src, u32 len);
-extern void memcopy(void* src, u32 len, void* dst);
-extern void memcomp(void* src, u32 len, void* dst);
-
-extern void memsetb(void* addr, u32 len, u8  value);
-extern void memseth(void* addr, u32 len, u16 value);
-extern void memsetw(void* addr, u32 len, u32 value);
+#endif
