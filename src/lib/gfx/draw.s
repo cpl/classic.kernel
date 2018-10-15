@@ -28,9 +28,11 @@ font:		.incbin "data/font.bin"
 .section .data
 
 
+.globl colorF
 .align 1
 colorF:		.hword 0x0000
 
+.globl colorB
 .align 1
 colorB:		.hword 0xFFFF
 

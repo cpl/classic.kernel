@@ -110,7 +110,9 @@ vfb_scroll:
 
 
 	SUB	R3, R2, R1		@ Compute end minus last line
-	MOV	R0, #0
+	LDR	R0, =colorB		@ Load background color
+	LDRH	R0, [R0]		@
+	ORR	R0, R0, R0, LSL #16	@
 
  _vfb_scroll_fin:
 
