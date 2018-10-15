@@ -23,6 +23,7 @@ SOURCE	= src
 BUILD	= build
 DIST	= dist
 INCLD	= include
+EXTERN  = external
 INCLDC	= $(INCLD)/c
 BOOT	= boot
 
@@ -75,7 +76,7 @@ $(BUILD)/%.o: $(SOURCE)/%.s
 $(BUILD)/%.o: $(SOURCE)/%.c
 	@echo "==== Generating C   object: $@"
 	@mkdir -p $(@D)
-	@$(COMPILER)-gcc $(CFLAGS) -I$(INCLDC) $< -o $@ -I$(LIBDIR) -I./external/clslib/include
+	@$(COMPILER)-gcc $(CFLAGS) -I$(INCLDC) $< -o $@ -I$(LIBDIR) -I./external/cls/include
 
 # Deploy firmware to SD card
 firmware:
@@ -103,3 +104,8 @@ clean :
 	@rm -f $(LIST)
 	@rm -f $(MAP)
 	@echo "==== CLEAN: KERNEL"
+
+$(LIBS):
+	@echo "==== BUILDING LIBRARY: $@"
+	@make -C "$(EXTERN)/$@"
+	@cp $(EXTERN)/$@/lib$@.a $(LIBDIR)/
