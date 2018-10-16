@@ -24,9 +24,6 @@
 #include "asm.h"
 
 
-extern void* KeyboardOldDown;
-
-
 void _memdump(void* ptr, u32 len) {
     u32* p = (u32*)ptr;
     void* bufr = cls_knl_malloc(0x40);
@@ -50,5 +47,7 @@ void print_stack() {
 
 
 void cmain(void) {
-    _memdump(KeyboardOldDown, 3);
+    _memdump((void*)0x0,        10);
+    println(NULL);
+    _memdump((void*)0x40000000, 10);
 }

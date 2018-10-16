@@ -34,13 +34,9 @@ _str_char:
 .globl _main
 _main:
 
-	BL	csudUsbInitialise
+	BL	cmain
+
 	LDR	R4, =_str_char
-
-	BL	KeyboardUpdate
-	BL	KeyboardGetChar
-
-	@ BL	mem_block_printmem
 
  _main_loop:
 
@@ -54,9 +50,6 @@ _main:
 	MOV	R0, R4
 	BL	vfb_print
 
-	MOV	R0, #0
-	BL	vfb_println
-	BL	cmain
  _dontprint:
 
 	BL	clk_sys_epoch

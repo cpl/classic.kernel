@@ -35,7 +35,8 @@ _reset:
 	SUB	R1, R1, R0			@
 	BL	memzero				@
 
-	MOV	R1, #0x80000000			@ Stack pointers storage
+	@ MOV	R1, #0x80000000			@ Stack pointers storage
+	MOV	R1, #0				@
 
 	MOV	R0, #(PSR_MODE_SVC|PSR_IRQ|PSR_FIQ)	@ SVC, DISABLE:
 	MSR	CPSR_c, R0				@ IRQ & FIQ
@@ -56,6 +57,7 @@ _reset:
 							@ Stay in SYS MODE
 
 	BL	cls_knl_heap_init			@ Initialize knl heap
+	BL	csudUsbInitialise			@ Initialize CSUD USB
 
 	B	sys_init				@ Initialize system
 							@ - LED
