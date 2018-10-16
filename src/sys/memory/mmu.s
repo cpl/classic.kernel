@@ -22,7 +22,7 @@
 .section .text
 
 
-@ mmu_enable (mmu_base, mmu_flags)
+@ void mmu_enable (void* mmu_base, u32 mmu_flags)
 @ Enable the MMU with the specified flags.
 .globl mmu_enable
 mmu_enable:
@@ -45,7 +45,7 @@ mmu_enable:
 	BX	LR				@ Return
 
 
-@ mmu_disable
+@ void mmu_disable(void)
 @ Disable the MMU.
 .globl mmu_disable
 mmu_disable:
@@ -57,7 +57,7 @@ mmu_disable:
 	BX	LR				@ Return
 
 
-@ mmu_invalidate_tlb
+@ void mmu_invalidate_tlb(void)
 .globl mmu_invalidate_tlb
 mmu_invalidate_tlb:
 	MOV	R0, #0
@@ -66,7 +66,7 @@ mmu_invalidate_tlb:
 	BX	LR				@ Return
 
 
-@ mmu_section (v_addr, p_addr, flags)
+@ void mmu_section (void* v_addr, void* p_addr, u32 flags)
 @ Assign a virtual address to a physical address space of 1MB (aka section),
 @ using specified flags (R2).
 .globl mmu_section
@@ -85,22 +85,8 @@ mmu_section:
 
 	BX	LR				@ Return
 
-/*
 
-V	= V >> 20
-SADR	= MMU_TLB_BASE | (V << 2)
-SVAL	= (C & 0xFFFFFC00) | 0b01
-STR	SVAL, [SADR]
-
-V	= (V >> 12) & 0xFF
-SADR	= (C & 0xFFFFFC00) | (V << 2)
-SVAL	= (P & 0xFFFFF000) | AP | F | 2
-STR	SVAL, [SADR]
-
-*/
-
-
-@ mmu_coarse (v_addr, mmu_base)
+@ void mmu_coarse (void* v_addr, void* mmu_base)
 @ Create the first level lookup for a two level lookup TLB with a coarse page
 @ table and then sub-pages (small pages of 4kb).
 .globl mmu_coarse
@@ -118,7 +104,7 @@ mmu_coarse:
 	BX	LR				@ Return
 
 
-@ mmu_page (v_addr, p_addr, flags, mmu_base)
+@ void mmu_page (void* v_addr, void* p_addr, u32 flags, void* mmu_base)
 .globl mmu_page
 mmu_page:
 	PUSH	{R4}
@@ -142,7 +128,7 @@ mmu_page:
 	BX	LR				@
 
 
-@ mmu_setup
+@ void mmu_setup(void)
 @ Setup memory section to map virtual to physical and uncache peripherals.
 .globl mmu_setup
 mmu_setup:
@@ -188,7 +174,7 @@ mmu_setup:
 	POP	{R4-R5, PC}			@ Return
 
 
-@ mmu_init
+@ void mmu_init(void)
 @ Initialize the MMU TLB, then enable the MMU with custom flags.
 .globl mmu_init
 mmu_init:
