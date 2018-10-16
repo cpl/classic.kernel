@@ -3,7 +3,7 @@ ENTRY(_start)
 
 /* Kernel system memory region */
 MEMORY {
-    sys : ORIGIN = 0x8000,     LENGTH = 1M
+    sys : ORIGIN = 0x8000,     LENGTH = 10M
 }
 
 SECTIONS {
@@ -51,5 +51,6 @@ SECTIONS {
 	}
 
 	/* Kernel heap */
-	_KERNEL_HEAP = ALIGN(0x40);
+	. = ALIGN(0x40);
+	_KERNEL_HEAP = .;
 }
