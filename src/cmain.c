@@ -47,7 +47,5 @@ void print_stack() {
 
 
 void cmain(void) {
-    _memdump((void*)0x0,        10);
-    println(NULL);
-    _memdump((void*)0x40000000, 10);
+
 }

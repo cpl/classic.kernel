@@ -55,19 +55,33 @@ _main:
 	BL	clk_sys_epoch
 	BL	strtmp_hex
 	MOV	R1, #1000
-	MOV	R2, #960
+	MOV	R2, #900
 	BL	draw_string
 
 	MOV	R0, SP
 	BL	strtmp_hex
 	MOV	R1, #1000
-	MOV	R2, #980
+	MOV	R2, #920
 	BL	draw_string
 
 	MOV	R0, PC
 	BL	strtmp_hex
 	MOV	R1, #1000
-	MOV	R2, #1000
+	MOV	R2, #940
+	BL	draw_string
+
+	LDR	R0, =_KERNEL_ALOC_LAST
+	LDR	R0, [R0]
+	BL	strtmp_hex
+	MOV	R1, #1000
+	MOV	R2, #960
+	BL	draw_string
+
+	LDR	R0, =_KERNEL_ALOC_TAIL
+	LDR	R0, [R0]
+	BL	strtmp_hex
+	MOV	R1, #1000
+	MOV	R2, #980
 	BL	draw_string
 
 	B	_main_loop
