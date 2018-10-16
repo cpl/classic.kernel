@@ -34,24 +34,8 @@ _str_char:
 .globl _main
 _main:
 
-	BL	cmain
-
-	LDR	R4, =_str_char
 
  _main_loop:
-
-	BL	KeyboardUpdate
-	BL	KeyboardGetChar
-
-	CMP R0, #0
-	BEQ _dontprint
-
-	STRB	R0, [R4]
-	MOV	R0, R4
-	BL	vfb_print
-
- _dontprint:
-
 	BL	clk_sys_epoch
 	BL	strtmp_hex
 	MOV	R1, #1000
