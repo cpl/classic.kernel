@@ -3,7 +3,7 @@ ENTRY(_start)
 
 /* Kernel system memory region */
 MEMORY {
-    sys : ORIGIN = 0x8000,     LENGTH = 10M
+    sys : ORIGIN = 0x8000,     LENGTH = 1M
 }
 
 SECTIONS {

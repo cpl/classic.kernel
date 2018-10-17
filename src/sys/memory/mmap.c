@@ -19,39 +19,52 @@
 #include "mmap.h"
 #include "sched.h"
 #include "mmu.h"
+#include "error.h"
+#include "memutil.h"
 
 
-static u32 mmap_findex = 0;
-static u8  mmap_ppages [_USR_PAGE_MAX] = {0,};
+static u32 mmap_free_index = 0;
+static u8  mmap_phys_pages[_USR_PAGE_TTL] = {0,};
 
 
-void* mmap_get_page(void) {
+void* mmap_aloc_page(void) {
+    // Iterate physical pages from "free probable index", until a free page
+    for(register u32 index = mmap_free_index; index < _USR_PAGE_TTL; index++) {
+        // Check if page is free
+        if(mmap_phys_pages[index] == 0) {
+            // Set page as allocated
+            mmap_phys_pages[index]  = 1;
+            // Set "free probable index" to next index
+            mmap_free_index = index + 1;
 
-    // Iterate all phyisical pages and find a free one
-    for (u32 index = mmap_findex; index < _USR_PAGE_MAX; index++) {
+            // Clean page memory
+            memzero(
+                (void*)(_USR_PHYS_START+(index << _SYS_PAGE_SHFT)),
+                _SYS_PAGE_SIZE);
 
-        // Check if physical page is free
-        if(!mmap_ppages[index]) {
-            mmap_findex = index+1;           // Set next possible free page
-            mmap_ppages[index] = 1;          // Set page as allocated
-
-            // Return physical page address
-            return (void*)(_USR_VIRT_START+(index<<_SYS_PAGE_SHFT));
+            // Return physical addres of page
+            return (void*)(_USR_PHYS_START+index);
         }
     }
 
-    return NULL;
+    // Fail to find free page, panic
+    _panic(); return NULL;
 }
 
 
-void mmap_free(void* addr) {
-    // Convert address to index
-    u8 index = (((u32)addr - _USR_VIRT_START)>>_SYS_PAGE_SHFT);
+void mmap_free_page(void* page_addr) {
+    // Extract index from physical address of page
+    register u32 index = (u32)page_addr - _USR_PHYS_START;
 
-    // Set possible free index
-    if(index < mmap_findex)
-        mmap_findex = index;
+    // Check index bounds
+    if(index > _USR_PAGE_TTL)
+        return;
 
-    // Free page
-    mmap_ppages[index] = 0;
+    // Set page as free
+    mmap_phys_pages[index] = 0;
+
+    // Move free page index
+    if(index < mmap_free_index) {
+        mmap_free_index = index;
+    }
 }

@@ -24,11 +24,11 @@
 #define _INC_SCHED_H
 
 #define SCHED_MAX_TASKS 0x100
-#define TASKS_MAX_PAGES 0x100
+#define SIZEOF_TASK     sizeof(task);
 
 typedef struct task_mmap {
-    u32 count;
-    u32 pages[TASKS_MAX_PAGES];
+    u8  coarse_page_count;
+    u32 coarse_tlb[0x100];
 } task_mmap;
 
 
@@ -47,10 +47,10 @@ typedef enum {
 
 typedef struct task {
     u16         PID;
+    u16         slice;
+    u32         flags;
     task_state  state;
     task_prior  prior;
-    u8          slice;
-    u8          flags;
 
     ctx       context;
     task_mmap pagemap;

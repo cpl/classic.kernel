@@ -18,6 +18,7 @@
 #include "bool.h"
 #include "types.h"
 #include "sched.h"
+#include "mmu.h"
 
 
 static task* CURRENT = NULL;
@@ -33,6 +34,9 @@ void sched_switch(task* to) {
     // Update current task
     task* prev = CURRENT;
     CURRENT = to;
+
+    // Switch coarse table
+    mmu_coarse((void*)_USR_VIRT_START, to -> pagemap.coarse_tlb);
 
     // Switch CPU context
     ctx_switch(
