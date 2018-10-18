@@ -23,7 +23,8 @@
 
 #define _SYS_PAGE_SHFT      12
 #define _SYS_PAGE_SIZE      (1<<_SYS_PAGE_SHFT)
-
+#define _SYS_SECT_SHFT      20
+#define _SYS_SECT_SIZE      (1<<_SYS_SECT_SHFT)
 
 #define _GPU_PHYS_MEM       0x04000000
 #define _SYS_PHYS_MEM       (0x20000000 - _GPU_PHYS_MEM)
@@ -36,8 +37,6 @@
 #define _USR_PAGE_TTL       (_USR_PHYS_MEM/_SYS_PAGE_SIZE)
 #define _USR_VIRT_START     0x10000000
 #define _USR_PHYS_START     (_KNL_PHYS_START + _KNL_PHYS_MEM)
-
-
 
 void* mmap_aloc_page(void);
 void  mmap_free_page(void* page_addr);

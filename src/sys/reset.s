@@ -57,7 +57,7 @@ _reset:
 							@ Stay in SYS MODE
 
 	BL	cls_knl_heap_init			@ Initialize knl heap
-	BL	csudUsbInitialise			@ Initialize CSUD USB
+	@ BL	csudUsbInitialise			@ Initialize CSUD USB
 
 	B	sys_init				@ Initialize system
 							@ - LED

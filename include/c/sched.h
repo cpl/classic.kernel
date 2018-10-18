@@ -24,11 +24,18 @@
 #define _INC_SCHED_H
 
 #define SCHED_MAX_TASKS 0x100
+
+#define TASK_MAX_MEMORY 0x02000000
+#define TASK_MAX_PAGES  (TASK_MAX_MEMORY/_SYS_PAGE_SIZE)
+#define TASK_TLB_SIZE   0x100
+
 #define SIZEOF_TASK     sizeof(task);
 
+
+
 typedef struct task_mmap {
-    u8  coarse_page_count;
-    u32 coarse_tlb[0x100];
+    u32   coarse_page_count;
+    void* coarse_tlb[TASK_MAX_PAGES/TASK_TLB_SIZE];
 } task_mmap;
 
 

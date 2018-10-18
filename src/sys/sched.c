@@ -23,7 +23,6 @@
 
 static task* CURRENT = NULL;
 static task* TASKS[SCHED_MAX_TASKS];
-static u8    TASK_COUNT = 1;
 
 
 void sched_switch(task* to) {
@@ -35,8 +34,15 @@ void sched_switch(task* to) {
     task* prev = CURRENT;
     CURRENT = to;
 
-    // Switch coarse table
-    mmu_coarse((void*)_USR_VIRT_START, to -> pagemap.coarse_tlb);
+    // Switch coarse tables
+    for(u8 tlb_index = 0;
+        tlb_index < (to -> pagemap.coarse_page_count)/TASK_TLB_SIZE;
+        tlb_index++) {
+            // Switch table
+            mmu_coarse(
+                (void*)_USR_VIRT_START+_SYS_SECT_SIZE*tlb_index,
+                to -> pagemap.coarse_tlb[tlb_index]);
+    }
 
     // Switch CPU context
     ctx_switch(
