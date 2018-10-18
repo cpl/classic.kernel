@@ -15,13 +15,10 @@
 */
 
 
+#include "types.h"
 #include "vfb.h"
-
-#include "varg.h"
-#include "mm.h"
 #include "conv.h"
-#include "memutil.h"
-#include "asm.h"
+#include "mm.h"
 
 
 void _memdump(void* ptr, u32 len) {
@@ -36,15 +33,6 @@ void _memdump(void* ptr, u32 len) {
 
     cls_knl_free(bufr);
 }
-
-void print_stack() {
-    vfb_print("STACK: ");
-    void* bufr = cls_knl_malloc(0x40);
-    conv_hex_str(bufr, GETSP());
-    vfb_println(bufr);
-    cls_knl_free(bufr);
-}
-
 
 void cmain(void) {
 

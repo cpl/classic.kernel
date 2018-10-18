@@ -34,6 +34,7 @@ _str_char:
 .globl _main
 _main:
 
+	BL	cmain
 
  _main_loop:
 	BL	clk_sys_epoch
