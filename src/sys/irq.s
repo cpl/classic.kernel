@@ -55,4 +55,7 @@ irq_handler:
 	TST	R4, #IRQ_CLK_ARM		@ Check for timer interrupt
 	BLNE	clk_arm_isr			@ Handle    timer interrupt
 
+	TST	R4, #IRQ_CLK_ARM		@ Tick the scheduler
+	BLNE	sched_tick			@
+
 	POP	{R4, PC}			@ Return

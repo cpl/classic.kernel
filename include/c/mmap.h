@@ -16,7 +16,12 @@
 
 /* mmap.h - Memory map of physical pages
 
-Map and free physical pages.
+Map and free physical pages for kernel and user use. In userland pages are
+mapped to virtual address space. The user address space starts at 0x1000 0000,
+and goes up to 0x1200 0000, giving each task a total of 32MB of physical
+memory. In order to map 32MB of memory, 32 coarse tables are assigned taking
+up 1kb of memory each and so 4 coarse tables can fit on a single 4kb page.
+Giving each task 8 page pointers for all 32 tables.
 
 */
 
@@ -36,7 +41,9 @@ Map and free physical pages.
 #define MM_PAGE_SIZE (1<<MM_PAGE_SHIFT)
 
 #define MM_PAGES_TTL (MM_PHYS_USR/MM_PAGE_SIZE)
+#define MM_PAGES_PER_TLB 0x100
 
+#define MM_VIRT_USR_START 0x10000000
 
 void* mmap_aloc_page();
 void  mmap_free_page(void* addr);

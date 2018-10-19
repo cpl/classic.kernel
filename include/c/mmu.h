@@ -14,29 +14,19 @@
    limitations under the License.
 */
 
+/* mmu.h - Memory Management Unit
+
+*/
+
 
 #include "types.h"
-#include "vfb.h"
-#include "conv.h"
-#include "mm.h"
-#include "uart.h"
-#include "sched.h"
 
 
-void _memdump(void* ptr, u32 len) {
-    u32* p = (u32*)ptr;
-    void* bufr = cls_knl_malloc(0x40);
+#ifndef _INC_MMU_H
+#define _INC_MMU_H
 
-    while(len-- > 0) {
-        conv_hex_str(bufr, (u32) p); vfb_print(bufr); vfb_print(" : ");
-        conv_hex_str(bufr, (u32)*p); vfb_println(bufr);
-        p++;
-    }
+void mmu_invalidate_tlb(void);
+void mmu_coarse(void* virt_addr, void* mmu_base);
+void mmu_page(void* virt_addr, void* phys_addr, u32 flags, void* mmu_base);
 
-    cls_knl_free(bufr);
-}
-
-void cmain(void) {
-    uart_send_string("CMAIN\n\r");
-    sched_init();
-}
+#endif
