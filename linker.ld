@@ -22,7 +22,7 @@ SECTIONS {
 	.text   : {
 		*(.text)
 	} > sys
-	.rodata : { *(.rodata) } > sys
+	.rodata : { *(.rodata*) } > sys
 	. = ALIGN(4);
 
 	/* Kernel data */
