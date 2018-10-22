@@ -15,42 +15,28 @@
 */
 
 
-.section .rodata
+#include "types.h"
 
 
-_str_undef:		.asciz "ERR: UNDEF INS\n\r"
-_str_abort_ins:		.asciz "ERR: ABORT INS\n\r"
-_str_abort_dat:		.asciz "ERR: ABORT DAT\n\r"
+#ifndef _INC_SYSCALL_H
+#define _INC_SYSCALL_H
 
+extern void syscall_exit(void);
+extern void syscall_fork(void);
+extern void syscall_kill(void);
 
-.section .text
+extern u32  syscall_time(void);
+extern void syscall_sleep(u32 ms);
 
+extern void syscall_uputc(u8 c);
+extern void syscall_uputs(char* str);
+extern u8   syscall_ugetc(void);
 
-@ _undef
-.globl _undef
-_undef:
-	LDR	R0, =_str_undef
-	BL	syscall_uputs
+extern void syscall_gpio_set(u8 pin, u8 status);
+extern void syscall_gpio_sel(u8 pin, u8 cmd);
 
-	B	_hang
-	@ MOVS	PC, LR			@ Return
+extern void syscall_print(char* str);
+extern void syscall_println(char* str);
+extern void syscall_printf(char* str);
 
-
-@ _abort_ins
-.globl _abort_ins
-_abort_ins:
-	LDR	R0, =_str_abort_ins
-	BL	syscall_uputs
-
-	B	_hang
-	@ MOVS	PC, LR			@ Return
-
-
-@ _abort_dat
-.globl _abort_dat
-_abort_dat:
-	LDR	R0, =_str_abort_dat
-	BL	syscall_uputs
-
-	B	_hang
-	@ SUBS	PC, LR, #4		@ Return
+#endif

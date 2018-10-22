@@ -15,7 +15,25 @@
 */
 
 
-.set	SWI_MAX,	0xC
+.globl SWI_MAX_VAL
+.set   SWI_MAX_VAL, -1
+
+
+.macro MACRO_SWI_ENTRY			OP_NAME, CALL_FUNC
+
+	.set	SWI_MAX_VAL, SWI_MAX_VAL+1
+	.set	sys_\OP_NAME, SWI_MAX_VAL
+	.globl	sys_\OP_NAME
+
+	.section .rodata
+	.word	\CALL_FUNC
+
+	.section .text
+	.globl   syscall_\OP_NAME
+	syscall_\OP_NAME:
+		SWI	sys_\OP_NAME
+		BX	LR
+.endm
 
 
 .section .rodata
@@ -30,26 +48,23 @@ _str_swi_test:		.ascii "SWI WORKS!\n\r\0"
 .align 4
 _SWI_JUMP_TABLE:
 
-.word	_hang
-.word	_hang
-.word	_hang
+	MACRO_SWI_ENTRY		exit,		_hang
+	MACRO_SWI_ENTRY		fork,		_hang
+	MACRO_SWI_ENTRY		kill,		_hang
 
-.word	clk_sys_epoch
-.word	_hang
+	MACRO_SWI_ENTRY		time,		clk_sys_epoch
+	MACRO_SWI_ENTRY		sleep,		_hang
 
-.word	uart_send
-.word	uart_send_string
-.word	uart_recv
+	MACRO_SWI_ENTRY		uputc,		uart_send
+	MACRO_SWI_ENTRY		uputs,		uart_send_string
+	MACRO_SWI_ENTRY		ugetc,		uart_recv
 
-.word	gpio_set
-.word	gpio_fsel
+	MACRO_SWI_ENTRY		gpio_set,	gpio_set
+	MACRO_SWI_ENTRY		gpio_sel,	gpio_fsel
 
-.word	vfb_print
-.word	vfb_println
-.word	vfb_printf
-
-.word	_hang
-.word	_hang
+	MACRO_SWI_ENTRY		print,		vfb_print
+	MACRO_SWI_ENTRY		println,	vfb_println
+	MACRO_SWI_ENTRY		printf,		vfb_printf
 
 /*****************************************************************************/
 
@@ -57,10 +72,10 @@ _SWI_JUMP_TABLE:
 .section .text
 
 
-@ _swi
+@ _swi_handler
 @ SWI handler.
-.globl _swi
-_swi:
+.globl _swi_handler
+_swi_handler:
 	PUSH	{R4-R5, LR}
 
 	MRS	R4, SPSR			@ Store SPSR
@@ -76,7 +91,7 @@ _swi:
 
 	LDR	LR, =_swi_end			@ Prepare return to end routine
 
-	CMP	R4, #SWI_MAX			@ Check for valid SWI OP code
+	CMP	R4, #SWI_MAX_VAL		@ Check for valid SWI OP code
 	BHI	_swi_unknown			@ Invalid SWI routine
 
 	LDR	R5, =_SWI_JUMP_TABLE		@ Load SWI routines table

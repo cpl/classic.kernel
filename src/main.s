@@ -15,13 +15,9 @@
 */
 
 
-.include "asm/swi.s"
-
-
 .section .rodata
 
 
-_str_swi_test:	.ascii "SWI TEST\n\r\0"
 _str_hang:	.ascii "HANG\n\r\0"
 
 .align 4
@@ -39,9 +35,6 @@ _str_char:
 _main:
 
 	BL	cmain
-
-	LDR	R0, =_str_swi_test
-	SWI	sys_uputs
 
  _main_loop:
 	BL	clk_sys_epoch
@@ -83,6 +76,6 @@ _main:
 _hang:
 
 	LDR	R0, =_str_hang
-	SWI	sys_uputs
+	BL	syscall_uputs
 
 	B .

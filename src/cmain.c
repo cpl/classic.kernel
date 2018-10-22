@@ -21,6 +21,7 @@
 #include "mm.h"
 #include "uart.h"
 #include "sched.h"
+#include "syscall.h"
 
 
 void _memdump(void* ptr, u32 len) {
@@ -38,4 +39,5 @@ void _memdump(void* ptr, u32 len) {
 
 void cmain(void) {
     uart_send_string("CMAIN\n\r");
+    syscall_println("HELLO, WORLD! - FROM C SYSCALL");
 }
