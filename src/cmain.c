@@ -37,7 +37,29 @@ void _memdump(void* ptr, u32 len) {
     cls_knl_free(bufr);
 }
 
+extern void _hang(void);
+
 void cmain(void) {
-    uart_send_string("CMAIN\n\r");
-    syscall_println("HELLO, WORLD! - FROM C SYSCALL");
+    // ctx my_context;
+    // ctx new;
+
+    // my_context.R0 = 0x100;
+    // my_context.R1 = 0x200;
+    // my_context.R2 = 0x300;
+
+    // ctx_save(&my_context);
+    // my_context.R0 = 0x500;
+    // my_context.PC = (u32)&_hang;
+
+    // new = my_context;
+
+
+    // ctx_load(&my_context);
+
+    sched_init();
+
+    // while(1) {
+    //     vfb_reset();
+    //     vfb_printf("CLK: %x\n", syscall_time());
+    // }
 }

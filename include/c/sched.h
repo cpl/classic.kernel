@@ -23,6 +23,11 @@
 #ifndef _INC_SCHED_H
 #define _INC_SCHED_H
 
+// CONTEXT
+
+static ctx* CTX_IRQ = (ctx*)(0x2C00-60);
+
+
 // TASK
 
 #define TASK_MAX_MEM 0x02000000
@@ -74,5 +79,7 @@ void sched_enqueue(task* new);
 void sched_next(void);
 void sched_tick(void);
 void sched_init(void);
+
+void sched_printproc(void);
 
 #endif

@@ -37,10 +37,16 @@ irq_psr_enable:
 @ IRQ signal.
 .globl _irq
 _irq:
-	PUSH	{R0-R12, LR}			@ Save registers
-	BL	irq_handler			@ IRQ Handler
-	POP	{R0-R12, LR}			@ Load registers
-	SUBS	PC, LR, #4			@ Resume
+	STMIA	SP, {LR}
+	SUB	SP, #60
+	STMIA	SP, {R0-R12}
+
+	BL	irq_handler
+
+	LDMIA	SP!, {R0-R12}
+	ADD	SP, #8
+	LDMIA	SP, {LR}
+	SUBS	PC, LR, #4
 
 
 @ irq_handler
@@ -52,10 +58,11 @@ irq_handler:
 	LDR	R4, =INTERRUPTS_BASE		@ Load IRQ base
 	LDR	R4, [R4, #IRQ_BASIC_PENDING]	@ Load IRQ pending
 
+	TST	R4, #IRQ_CLK_ARM		@ Tick the scheduler
+	BLNE	sched_tick			@
+
 	TST	R4, #IRQ_CLK_ARM		@ Check for timer interrupt
 	BLNE	clk_arm_isr			@ Handle    timer interrupt
 
-	TST	R4, #IRQ_CLK_ARM		@ Tick the scheduler
-	BLNE	sched_tick			@
 
 	POP	{R4, PC}			@ Return
