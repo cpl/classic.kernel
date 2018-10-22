@@ -23,6 +23,10 @@ extern void vfb_printf(const char* fmt, ...);
 extern void vfb_println(const char* str);
 extern void vfb_printdump(void* addr, unsigned int len);
 
+extern void vfb_scroll(void);
+extern void vfb_reset(void);
+extern void vfb_clear(void);
+
 #define print vfb_print
 #define println vfb_println
 #define printf vfb_printf

@@ -123,3 +123,21 @@ vfb_scroll:
 
 	POP	{R4}			@ Return
 	BX	LR			@
+
+
+@ vfb_reset
+.globl vfb_reset
+vfb_reset:
+	LDR	R1, =vfb_data		@ Get vfb data address
+	MOV	R0, #0			@ Reset both curs_x and curs_y to 0
+	STRH	R0, [R1]		@
+	BX	LR			@ Return
+
+
+@ vfb_clear
+.globl vfb_clear
+vfb_clear:
+	PUSH	{LR}
+	BL	draw_get_color_b	@ Fill framebuffer with background
+	BL	draw_fill_fb		@ color from gfx lib
+	POP	{PC}
