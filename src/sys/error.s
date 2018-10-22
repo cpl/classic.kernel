@@ -30,7 +30,7 @@ _str_abort_dat:		.asciz "ERR: ABORT DAT\n\r"
 .globl _undef
 _undef:
 	LDR	R0, =_str_undef
-	BL	uart_send_string
+	SWI	sys_uputs
 
 	B	_hang
 	@ MOVS	PC, LR			@ Return
@@ -40,7 +40,7 @@ _undef:
 .globl _abort_ins
 _abort_ins:
 	LDR	R0, =_str_abort_ins
-	BL	uart_send_string
+	SWI	sys_uputs
 
 	B	_hang
 	@ MOVS	PC, LR			@ Return
@@ -50,7 +50,7 @@ _abort_ins:
 .globl _abort_dat
 _abort_dat:
 	LDR	R0, =_str_abort_dat
-	BL	uart_send_string
+	SWI	sys_uputs
 
 	B	_hang
 	@ SUBS	PC, LR, #4		@ Return

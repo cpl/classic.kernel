@@ -38,5 +38,4 @@ void _memdump(void* ptr, u32 len) {
 
 void cmain(void) {
     uart_send_string("CMAIN\n\r");
-    sched_init();
 }
