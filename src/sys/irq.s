@@ -20,6 +20,13 @@
 .include "asm/psr.s"
 
 
+.section .rodata
+
+
+_str_irq_enter:		.asciz	"IRQ: ENTER\n\r"
+_str_irq_exit:		.asciz	"IRQ: EXIT\n\r"
+
+
 .section .text
 
 
@@ -29,6 +36,16 @@
 irq_psr_enable:
 	MRS	R0, CPSR			@ Read  CPSR
 	BIC	R0, #(PSR_IRQ)			@ Clear IRQ bit to enable IRQ
+	MSR	CPSR_c, R0			@ Write CPSR
+	BX	LR				@ Return
+
+
+@ irq_psr_disable
+@ Enable IRQ in current PSR mode.
+.globl irq_psr_disable
+irq_psr_disable:
+	MRS	R0, CPSR			@ Read  CPSR
+	ORR	R0, #(PSR_IRQ)			@ Set IRQ bit to disable IRQ
 	MSR	CPSR_c, R0			@ Write CPSR
 	BX	LR				@ Return
 
@@ -48,7 +65,7 @@ _irq:
 
 	BL	irq_handler			@ Handle interrupts
 
-	LDR	R0, [SP, #0x40]			@ Load and setSPSR
+	LDR	R0, [SP, #0x40]			@ Load and set SPSR
 	MSR	SPSR, R0			@
 
 	LDR	LR, [SP, #0x3C]			@ Load PC+4
@@ -66,6 +83,9 @@ _irq:
 irq_handler:
 	PUSH	{R4, LR}
 
+	LDR	R0, =_str_irq_enter
+	BL	syscall_uputs
+
 	LDR	R4, =INTERRUPTS_BASE		@ Load IRQ base
 	LDR	R4, [R4, #IRQ_BASIC_PENDING]	@ Load IRQ pending
 
@@ -75,5 +95,7 @@ irq_handler:
 	TST	R4, #IRQ_CLK_ARM		@ Check for timer interrupt
 	BLNE	clk_arm_isr			@ Handle    timer interrupt
 
+	LDR	R0, =_str_irq_exit
+	BL	syscall_uputs
 
 	POP	{R4, PC}			@ Return

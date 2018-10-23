@@ -25,7 +25,7 @@
 
 // CONTEXT
 
-static ctx* CTX_IRQ = (ctx*)(0x2C00-60);
+static ctx* CTX_IRQ = (ctx*)(0x2C00-0x40);
 
 
 // TASK
