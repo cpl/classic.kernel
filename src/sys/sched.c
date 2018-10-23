@@ -23,6 +23,7 @@
 #include "vfb.h"
 #include "memutil.h"
 #include "asm.h"
+#include "mm.h"
 
 
 void print_ctx(ctx* c) {
@@ -106,6 +107,8 @@ static task _NEW_TASK = {
     },
 };
 
+extern void* _KERNEL_ALOC_TAIL;
+extern void* _KERNEL_ALOC_LAST;
 
 void _new_proc() {
     while(1) {
@@ -116,6 +119,8 @@ void _new_proc() {
         vfb_printf("SLICE: %x\n", _NEW_TASK.slice);
         vfb_printf("CLK: %x\n", syscall_time());
         vfb_printf("\nLR: %x SP: %x\n", GETLR(), GETSP());
+
+        vfb_printf("MALLOC: %x %x\n", _KERNEL_ALOC_LAST, _KERNEL_ALOC_TAIL);
 
         vfb_printf("CTX IRQ: %x\n", CTX_IRQ);
         syscall_uputs("*");
@@ -142,6 +147,8 @@ void _kernel() {
         vfb_printf("SLICE: %x\n", _KERNEL_TASK.slice);
         vfb_printf("CLK: %x\n", syscall_time());
         vfb_printf("\nLR: %x SP: %x\n", GETLR(), GETSP());
+
+        vfb_printf("MALLOC: %x %x\n", _KERNEL_ALOC_LAST, _KERNEL_ALOC_TAIL);
 
         vfb_printf("CTX IRQ: %x\n", CTX_IRQ);
         syscall_uputs("+");

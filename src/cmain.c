@@ -26,7 +26,7 @@
 
 void _memdump(void* ptr, u32 len) {
     u32* p = (u32*)ptr;
-    void* bufr = cls_knl_malloc(0x40);
+    void* bufr = syscall_kmalloc(0x40);
 
     while(len-- > 0) {
         conv_hex_str(bufr, (u32) p); vfb_print(bufr); vfb_print(" : ");
@@ -34,7 +34,7 @@ void _memdump(void* ptr, u32 len) {
         p++;
     }
 
-    cls_knl_free(bufr);
+    syscall_kfree(bufr);
 }
 
 extern void _hang(void);

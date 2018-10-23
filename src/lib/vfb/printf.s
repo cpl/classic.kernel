@@ -62,7 +62,7 @@ vfb_printf:
 	AND	curs_x, R1, #0xFF	@
 
 	MOV	R0, #0x40		@ Allocate conversion buffer
-	BL	cls_knl_malloc		@
+	BL	syscall_kmalloc		@
 	MOV	cvbufr, R0		@ Save pointer
 
  _vfb_printf_loop:
@@ -111,7 +111,7 @@ vfb_printf:
 	STRB	curs_y, [vfbdat, #1]	@ Save new curs y
 
 	MOV	R0, cvbufr		@ Free conversion buffer
-	BL	cls_knl_free		@
+	BL	syscall_kfree		@
 
 	POP	{R4-R12, LR}		@ Restore context
 	ADD	SP, #(3*4)		@

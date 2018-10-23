@@ -66,6 +66,10 @@ _SWI_JUMP_TABLE:
 	MACRO_SWI_ENTRY		println,	vfb_println
 	MACRO_SWI_ENTRY		printf,		vfb_printf
 
+	MACRO_SWI_ENTRY		kmalloc,	cls_knl_malloc
+	MACRO_SWI_ENTRY		kcalloc,	cls_knl_calloc
+	MACRO_SWI_ENTRY		kfree,		cls_knl_free
+
 /*****************************************************************************/
 
 
