@@ -30,7 +30,7 @@ _str_abort_dat:		.asciz "ERR: ABORT DAT\n\r"
 .globl _undef
 _undef:
 	PUSH	{LR}
-	BL	irq_psr_disable
+	BL	irq_cpsr_disable
 
 	LDR	R0, =_str_undef
 	BL	syscall_uputs
@@ -47,7 +47,7 @@ _undef:
 @ _abort_ins
 .globl _abort_ins
 _abort_ins:
-	BL	irq_psr_disable
+	BL	irq_cpsr_disable
 
 	LDR	R0, =_str_abort_ins
 	BL	syscall_uputs
@@ -59,7 +59,7 @@ _abort_ins:
 @ _abort_dat
 .globl _abort_dat
 _abort_dat:
-	BL	irq_psr_disable
+	BL	irq_cpsr_disable
 
 	LDR	R0, =_str_abort_dat
 	BL	syscall_uputs

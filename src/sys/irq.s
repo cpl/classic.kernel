@@ -30,20 +30,20 @@ _str_irq_exit:		.asciz	"IRQ: EXIT\n\r"
 .section .text
 
 
-@ irq_psr_enable
+@ irq_cpsr_enable
 @ Enable IRQ in current PSR mode.
-.globl irq_psr_enable
-irq_psr_enable:
+.globl irq_cpsr_enable
+irq_cpsr_enable:
 	MRS	R0, CPSR			@ Read  CPSR
 	BIC	R0, #(PSR_IRQ)			@ Clear IRQ bit to enable IRQ
 	MSR	CPSR_c, R0			@ Write CPSR
 	BX	LR				@ Return
 
 
-@ irq_psr_disable
+@ irq_cpsr_disable
 @ Enable IRQ in current PSR mode.
-.globl irq_psr_disable
-irq_psr_disable:
+.globl irq_cpsr_disable
+irq_cpsr_disable:
 	MRS	R0, CPSR			@ Read  CPSR
 	ORR	R0, #(PSR_IRQ)			@ Set IRQ bit to disable IRQ
 	MSR	CPSR_c, R0			@ Write CPSR
