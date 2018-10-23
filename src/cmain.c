@@ -58,6 +58,10 @@ void cmain(void) {
 
     sched_init();
 
+    vfb_println("_hang_main();\n\r");
+
+    while(1) {}
+
     // while(1) {
     //     vfb_reset();
     //     vfb_printf("CLK: %x\n", syscall_time());
