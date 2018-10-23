@@ -35,9 +35,9 @@ extern u8   syscall_ugetc(void);
 extern void syscall_gpio_set(u8 pin, u8 status);
 extern void syscall_gpio_sel(u8 pin, u8 cmd);
 
-extern void syscall_print(char* str);
-extern void syscall_println(char* str);
-extern void syscall_printf(char* str);
+extern void syscall_print(const char* str);
+extern void syscall_println(const char* str);
+extern void syscall_printf(const char* fmt, ...);
 
 extern void* syscall_kmalloc(u32 size);
 extern void* syscall_kcalloc(u32 size);

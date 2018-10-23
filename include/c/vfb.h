@@ -27,9 +27,4 @@ extern void vfb_scroll(void);
 extern void vfb_reset(void);
 extern void vfb_clear(void);
 
-#define print vfb_print
-#define println vfb_println
-#define printf vfb_printf
-#define printdump vfb_printdump
-
 #endif
