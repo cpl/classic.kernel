@@ -103,7 +103,7 @@ _swi_handler:
 
  _swi_end:
 	POP	{R4}				@ Restore SPSR
-	MSR	SPSR_c, R4			@
+	MSR	SPSR, R4			@
 	LDM	SP!, {R4-R5, PC}^		@ Restore registers and return
 
 
