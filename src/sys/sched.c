@@ -24,6 +24,10 @@
 #include "memutil.h"
 #include "asm.h"
 #include "mm.h"
+#include "varg.h"
+
+
+static ctx* CTX_IRQ = (ctx*)(0x2C00-0x40);
 
 
 void print_ctx(ctx* c) {
@@ -50,7 +54,7 @@ void print_ctx(ctx* c) {
 
 void _kernel();
 void _new_proc();
-
+void _third_proc();
 
 static task* CURRENT = NULL;
 
@@ -83,13 +87,37 @@ static task _KERNEL_TASK = {
     },
 };
 
-static task _NEW_TASK = {
-    PID:   1,
+// static task _NEW_TASK = {
+//     PID:   1,
+//     flags: 0,
+//     slice: 4,
+
+//     size: 0x100,
+//     entry: &_new_proc,
+
+//     prior: TASK_PRIOR_MED,
+//     state: TASK_STATE_RUNNING,
+
+//     mm_page_count: 0,
+//     mm_tables: {NULL, },
+
+//     next: &_KERNEL_TASK,
+//     context: {
+//         0,0,0,0,0,0,0,0,0,0,0,0,0,
+//         SP: 0x2000,
+//         LR: 0x0,
+//         PC: ((u32)&_new_proc)+4,
+//         CPSR: 0x0000015F,
+//     },
+// };
+
+static task _THIRD_TASK = {
+    PID:   2,
     flags: 0,
     slice: 4,
 
     size: 0x100,
-    entry: &_new_proc,
+    entry: &_third_proc,
 
     prior: TASK_PRIOR_MED,
     state: TASK_STATE_RUNNING,
@@ -102,7 +130,7 @@ static task _NEW_TASK = {
         0,0,0,0,0,0,0,0,0,0,0,0,0,
         SP: 0x2000,
         LR: 0x0,
-        PC: ((u32)&_new_proc)+4,
+        PC: ((u32)&_third_proc)+4,
         CPSR: 0x0000015F,
     },
 };
@@ -110,33 +138,33 @@ static task _NEW_TASK = {
 extern void* _KERNEL_ALOC_TAIL;
 extern void* _KERNEL_ALOC_LAST;
 
-void _new_proc() {
-    while(1) {
-        syscall_uputs("*");
+// void _new_proc() {
+//     while(1) {
+//         syscall_uputs("*");
 
-        vfb_reset();
-        vfb_printf("PID: %x\n", CURRENT->PID);
-        vfb_printf("SLICE: %x\n", _NEW_TASK.slice);
-        vfb_printf("CLK: %x\n", syscall_time());
-        vfb_printf("\nLR: %x SP: %x\n", GETLR(), GETSP());
+//         vfb_reset();
+//         vfb_printf("PID: %x\n", CURRENT->PID);
+//         vfb_printf("SLICE: %x\n", _NEW_TASK.slice);
+//         vfb_printf("CLK: %x\n", syscall_time());
+//         vfb_printf("\nLR: %x SP: %x\n", GETLR(), GETSP());
 
-        vfb_printf("MALLOC: %x %x\n", _KERNEL_ALOC_LAST, _KERNEL_ALOC_TAIL);
+//         vfb_printf("MALLOC: %x %x\n", _KERNEL_ALOC_LAST, _KERNEL_ALOC_TAIL);
 
-        vfb_printf("CTX IRQ: %x\n", CTX_IRQ);
-        syscall_uputs("*");
+//         vfb_printf("CTX IRQ: %x\n", CTX_IRQ);
+//         syscall_uputs("*");
 
-        print_ctx(CTX_IRQ);
-        syscall_uputs("*");
+//         print_ctx(CTX_IRQ);
+//         syscall_uputs("*");
 
-        print_ctx(&(_KERNEL_TASK.context));
-        syscall_uputs("*");
+//         print_ctx(&(_KERNEL_TASK.context));
+//         syscall_uputs("*");
 
-        print_ctx(&(_NEW_TASK.context));
-        syscall_uputs("*");
+//         print_ctx(&(_NEW_TASK.context));
+//         syscall_uputs("*");
 
-        syscall_uputs("\n\r");
-    }
-}
+//         syscall_uputs("\n\r");
+//     }
+// }
 
 void _kernel() {
     while(1) {
@@ -144,34 +172,61 @@ void _kernel() {
 
         vfb_reset();
         vfb_printf("PID: %x\n", CURRENT->PID);
-        vfb_printf("SLICE: %x\n", _KERNEL_TASK.slice);
-        vfb_printf("CLK: %x\n", syscall_time());
-        vfb_printf("\nLR: %x SP: %x\n", GETLR(), GETSP());
+        // vfb_printf("SLICE: %x\n", _KERNEL_TASK.slice);
+        // vfb_printf("CLK: %x\n", syscall_time());
+        // vfb_printf("\nLR: %x SP: %x\n", GETLR(), GETSP());
 
-        vfb_printf("MALLOC: %x %x\n", _KERNEL_ALOC_LAST, _KERNEL_ALOC_TAIL);
+        // vfb_printf("MALLOC: %x %x\n", _KERNEL_ALOC_LAST, _KERNEL_ALOC_TAIL);
 
-        vfb_printf("CTX IRQ: %x\n", CTX_IRQ);
+        // vfb_printf("CTX IRQ: %x\n", CTX_IRQ);
         syscall_uputs("+");
 
 
-        print_ctx(CTX_IRQ);
+        // print_ctx(CTX_IRQ);
         syscall_uputs("+");
 
-        print_ctx(&(_KERNEL_TASK.context));
+        // print_ctx(&(_KERNEL_TASK.context));
         syscall_uputs("+");
 
-        print_ctx(&(_NEW_TASK.context));
-        syscall_uputs("+");
+        // print_ctx(&(_NEW_TASK.context));
+        // syscall_uputs("+");
 
         syscall_uputs("\n\r");
     }
 }
 
 
+void multiarg(u32 a, ...) {
+    va_list vl;
+    VA_STA(vl, a);
+    VA_SKI(vl, 1);
+
+    u32 b = VA_ARG(vl, u32);
+    u32 c = VA_ARG(vl, u32);
+
+    vfb_printf("\n\n\n\nARG A: %x %x %x\n", a, b, c);
+
+
+    VA_END(vl);
+}
+
+
+
+void _third_proc() {
+    while(1){
+        vfb_reset();
+        vfb_printf("PID: %x\n", CURRENT->PID);
+        syscall_println("HELLO WORLD");
+    }
+}
+
 
 void sched_init() {
     CURRENT = &_KERNEL_TASK;
-    sched_enqueue(&(_NEW_TASK));
+
+    // sched_enqueue(&(_NEW_TASK));
+    sched_enqueue(&(_THIRD_TASK));
+
     ctx_load(&(_KERNEL_TASK.context));
 }
 

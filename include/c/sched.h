@@ -23,11 +23,6 @@
 #ifndef _INC_SCHED_H
 #define _INC_SCHED_H
 
-// CONTEXT
-
-static ctx* CTX_IRQ = (ctx*)(0x2C00-0x40);
-
-
 // TASK
 
 #define TASK_MAX_MEM 0x02000000
