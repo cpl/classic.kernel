@@ -37,16 +37,27 @@ irq_psr_enable:
 @ IRQ signal.
 .globl _irq
 _irq:
-	STMIA	SP, {LR}
-	SUB	SP, #60
-	STMIA	SP, {R0-R12}
+	SUB	SP, #0x40			@ "Allocate" space on stack
+						@ for context struct, 17 words
 
-	BL	irq_handler
+	STR	LR, [SP, #0x3C]			@ Save PC+4
+	STMIA	SP, {R0-R12}			@ Save general registers
 
-	LDMIA	SP!, {R0-R12}
-	ADD	SP, #8
-	LDMIA	SP, {LR}
-	SUBS	PC, LR, #4
+	MRS	R0, SPSR			@
+	STR	R0, [SP, #0x40]			@ Save status register
+
+	BL	irq_handler			@ Handle interrupts
+
+	LDR	R0, [SP, #0x40]			@ Load and setSPSR
+	MSR	SPSR, R0			@
+
+	LDR	LR, [SP, #0x3C]			@ Load PC+4
+	LDMIA	SP, {R0-R12}			@ Load general registers
+
+	ADD	SP, #0x40			@ Reset stack space from
+						@ context struct
+
+	SUBS	PC, LR, #4			@ Return from exception
 
 
 @ irq_handler
