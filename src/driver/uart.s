@@ -25,7 +25,7 @@
 .section .text
 
 
-@ uart_init
+@ void uart_init(void)
 @ Enables the UART receiver and transmitter on GPIO pins 14, 15
 .globl uart_init
 uart_init:
@@ -72,7 +72,7 @@ uart_init:
 	BX	LR				@ Return
 
 
-@ uart_recv -> R0
+@ u8 uart_recv(void)
 @ Receive a byte from the mini-UART interface and place it in R0.
 .globl uart_recv
 uart_recv:
@@ -88,7 +88,7 @@ uart_recv:
 	BX	LR				@ Return
 
 
-@ uart_send (byte)
+@ void uart_send (u8 val)
 @ Sends the value (R0) to the mini-UART interface.
 .globl uart_send
 uart_send:
@@ -104,7 +104,7 @@ uart_send:
 	BX	LR				@ Return
 
 
-@ uart_send_string (*str)
+@ void uart_send_string (char* str)
 @ Sends a 0 terminated string via the mini-UART interface.
 .globl uart_send_string
 uart_send_string:
@@ -120,7 +120,76 @@ uart_send_string:
 	B	_uart_send_string		@ Repeat
 
 
-@ uart_clrf
+@ void uart_send_hex(u32 val)
+.globl uart_send_hex
+uart_send_hex:
+	PUSH	{R4, LR}
+
+	MOV	R4, R0				@ Save initial value
+
+	MOV	R0, #'0'			@ Send 0x padding
+	BL	uart_send			@
+	MOV	R0, #'x'			@
+	BL	uart_send			@
+
+	LSR	R0, R4, #28			@ Print each char
+	CMP	R0, #9
+	ADDHI	R0, #0x37
+	ADDLS	R0, #0x30
+	BL	uart_send
+
+	MOV	R0, #0xF
+	AND	R0, R0, R4, LSR #24
+	CMP	R0, #9
+	ADDHI	R0, #0x37
+	ADDLS	R0, #0x30
+	BL	uart_send
+
+	MOV	R0, #0xF
+	AND	R0, R0, R4, LSR #20
+	CMP	R0, #9
+	ADDHI	R0, #0x37
+	ADDLS	R0, #0x30
+	BL	uart_send
+
+	MOV	R0, #0xF
+	AND	R0, R0, R4, LSR #16
+	CMP	R0, #9
+	ADDHI	R0, #0x37
+	ADDLS	R0, #0x30
+	BL	uart_send
+
+	MOV	R0, #0xF
+	AND	R0, R0, R4, LSR #12
+	CMP	R0, #9
+	ADDHI	R0, #0x37
+	ADDLS	R0, #0x30
+	BL	uart_send
+
+	MOV	R0, #0xF
+	AND	R0, R0, R4, LSR #8
+	CMP	R0, #9
+	ADDHI	R0, #0x37
+	ADDLS	R0, #0x30
+	BL	uart_send
+
+	MOV	R0, #0xF
+	AND	R0, R0, R4, LSR #4
+	CMP	R0, #9
+	ADDHI	R0, #0x37
+	ADDLS	R0, #0x30
+	BL	uart_send
+
+	AND	R0, R4, #0xF
+	CMP	R0, #9
+	ADDHI	R0, #0x37
+	ADDLS	R0, #0x30
+	BL	uart_send
+
+	POP	{R4, PC}
+
+
+@ void uart_clrf(void)
 @ Send line feed and carriage return to mini-UART interface.
 .globl uart_clrf
 uart_clrf:

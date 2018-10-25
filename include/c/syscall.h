@@ -22,14 +22,16 @@
 #define _INC_SYSCALL_H
 
 extern void syscall_exit(void);
-extern void syscall_fork(void);
 extern void syscall_kill(void);
+extern void syscall_spawn(void);
+extern void syscall_yield(void);
 
 extern u32  syscall_time(void);
 extern void syscall_sleep(u32 ms);
 
 extern void syscall_uputc(u8 c);
 extern void syscall_uputs(char* str);
+extern void syscall_uputx(u32 val);
 extern u8   syscall_ugetc(void);
 
 extern void syscall_gpio_set(u8 pin, u8 status);
@@ -41,6 +43,6 @@ extern void syscall_printf(const char* fmt, ...);
 
 extern void* syscall_kmalloc(u32 size);
 extern void* syscall_kcalloc(u32 size);
-extern void syscall_kfree(void* addr);
+extern void  syscall_kfree(void* addr);
 
 #endif

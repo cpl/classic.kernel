@@ -49,14 +49,16 @@ _str_swi_test:		.ascii "SWI WORKS!\n\r\0"
 _SWI_JUMP_TABLE:
 
 	MACRO_SWI_ENTRY		exit,		_swi_undefined
-	MACRO_SWI_ENTRY		fork,		_swi_undefined
 	MACRO_SWI_ENTRY		kill,		_swi_undefined
+	MACRO_SWI_ENTRY		spawn,		_swi_undefined
+	MACRO_SWI_ENTRY		yield,		_swi_undefined
 
 	MACRO_SWI_ENTRY		time,		clk_sys_epoch
 	MACRO_SWI_ENTRY		sleep,		_swi_undefined
 
 	MACRO_SWI_ENTRY		uputc,		uart_send
 	MACRO_SWI_ENTRY		uputs,		uart_send_string
+	MACRO_SWI_ENTRY		uputx,		uart_send_hex
 	MACRO_SWI_ENTRY		ugetc,		uart_recv
 
 	MACRO_SWI_ENTRY		gpio_set,	gpio_set
