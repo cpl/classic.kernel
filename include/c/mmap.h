@@ -38,14 +38,19 @@ Giving each task 8 page pointers for all 32 tables.
 #define MM_PAGE_SHIFT 12
 
 #define MM_SECT_SIZE (1<<MM_SECT_SHIFT)
+#define MM_PAGE_SIZE_MASK (MM_SECT_SIZE-1)
 #define MM_PAGE_SIZE (1<<MM_PAGE_SHIFT)
 
 #define MM_PAGES_TTL (MM_PHYS_USR/MM_PAGE_SIZE)
 #define MM_PAGES_PER_TLB 0x100
 
 #define MM_VIRT_USR_START 0x10000000
+#define MM_USR_STACK_SIZE 0x400
+#define MM_VIRT_USR_STACK (MM_VIRT_USR_START+MM_USR_STACK_SIZE)
+#define MM_VIRT_USR_BEGIN MM_VIRT_USR_STACK
 
 void* mmap_aloc_page();
 void  mmap_free_page(void* addr);
+u32   mmap_get_aloc_memory();
 
 #endif

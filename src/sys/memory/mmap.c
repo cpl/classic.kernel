@@ -17,11 +17,17 @@
 
 #include "types.h"
 #include "mmap.h"
+#include "memutil.h"
 
 
 static u8  MMAP_PHYS_PAGES[MM_PAGES_TTL] = {0,};
 static u32 MMAP_FREE_PP  = 0;
 u32 MMAP_ALOC_PAGE_COUNT = 0;
+
+
+u32 mmap_get_aloc_memory() {
+    return MMAP_ALOC_PAGE_COUNT<<MM_PAGE_SHIFT;
+}
 
 
 void* mmap_aloc_page() {
@@ -31,8 +37,12 @@ void* mmap_aloc_page() {
             MMAP_FREE_PP = index+1;
             MMAP_ALOC_PAGE_COUNT++;
 
+            memzero((void*)(MM_PHYS_KNL+(index<<MM_PAGE_SHIFT)), MM_PAGE_SIZE);
+
             return (void*)(MM_PHYS_KNL+(index<<MM_PAGE_SHIFT));
         }
+
+    // PANIC
 
     return NULL;
 }

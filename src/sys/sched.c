@@ -56,11 +56,8 @@ void _kernel();
 void _new_proc();
 void _third_proc();
 
-static task* CURRENT = NULL;
 
-// static task* CURRENT_HIG = NULL;
-// static task* CURRENT_MED = NULL;
-// static task* CURRENT_LOW = NULL;
+static task* CURRENT = NULL;
 
 
 static task _KERNEL_TASK = {
@@ -87,29 +84,29 @@ static task _KERNEL_TASK = {
     },
 };
 
-// static task _NEW_TASK = {
-//     PID:   1,
-//     flags: 0,
-//     slice: 4,
+static task _NEW_TASK = {
+    PID:   1,
+    flags: 0,
+    slice: 4,
 
-//     size: 0x100,
-//     entry: &_new_proc,
+    size: 0x100,
+    entry: &_new_proc,
 
-//     prior: TASK_PRIOR_MED,
-//     state: TASK_STATE_RUNNING,
+    prior: TASK_PRIOR_MED,
+    state: TASK_STATE_RUNNING,
 
-//     mm_page_count: 0,
-//     mm_tables: {NULL, },
+    mm_page_count: 0,
+    mm_tables: {NULL, },
 
-//     next: &_KERNEL_TASK,
-//     context: {
-//         0,0,0,0,0,0,0,0,0,0,0,0,0,
-//         SP: 0x2000,
-//         LR: 0x0,
-//         PC: ((u32)&_new_proc)+4,
-//         CPSR: 0x0000015F,
-//     },
-// };
+    next: &_KERNEL_TASK,
+    context: {
+        0,0,0,0,0,0,0,0,0,0,0,0,0,
+        SP: 0x2000,
+        LR: 0x0,
+        PC: ((u32)&_new_proc)+4,
+        CPSR: 0x0000015F,
+    },
+};
 
 static task _THIRD_TASK = {
     PID:   2,
@@ -138,33 +135,27 @@ static task _THIRD_TASK = {
 extern void* _KERNEL_ALOC_TAIL;
 extern void* _KERNEL_ALOC_LAST;
 
-// void _new_proc() {
-//     while(1) {
-//         syscall_uputs("*");
+void _new_proc() {
+    while(1) {
+        syscall_uputs("*");
 
-//         vfb_reset();
-//         vfb_printf("PID: %x\n", CURRENT->PID);
-//         vfb_printf("SLICE: %x\n", _NEW_TASK.slice);
-//         vfb_printf("CLK: %x\n", syscall_time());
-//         vfb_printf("\nLR: %x SP: %x\n", GETLR(), GETSP());
+        vfb_reset();
+        vfb_printf("PID: %x\n", CURRENT->PID);
+        vfb_printf("SLICE: %x\n", _NEW_TASK.slice);
+        vfb_printf("CLK: %x\n", syscall_time());
+        vfb_printf("\nLR: %x SP: %x\n", GETLR(), GETSP());
+        vfb_printf("MALLOC: %x %x\n", _KERNEL_ALOC_LAST, _KERNEL_ALOC_TAIL);
+        vfb_printf("CTX IRQ: %x\n", CTX_IRQ);
+        vfb_printf("MM: %x\n", mmap_get_aloc_memory());
 
-//         vfb_printf("MALLOC: %x %x\n", _KERNEL_ALOC_LAST, _KERNEL_ALOC_TAIL);
+        syscall_uputs("*");
+        syscall_uputs("*");
+        syscall_uputs("*");
+        syscall_uputs("*");
 
-//         vfb_printf("CTX IRQ: %x\n", CTX_IRQ);
-//         syscall_uputs("*");
-
-//         print_ctx(CTX_IRQ);
-//         syscall_uputs("*");
-
-//         print_ctx(&(_KERNEL_TASK.context));
-//         syscall_uputs("*");
-
-//         print_ctx(&(_NEW_TASK.context));
-//         syscall_uputs("*");
-
-//         syscall_uputs("\n\r");
-//     }
-// }
+        syscall_uputs("\n\r");
+    }
+}
 
 void _kernel() {
     while(1) {
@@ -172,24 +163,17 @@ void _kernel() {
 
         vfb_reset();
         vfb_printf("PID: %x\n", CURRENT->PID);
-        // vfb_printf("SLICE: %x\n", _KERNEL_TASK.slice);
-        // vfb_printf("CLK: %x\n", syscall_time());
-        // vfb_printf("\nLR: %x SP: %x\n", GETLR(), GETSP());
+        vfb_printf("SLICE: %x\n", _KERNEL_TASK.slice);
+        vfb_printf("CLK: %x\n", syscall_time());
+        vfb_printf("\nLR: %x SP: %x\n", GETLR(), GETSP());
+        vfb_printf("MALLOC: %x %x\n", _KERNEL_ALOC_LAST, _KERNEL_ALOC_TAIL);
+        vfb_printf("CTX IRQ: %x\n", CTX_IRQ);
+        vfb_printf("MM: %x\n", mmap_get_aloc_memory());
 
-        // vfb_printf("MALLOC: %x %x\n", _KERNEL_ALOC_LAST, _KERNEL_ALOC_TAIL);
-
-        // vfb_printf("CTX IRQ: %x\n", CTX_IRQ);
         syscall_uputs("+");
-
-
-        // print_ctx(CTX_IRQ);
         syscall_uputs("+");
-
-        // print_ctx(&(_KERNEL_TASK.context));
         syscall_uputs("+");
-
-        // print_ctx(&(_NEW_TASK.context));
-        // syscall_uputs("+");
+        syscall_uputs("+");
 
         syscall_uputs("\n\r");
     }
@@ -224,8 +208,8 @@ void _third_proc() {
 void sched_init() {
     CURRENT = &_KERNEL_TASK;
 
-    // sched_enqueue(&(_NEW_TASK));
-    sched_enqueue(&(_THIRD_TASK));
+    sched_enqueue(&(_NEW_TASK));
+    // sched_enqueue(&(_THIRD_TASK));
 
     ctx_load(&(_KERNEL_TASK.context));
 }
@@ -246,9 +230,12 @@ void sched_enqueue(register task* new) {
 
 
 void sched_tick() {
-    syscall_uputs("SCHED TICK\n\r");
+    // syscall_uputs("SCHED TICK\n\r");
 
-    if(--(CURRENT->slice)) {
+    if(CURRENT == NULL)
+        return;
+
+    if( --(CURRENT->slice)) {
         syscall_uputs("--;\n\r");
         return;
     }
@@ -282,10 +269,9 @@ void sched_next() {
     CURRENT = next;
 
     // Update memory maps
-    // task_mm_set(next);
+    task_mm_set(next);
 
     syscall_uputs("SCHED CONTEXT SWITCH\n\r");
-
 
     memcopy(CTX_IRQ, sizeof(ctx), &(prev -> context));
     syscall_uputs("OK\n\r");
@@ -302,7 +288,64 @@ void sched_next() {
 
 void task_mm_set(task* t) {
     for(u8 index = 0; index < TASK_MM_TLBS; index++)
-        mmu_coarse(
-            (void*)(MM_VIRT_USR_START+(index<<MM_SECT_SHIFT)),
-            t -> mm_tables[index]);
+        for(u8 tindex = 0x0; tindex < 0x1000; tindex+=0x400)
+            mmu_coarse(
+                (void*)(MM_VIRT_USR_START+(index<<MM_SECT_SHIFT)),
+                t -> mm_tables[index]+tindex);
+}
+
+
+void task_mm_add(task* t, u32 page_count) {
+
+    // Optimie frequent variables
+    register void** mm_tables = t -> mm_tables;
+    register u16    mm_page_count = t -> mm_page_count;
+
+    // Allocate coarse tables for task, within the needed range
+    for(register u8 tindex = 0; tindex <= (mm_page_count + page_count)>>10; tindex++)
+        if(mm_tables[tindex] == NULL)
+            mm_tables[tindex] = mmap_aloc_page();
+
+    // Allocate requested pages in the coarse table and page handler
+    for(register u16 pindex = mm_page_count; pindex < (mm_page_count + page_count); pindex++)
+        mmu_page((void*)MM_VIRT_USR_START, mmap_aloc_page(), 0xFF0, mm_tables[pindex>>10]);
+}
+
+
+void task_free(task* t) {
+
+}
+
+
+void sched_spawn(void* entry, u32 size, u16 flags, task_prior prior) {
+    register task* new = mmap_aloc_page();
+
+    syscall_uputs("S: ");
+    syscall_uputx(size);
+    uart_clrf();
+
+    size += MM_USR_STACK_SIZE;
+    size += ((MM_PAGE_SIZE - (size & MM_PAGE_SIZE_MASK)) & MM_PAGE_SIZE_MASK);
+
+    if(size > TASK_MAX_MEM)
+        size = TASK_MAX_MEM;
+
+    new -> size = size;
+    syscall_uputs("S: ");
+    syscall_uputx(size);
+    uart_clrf();
+
+
+    new -> PID = 5;
+
+    new -> flags = flags;
+    new -> prior = prior;
+
+    new -> entry = (void*)MM_VIRT_USR_BEGIN;
+
+    new -> context.PC = MM_VIRT_USR_BEGIN;
+    new -> context.SP = MM_VIRT_USR_STACK;
+    new -> context.CPSR = 0x0000015F;
+
+    task_mm_add(new, size>>MM_PAGE_SHIFT);
 }

@@ -39,26 +39,28 @@ void _memdump(void* ptr, u32 len) {
 
 extern void _hang(void);
 
+
+void _nothing() {
+    while(1) {
+        syscall_uputs("_nothing();\n\r");
+    }
+}
+
+
 void cmain(void) {
-    // ctx my_context;
-    // ctx new;
 
-    // my_context.R0 = 0x100;
-    // my_context.R1 = 0x200;
-    // my_context.R2 = 0x300;
+    syscall_uputx(0xDEADBEEF);
+    uart_clrf();
 
-    // ctx_save(&my_context);
-    // my_context.R0 = 0x500;
-    // my_context.PC = (u32)&_hang;
+    syscall_uputx(syscall_time()); uart_clrf();
+    sched_spawn(&_nothing, 0xA37F, 0, TASK_PRIOR_MED);
+    syscall_uputx(syscall_time()); uart_clrf();
+    syscall_uputx(mmap_get_aloc_memory()); uart_clrf();
 
-    // new = my_context;
-
-
-    // ctx_load(&my_context);
-
-    sched_init();
+    // sched_init();
 
     vfb_println("_hang_main();\n\r");
+    _memdump((void*)0x10000000, 0x30);
 
     while(1) {}
 

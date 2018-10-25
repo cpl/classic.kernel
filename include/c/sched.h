@@ -26,7 +26,8 @@
 // TASK
 
 #define TASK_MAX_MEM 0x02000000
-#define TASK_MM_TLBS (TASK_MAX_MEM/MM_PAGE_SIZE)/MM_PAGES_PER_TLB
+// #define TASK_MM_TLBS ((TASK_MAX_MEM/MM_PAGE_SIZE)/MM_PAGES_PER_TLB)
+#define TASK_MM_TLBS 8
 
 
 typedef enum task_state {
@@ -58,7 +59,7 @@ typedef struct task {
     task_prior    prior;
     task_state    state;
 
-    u32   mm_page_count;
+    u16   mm_page_count;
     void* mm_tables[TASK_MM_TLBS];
 
 
@@ -76,5 +77,6 @@ void sched_tick(void);
 void sched_init(void);
 
 void sched_printproc(void);
+void sched_spawn(void* entry, u32 size, u16 flags, task_prior prior);
 
 #endif
