@@ -53,11 +53,13 @@ void cmain(void) {
     uart_clrf();
 
     syscall_uputx(syscall_time()); uart_clrf();
-    sched_spawn(&_nothing, 0xA37F, 0, TASK_PRIOR_MED);
+
+    // sched_spawn(&_nothing, 0xA37F, 0, TASK_PRIOR_MED);
+
     syscall_uputx(syscall_time()); uart_clrf();
     syscall_uputx(mmap_get_aloc_memory()); uart_clrf();
 
-    // sched_init();
+    sched_init();
 
     vfb_println("_hang_main();\n\r");
     _memdump((void*)0x10000000, 0x30);

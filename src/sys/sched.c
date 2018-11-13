@@ -28,6 +28,7 @@
 
 
 static ctx* CTX_IRQ = (ctx*)(0x2C00-0x40);
+static task* CURRENT = NULL;
 
 
 void print_ctx(ctx* c) {
@@ -55,10 +56,6 @@ void print_ctx(ctx* c) {
 void _kernel();
 void _new_proc();
 void _third_proc();
-
-
-static task* CURRENT = NULL;
-
 
 static task _KERNEL_TASK = {
     PID:   0,
@@ -206,12 +203,12 @@ void _third_proc() {
 
 
 void sched_init() {
-    CURRENT = &_KERNEL_TASK;
+    CURRENT = &_THIRD_TASK;
 
-    sched_enqueue(&(_NEW_TASK));
+    // sched_enqueue(&(_NEW_TASK));
     // sched_enqueue(&(_THIRD_TASK));
 
-    ctx_load(&(_KERNEL_TASK.context));
+    ctx_load(&(CURRENT -> context));
 }
 
 
@@ -230,7 +227,7 @@ void sched_enqueue(register task* new) {
 
 
 void sched_tick() {
-    // syscall_uputs("SCHED TICK\n\r");
+    syscall_uputs("SCHED TICK\n\r");
 
     if(CURRENT == NULL)
         return;
