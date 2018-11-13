@@ -15,45 +15,40 @@
 */
 
 
-.section .rodata
+#include "sched.h"
+#include "syscall.h"
 
 
-_str_undef:		.asciz " ERR: UNDEF INS\n\r"
-_str_abort_ins:		.asciz " ERR: ABORT INS\n\r"
-_str_abort_dat:		.asciz " ERR: ABORT DAT\n\r"
+void _kernel();
 
 
-.section .text
+task _KERNEL_TASK = {
+    PID:   0,
+    slice: 4,
+    flags: 0,
+
+    size: 0x100,
+    entry: &_kernel,
+
+    prior: TASK_PRIOR_LOW,
+    state: TASK_STATE_RUNNING,
+
+    mm_page_count: 0,
+    mm_tables: {NULL},
+
+    next: &_KERNEL_TASK,
+    context: {
+        0,0,0,0,0,0,0,0,0,0,0,0,0,
+        SP: 0x1800,
+        LR: 0x0,
+        PC: ((u32)&_kernel),
+        CPSR: 0x0000015F,
+    },
+};
 
 
-@ _undef
-.globl _undef
-_undef:
-	LDR	R0, =_str_undef
-	BL	syscall_uputs
-
-	B	_hang
-	@ MOVS	PC, LR			@ Return
-
-
-@ _abort_ins
-.globl _abort_ins
-_abort_ins:
-	LDR	R0, =_str_abort_ins
-	BL	syscall_uputs
-
-	B	_hang
-	@ MOVS	PC, LR			@ Return
-
-
-@ _abort_dat
-.globl _abort_dat
-_abort_dat:
-	MOV	R0, LR
-	BL	syscall_uputx
-
-	LDR	R0, =_str_abort_dat
-	BL	syscall_uputs
-
-	B	_hang
-	@ SUBS	PC, LR, #4		@ Return
+void _kernel() {
+    while(1) {
+        syscall_uputs("_kernel()\n\r");
+    }
+}

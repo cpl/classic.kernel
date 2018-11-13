@@ -34,9 +34,10 @@ typedef enum task_state {
     TASK_STATE_RUNNING,
     TASK_STATE_READY,
     TASK_STATE_ZOMBIE,
-    TASK_STATE_IDLE,
+    TASK_STATE_SLEEPING,
+    TASK_STATE_BLOCKED,
 
-    TASK_STATE_COUNT = 4,
+    TASK_STATE_COUNT = 5,
 } task_state;
 
 typedef enum task_prior {
@@ -54,7 +55,7 @@ typedef struct task {
     u16           flags;
 
     u32           size;
-    void*         entry;
+    void(*entry)(void);
 
     task_prior    prior;
     task_state    state;

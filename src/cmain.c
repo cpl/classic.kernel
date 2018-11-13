@@ -37,8 +37,6 @@ void _memdump(void* ptr, u32 len) {
     syscall_kfree(bufr);
 }
 
-extern void _hang(void);
-
 
 void _nothing() {
     while(1) {
@@ -49,25 +47,21 @@ void _nothing() {
 
 void cmain(void) {
 
+    // DEADBEEF on entry
     syscall_uputx(0xDEADBEEF);
     uart_clrf();
 
-    syscall_uputx(syscall_time()); uart_clrf();
-
+    // ! DEBUG sched spawn performance
+    // syscall_uputx(syscall_time()); uart_clrf();
     // sched_spawn(&_nothing, 0xA37F, 0, TASK_PRIOR_MED);
+    // syscall_uputx(syscall_time()); uart_clrf();
+    // syscall_uputx(mmap_get_aloc_memory()); uart_clrf();
 
-    syscall_uputx(syscall_time()); uart_clrf();
-    syscall_uputx(mmap_get_aloc_memory()); uart_clrf();
-
+    // Pass execution control to scheduler
     sched_init();
 
-    vfb_println("_hang_main();\n\r");
-    _memdump((void*)0x10000000, 0x30);
-
-    while(1) {}
-
-    // while(1) {
-    //     vfb_reset();
-    //     vfb_printf("CLK: %x\n", syscall_time());
-    // }
+    // Catch
+    syscall_uputs("_hang_main();\n\r");
+    while(1);
+    // _nothing();
 }
