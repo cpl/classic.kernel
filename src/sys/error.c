@@ -14,21 +14,32 @@
    limitations under the License.
 */
 
-/* stach.h - Stack operations and constants
 
-*/
+#include "error.h"
+#include "stack.h"
+#include "asm.h"
+#include "bool.h"
+#include "syscall.h"
 
 
-#ifndef _INC_STACK_H
-#define _INC_STACK_H
+void _panic(const char* msg) {
+    // Print error message
+    syscall_uputs("\n\r\n\rPANIC: ");
+    syscall_uputs(msg);
+    syscall_uputs("\n\r");
 
-#include "types.h"
+    // Print LR
+    syscall_uputs("LR: ");
+    syscall_uputx(GETLR());
+    syscall_uputs("\n\r");
 
-#define _STACK_SYS 0x3C00
-#define _STACK_SVC 0x2400
-#define _STACK_ABT 0x2800
-#define _STACK_IRQ 0x2C00
+    // Print SYS stack
+    stack_dump(_STACK_SYS, _STACK_SYS-0x40);
 
-void stack_dump(void* addr, u32 SP);
+    // Print SVC stack
+    stack_dump(_STACK_SVC, _STACK_SVC-0x40);
 
-#endif
+    // HANG
+    syscall_uputs("HANG\n\r");
+    while(TRUE){};
+}

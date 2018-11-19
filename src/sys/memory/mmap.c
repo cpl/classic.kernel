@@ -18,6 +18,7 @@
 #include "types.h"
 #include "mmap.h"
 #include "memutil.h"
+#include "error.h"
 
 
 static u8  MMAP_PHYS_PAGES[MM_PAGES_TTL] = {0,};
@@ -42,7 +43,7 @@ void* mmap_aloc_page() {
             return (void*)(MM_PHYS_KNL+(index<<MM_PAGE_SHIFT));
         }
 
-    // PANIC
+    _panic("mmap_aloc_page() failed to find free page.");
 
     return NULL;
 }

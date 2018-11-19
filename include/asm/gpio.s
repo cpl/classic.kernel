@@ -18,6 +18,9 @@
 .set	MAX_GPIO_PIN,	53
 .set	MAX_GPIO_CMD,	7
 
+.set	GPIO_ON,	1
+.set	GPIO_OFF,	0
+
 .set	GPIO_ACT,	47
 .set	GPIO_RX,	14
 .set	GPIO_TX,	15

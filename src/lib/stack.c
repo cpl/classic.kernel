@@ -14,21 +14,26 @@
    limitations under the License.
 */
 
-/* stach.h - Stack operations and constants
 
-*/
+#include "stack.h"
+#include "uart.h"
+#include "syscall.h"
 
 
-#ifndef _INC_STACK_H
-#define _INC_STACK_H
+void stack_dump(void* addr, u32 SP) {
+    syscall_uputs("STACK DUMP\n\r\n\r");
 
-#include "types.h"
+    u32* p = (u32*)addr;
 
-#define _STACK_SYS 0x3C00
-#define _STACK_SVC 0x2400
-#define _STACK_ABT 0x2800
-#define _STACK_IRQ 0x2C00
+    syscall_uputs("STACK: "); syscall_uputx((u32)p); syscall_uputs("\n\r");
+    syscall_uputs("SP:    "); syscall_uputx(SP); syscall_uputs("\n\r\n\r");
 
-void stack_dump(void* addr, u32 SP);
+    while((u32)p >= SP) {
+        syscall_uputx((u32)(p)); syscall_uputs(" : "); syscall_uputx(*p);
+        syscall_uputs("\n\r");
+        p--;
+    }
 
-#endif
+    syscall_uputs("\n\r");
+}
+

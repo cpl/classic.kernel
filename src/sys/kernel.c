@@ -17,6 +17,8 @@
 
 #include "sched.h"
 #include "syscall.h"
+#include "stack.h"
+#include "asm.h"
 
 
 void _kernel();
@@ -48,8 +50,9 @@ task _KERNEL_TASK = {
 
 
 void _kernel() {
-    syscall_uputs("KERNEL INIT!\n\r");
+    syscall_uputs("_kernel()!\n\r");
+
     while(1) {
-        syscall_uputs(".");
+        // syscall_uputs(".");
     }
 }
