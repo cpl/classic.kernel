@@ -14,18 +14,15 @@
    limitations under the License.
 */
 
-/* mmu.h - Memory Management Unit
+/* stach.h - Stack operations and constants
 
 */
 
 
-#ifndef _INC_MMU_H
-#define _INC_MMU_H
+#ifndef _INC_STACK_H
+#define _INC_STACK_H
 
-#include "types.h"
 
-void mmu_invalidate_tlb(void);
-void mmu_coarse(void* virt_addr, void* mmu_base);
-void mmu_page(void* virt_addr, void* phys_addr, u32 flags, void* mmu_base);
+
 
 #endif

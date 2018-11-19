@@ -15,13 +15,12 @@
 */
 
 
+#ifndef _INC_SCHED_H
+#define _INC_SCHED_H
+
 #include "types.h"
 #include "ctx.h"
 #include "mmap.h"
-
-
-#ifndef _INC_SCHED_H
-#define _INC_SCHED_H
 
 // TASK
 

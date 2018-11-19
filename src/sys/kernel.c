@@ -48,7 +48,8 @@ task _KERNEL_TASK = {
 
 
 void _kernel() {
+    syscall_uputs("KERNEL INIT!\n\r");
     while(1) {
-        syscall_uputs("_kernel()\n\r");
+        syscall_uputs(".");
     }
 }

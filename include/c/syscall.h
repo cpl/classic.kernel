@@ -15,11 +15,10 @@
 */
 
 
-#include "types.h"
-
-
 #ifndef _INC_SYSCALL_H
 #define _INC_SYSCALL_H
+
+#include "types.h"
 
 extern void syscall_exit(void);
 extern void syscall_kill(void);
