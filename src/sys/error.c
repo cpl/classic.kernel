@@ -16,13 +16,14 @@
 
 
 #include "error.h"
+
 #include "stack.h"
 #include "asm.h"
 #include "bool.h"
 #include "syscall.h"
 
 
-void _panic(const char* msg) {
+void _panic(char* msg) {
     // Print error message
     syscall_uputs("\n\r\n\rPANIC: ");
     syscall_uputs(msg);
@@ -34,10 +35,10 @@ void _panic(const char* msg) {
     syscall_uputs("\n\r");
 
     // Print SYS stack
-    stack_dump(_STACK_SYS, _STACK_SYS-0x40);
+    stack_dump((void*)_STACK_SYS, _STACK_SYS-0x40);
 
     // Print SVC stack
-    stack_dump(_STACK_SVC, _STACK_SVC-0x40);
+    stack_dump((void*)_STACK_SVC, _STACK_SVC-0x40);
 
     // HANG
     syscall_uputs("HANG\n\r");

@@ -19,6 +19,7 @@
 #include "syscall.h"
 #include "stack.h"
 #include "asm.h"
+#include "error.h"
 
 
 void _kernel();
@@ -51,6 +52,7 @@ task _KERNEL_TASK = {
 
 void _kernel() {
     syscall_uputs("_kernel()!\n\r");
+    _panic("kernel panic test");
 
     while(1) {
         // syscall_uputs(".");
