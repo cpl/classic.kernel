@@ -32,6 +32,7 @@ extern void syscall_uputc(u8 c);
 extern void syscall_uputs(char* str);
 extern void syscall_uputx(u32 val);
 extern u8   syscall_ugetc(void);
+extern void syscall_uputnl(void);
 
 extern void syscall_gpio_set(u8 pin, u8 status);
 extern void syscall_gpio_sel(u8 pin, u8 cmd);

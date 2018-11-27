@@ -60,6 +60,7 @@ _SWI_JUMP_TABLE:
 	MACRO_SWI_ENTRY		uputs,		uart_send_string
 	MACRO_SWI_ENTRY		uputx,		uart_send_hex
 	MACRO_SWI_ENTRY		ugetc,		uart_recv
+	MACRO_SWI_ENTRY		uputnl,		uart_clrf
 
 	MACRO_SWI_ENTRY		gpio_set,	gpio_set
 	MACRO_SWI_ENTRY		gpio_sel,	gpio_fsel

@@ -76,7 +76,6 @@ void sched_next(void);
 void sched_tick(void);
 void sched_init(void);
 
-void sched_printproc(void);
-void sched_spawn(void* entry, u32 size, u16 flags, task_prior prior);
+task* sched_spawn(void* entry, u32 size, u16 flags, task_prior prior);
 
 #endif
