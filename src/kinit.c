@@ -18,32 +18,20 @@
 #include "types.h"
 #include "sched.h"
 #include "syscall.h"
-
-
-void _nothing(void) {
-    while(1) {
-        syscall_uputs("2");
-    }
-}
-
-void _andanotherone(void) {
-    while(1) {
-        syscall_uputs("3");
-    }
-}
+#include "error.h"
 
 
 void _kinit(void) {
     // DEADBEEF on entry
     syscall_uputx(0xDEADBEEF); syscall_uputnl();
 
-    // sched_enqueue(sched_spawn(&_nothing, 0xA37F, 0, TASK_PRIOR_MED));
-    // sched_enqueue(sched_spawn(&_andanotherone, 0x100, 0, TASK_PRIOR_LOW));
+
+    // Queue initial tasks
+
 
     // Pass execution control to scheduler
     sched_init();
 
     // Catch
-    syscall_uputs("_hang_main();\n\r");
-    while(1);
+    _panic("catch kernel ilegal exit");
 }

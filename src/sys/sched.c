@@ -63,6 +63,7 @@ u16 prior_to_slice[TASK_PRIOR_COUNT] = {
 
 // Initialize kernel task for idle state
 void sched_init() {
+    syscall_println("   SCHEDULER START: OK");
     CURRENT -> entry();
 }
 
