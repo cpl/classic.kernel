@@ -23,53 +23,68 @@
 #include "memutil.h"
 #include "asm.h"
 #include "mm.h"
+#include "error.h"
 
 
 // Location of context saved by interrupt exception
 static ctx* CTX_IRQ = (ctx*)(0x2C00-0x40);
 
-// Current executed task
-static task* CURRENT = NULL;
+// Kernel main task
+extern task _KERNEL_TASK;
 
-// Task lists
-static task* _TASK_LOW = NULL;
-static task* _TASK_MED = NULL;
-static task* _TASK_HIG = NULL;
+// Current executed task
+static task* CURRENT = &_KERNEL_TASK;
+
+
+// TODO Upgrade scheduler task list/queue to support multi-priority execution
+// static task* _TASK_LOW = NULL;
+// static task* _TASK_MED = NULL;
+// static task* _TASK_HIG = NULL;
 
 // Sleeping queue
-static task* _TASK_SLEEPING = NULL;
+// static task* _TASK_SLEEPING = NULL;
 
 
 // List of task quantum size based on priority
 u16 prior_to_slice[TASK_PRIOR_COUNT] = {
     [TASK_PRIOR_LOW] = 0x1,
-    [TASK_PRIOR_MED] = 0x5,
-    [TASK_PRIOR_HIG] = 0xA,
+    [TASK_PRIOR_MED] = 0x2,
+    [TASK_PRIOR_HIG] = 0x3,
 };
 
+// TODO Upgrade scheduler task list/queue to support multi-priority execution
+// Pointers to task priority lists based on task priority
+// task** prior_to_list[TASK_PRIOR_COUNT] = {
+//     [TASK_PRIOR_LOW] = &_TASK_LOW,
+//     [TASK_PRIOR_MED] = &_TASK_MED,
+//     [TASK_PRIOR_HIG] = &_TASK_HIG,
+// };
+
+
 // Initialize kernel task for idle state
-extern task _KERNEL_TASK;
 void sched_init() {
-    CURRENT = &_KERNEL_TASK;
     CURRENT -> entry();
 }
 
 
 void sched_enqueue(register task* new) {
-    new     -> next  = CURRENT -> next;
-    CURRENT -> next  = new;
-    new     -> slice = prior_to_slice[new -> prior];
+    // Include new task as the next READY task
+    // making sure it gets acknowledged and
+    // gets executed on the next cycle
+    new -> state = TASK_STATE_READY;
+    new -> next = CURRENT -> next;
+    CURRENT -> next = new;
 }
 
 
 void sched_tick() {
 
-    // Ignore
+    // If no running task, panic
     if(CURRENT == NULL)
-        return;
+        _panic("no active running task");
 
     // Decrement current time slice
-    if( --(CURRENT->slice))
+    if(--(CURRENT->slice))
         return;
 
     // Update time slice for executed task
@@ -82,18 +97,36 @@ void sched_tick() {
 
 void sched_next() {
 
-    // Scan for next task
     register task* next = CURRENT -> next;
+
+    // Skip schedueling the same task again
     if(next == CURRENT)
         return;
 
-    // Save ref to previous
+    // Skip kernel task if other tasks are in the list
+    if(next == &_KERNEL_TASK && _KERNEL_TASK.next != &_KERNEL_TASK)
+        next = _KERNEL_TASK.next;
+
+    // Save ref to previous task
     task* prev = CURRENT;
 
     // Skip non-running tasks
-    while(next -> state != TASK_STATE_RUNNING)
+    while(next -> state != TASK_STATE_RUNNING) {
+        // Prepare ready tasks for running
+        if(next -> state == TASK_STATE_READY) {
+            next -> state = TASK_STATE_RUNNING;
+            next -> slice = prior_to_slice[next -> prior];
+        }
+
+        // Skip
         next = next -> next;
 
+        // Return if nothing new to be run
+        if(next == prev)
+            return;
+    }
+
+    // Assign next task to run
     CURRENT = next;
 
     // Update memory maps
@@ -137,12 +170,8 @@ void task_free(task* t) {
 }
 
 
-void sched_spawn(void* entry, u32 size, u16 flags, task_prior prior) {
+task* sched_spawn(void* entry, u32 size, u16 flags, task_prior prior) {
     register task* new = mmap_aloc_page();
-
-    syscall_uputs("S: ");
-    syscall_uputx(size);
-    uart_clrf();
 
     size += MM_USR_STACK_SIZE;
     size += ((MM_PAGE_SIZE - (size & MM_PAGE_SIZE_MASK)) & MM_PAGE_SIZE_MASK);
@@ -151,21 +180,21 @@ void sched_spawn(void* entry, u32 size, u16 flags, task_prior prior) {
         size = TASK_MAX_MEM;
 
     new -> size = size;
-    syscall_uputs("S: ");
-    syscall_uputx(size);
-    uart_clrf();
-
-
     new -> PID = 5;
 
     new -> flags = flags;
     new -> prior = prior;
+    new -> state = TASK_STATE_READY;
 
-    new -> entry = (void*)MM_VIRT_USR_BEGIN;
+    new -> entry = entry;
+    // new -> entry = (void*)MM_VIRT_USR_BEGIN;
+    memcopy(entry, size, new -> entry);
 
-    new -> context.PC = MM_VIRT_USR_BEGIN;
+    new -> context.PC = (u32)(entry);
     new -> context.SP = MM_VIRT_USR_STACK;
     new -> context.CPSR = 0x0000015F;
 
     task_mm_add(new, size>>MM_PAGE_SHIFT);
+
+    return new;
 }

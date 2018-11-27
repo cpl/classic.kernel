@@ -27,7 +27,7 @@ void _kernel();
 
 task _KERNEL_TASK = {
     PID:   0,
-    slice: 4,
+    slice: 1,
     flags: 0,
 
     size: 0x100,
@@ -51,10 +51,8 @@ task _KERNEL_TASK = {
 
 
 void _kernel() {
-    syscall_uputs("_kernel()!\n\r");
-    _panic("kernel panic test");
 
-    while(1) {
-        // syscall_uputs(".");
-    }
+    syscall_uputs("_kernel();\n\r");
+
+    while(1){};
 }
