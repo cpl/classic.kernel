@@ -28,11 +28,12 @@
 	.section .rodata
 	.word	\CALL_FUNC
 
-	.section .text
+	.section .text.usr
 	.globl   syscall_\OP_NAME
 	syscall_\OP_NAME:
 		SWI	sys_\OP_NAME
 		BX	LR
+	.section .text
 .endm
 
 

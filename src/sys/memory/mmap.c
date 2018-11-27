@@ -23,7 +23,7 @@
 
 static u8  MMAP_PHYS_PAGES[MM_PAGES_TTL] = {0,};
 static u32 MMAP_FREE_PP  = 0;
-u32 MMAP_ALOC_PAGE_COUNT = 0;
+static u32 MMAP_ALOC_PAGE_COUNT = 0;
 
 
 u32 mmap_get_aloc_memory() {

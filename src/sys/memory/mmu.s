@@ -171,6 +171,10 @@ mmu_setup:
 	LDR	R2, =(VMSA_AP_RW_XX)		@
 	BL	mmu_section			@
 
+	@ LDR	R0, =0x00100000			@ Mark user libraries section
+	@ MOV	R1, R0				@ as RW for system and read
+	@ LDR	R2, =(VMSA_AP_RW_RX)		@ only for users
+
 	POP	{R4-R5, PC}			@ Return
 
 
