@@ -1,19 +1,27 @@
 # Classic Kernel
 
-## Description
+## Schematics
 
-## Structure
+### Memory
 
-## Build Instructions
+![Memory](schematics/cls.mmu.svg)
 
-## System Calls
+### Malloc
 
-## Frame-buffer
+![Malloc](schematics/cls.malloc.svg)
 
-## Scheduler
+### Context
 
-## Memory Management
+![Context](schematics/context.svg)
 
-## File System
+### Kernel Structure v0.1
 
-## Drivers
+![Kernel Structure](schematics/kernel-structure.svg)
+
+### Memutils
+
+![Memutils](schematics/memutils.svg)
+
+### Stack
+
+![Stack](schematics/stack.svg)
