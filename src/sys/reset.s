@@ -16,6 +16,7 @@
 
 
 .include "asm/psr.s"
+.include "asm/gpio.s"
 
 
 .section .init
@@ -28,12 +29,12 @@ _reset:
 	LDR	R1, =_start_end			@ to 0x0000 where the ARM CPU
 	SUB	R1, R1, R0			@ expects them to be after a
 	MOV	R2, #0				@ restart. On the first run the
-	BL	memcopy				@ GPU enters at 0x8000 (_start)
+	BL	kmemcopy			@ GPU enters at 0x8000 (_start)
 
 	LDR	R0, =_bss_start			@ Zero BSS memory zone
 	LDR	R1, =_bss_end			@
 	SUB	R1, R1, R0			@
-	BL	memzero				@
+	BL	kmemzero			@
 
 	@ MOV	R1, #0x80000000			@ Stack pointers storage
 	MOV	R1, #0				@
@@ -55,6 +56,14 @@ _reset:
 	ADD	SP, R1, #0x3C00				@ Set stack to 0x3C00
 
 							@ Stay in SYS MODE
+
+	@ TODO Move clslib init to later in sys_init
+	LDR	R0, =_USR_LOAD				@ Load clslib from
+	LDR	R1, =_USR_SIZE				@ its load address
+	LDR	R2, =0x1000000				@ to user space
+	BL	kmemcopy
+
+	@ TODO Move cls_knl mm to kernel space instead of clslib
 
 	BL	cls_knl_heap_init			@ Initialize knl heap
 	@ BL	csudUsbInitialise			@ Initialize CSUD USB
