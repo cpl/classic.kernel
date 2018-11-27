@@ -16,46 +16,29 @@
 
 
 #include "types.h"
-#include "vfb.h"
-#include "conv.h"
-#include "mm.h"
-#include "uart.h"
 #include "sched.h"
 #include "syscall.h"
 
 
-void _memdump(void* ptr, u32 len) {
-    u32* p = (u32*)ptr;
-    void* bufr = syscall_kmalloc(0x40);
-
-    while(len-- > 0) {
-        conv_hex_str(bufr, (u32) p); vfb_print(bufr); vfb_print(" : ");
-        conv_hex_str(bufr, (u32)*p); vfb_println(bufr);
-        p++;
-    }
-
-    syscall_kfree(bufr);
-}
-
-
-void _nothing() {
+void _nothing(void) {
     while(1) {
-        syscall_uputs("_nothing();\n\r");
+        syscall_uputs("2");
+    }
+}
+
+void _andanotherone(void) {
+    while(1) {
+        syscall_uputs("3");
     }
 }
 
 
-void cmain(void) {
-
+void _kinit(void) {
     // DEADBEEF on entry
-    syscall_uputx(0xDEADBEEF);
-    uart_clrf();
+    syscall_uputx(0xDEADBEEF); syscall_uputnl();
 
-    // ! DEBUG sched spawn performance
-    // syscall_uputx(syscall_time()); uart_clrf();
-    // sched_spawn(&_nothing, 0xA37F, 0, TASK_PRIOR_MED);
-    // syscall_uputx(syscall_time()); uart_clrf();
-    // syscall_uputx(mmap_get_aloc_memory()); uart_clrf();
+    // sched_enqueue(sched_spawn(&_nothing, 0xA37F, 0, TASK_PRIOR_MED));
+    // sched_enqueue(sched_spawn(&_andanotherone, 0x100, 0, TASK_PRIOR_LOW));
 
     // Pass execution control to scheduler
     sched_init();
@@ -63,5 +46,4 @@ void cmain(void) {
     // Catch
     syscall_uputs("_hang_main();\n\r");
     while(1);
-    // _nothing();
 }

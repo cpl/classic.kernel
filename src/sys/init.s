@@ -18,6 +18,17 @@
 .include "asm/gpio.s"
 
 
+.section .rodata
+
+_str_init_uart:		.asciz " INIT: UART OK"
+_str_init_vcfb:		.asciz " INIT: VCFB OK"
+_str_init_vtfb:		.asciz " INIT: VTFB OK"
+_str_init_mmu:		.asciz " INIT: MMU  OK"
+_str_init_util:		.asciz " INIT: UTIL OK"
+_str_init_clk:		.asciz " INIT: CLK  OK"
+_str_init_irq:		.asciz " INIT: IRQ  OK"
+_str_init_kernel:	.asciz "\n START KERNEL INIT ..."
+
 .section .init
 
 
@@ -33,6 +44,10 @@ sys_init:
 
 	BL	uart_init		@ Initialize mini-UART interface
 
+	LDR	R0, =_str_init_uart	@ ! DEBUG
+	BL	uart_send_string	@
+	BL	uart_clrf		@
+
 	MOV	R0, #1280		@ Initialize framebuffer
 	MOV	R1, #1024		@ 1280x1024, 16bit depth
 	MOV	R2, #16			@
@@ -43,12 +58,35 @@ sys_init:
 
 	BL	vfb_init		@ Initialize virtual-framebuffer
 
+	LDR	R0, =_str_init_vcfb	@ ! DEBUG
+	BL	vfb_println		@
+
+	LDR	R0, =_str_init_vtfb	@ ! DEBUG
+	BL	vfb_println		@
+
 	BL	clk_arm_init		@ Initialize ARM CLK
+
+	LDR	R0, =_str_init_clk	@ ! DEBUG
+	BL	vfb_println		@
+
 	BL	irq_cpsr_enable		@ Initialize Interrupts
+
+	LDR	R0, =_str_init_irq	@ ! DEBUG
+	BL	vfb_println		@
 
 	BL	mmu_setup		@ Define MMU sections
 	BL	mmu_init		@ Configure and enable MMU
 
+	LDR	R0, =_str_init_mmu	@ ! DEBUG
+	BL	vfb_println		@
+
 	BL	rand_init		@ Initialize RNG
 
-	B	_main
+	LDR	R0, =_str_init_util	@ ! DEBUG
+	BL	vfb_println		@
+
+
+	LDR	R0, =_str_init_kernel	@ ! DEBUG
+	BL	vfb_println		@
+
+	B	_kinit			@ Init kernel
