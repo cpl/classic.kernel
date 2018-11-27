@@ -43,3 +43,21 @@ sig_fiq:	.word _hang
 
 .globl _start_end
 _start_end:
+
+
+
+.section .rodata
+
+_str_hang:	.asciz "HANG\n\r"
+
+
+.section .text
+
+
+.globl _hang
+_hang:
+
+	LDR	R0, =_str_hang
+	BL	syscall_uputs
+
+	B .
