@@ -32,7 +32,8 @@ Giving each task 8 page pointers for all 32 tables.
 #define MM_PHYS_SYS 0x20000000
 #define MM_PHYS_GPU 0x04000000
 #define MM_PHYS_KNL 0x00100000
-#define MM_PHYS_USR (MM_PHYS_SYS-MM_PHYS_GPU-MM_PHYS_KNL)
+#define MM_PHYS_LIB 0x00100000
+#define MM_PHYS_USR (MM_PHYS_SYS-MM_PHYS_GPU-MM_PHYS_KNL-MM_PHYS_LIB)
 
 #define MM_SECT_SHIFT 20
 #define MM_PAGE_SHIFT 12

@@ -51,6 +51,6 @@ task _KERNEL_TASK = {
 
 
 void _kernel() {
-    syscall_println("   KERNEL    START: OK");
+    syscall_println(" KERNEL    START: OK");
     while(1);
 }

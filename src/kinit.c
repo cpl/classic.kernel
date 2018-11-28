@@ -19,12 +19,21 @@
 #include "sched.h"
 #include "syscall.h"
 #include "error.h"
+#include "vfb.h"
 
 
 void _kinit(void) {
     // DEADBEEF on entry
     syscall_uputx(0xDEADBEEF); syscall_uputnl();
 
+    // ! DEBUG mmap intial allocations
+    vfb_println("\n MMAP INITIAL ALLOCATIONS");
+    vfb_printf("   PHYS MEM SYS: %x\n",   MM_PHYS_SYS);
+    vfb_printf("   PHYS MEM GPU: %x\n",   MM_PHYS_GPU);
+    vfb_printf("   PHYS MEM KNL: %x\n",   MM_PHYS_KNL);
+    vfb_printf("   PHYS MEM LIB: %x\n",   MM_PHYS_LIB);
+    vfb_printf("   PHYS MEM USR: %x\n\n", MM_PHYS_USR);
+    vfb_printf("   PAGE COUNT: %x\n\n", MM_PAGES_TTL);
 
     // Queue initial tasks
 
