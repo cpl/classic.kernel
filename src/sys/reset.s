@@ -43,6 +43,8 @@ _reset:
 	MSR	CPSR_c, R0				@ IRQ & FIQ
 	ADD	SP, R1, #0x2400				@ Set stack to 0x2400
 
+	BL	kheap_init				@ Initialize knl heap
+
 	MOV	R0, #(PSR_MODE_ABT|PSR_IRQ|PSR_FIQ)	@ ABT, DISABLE:
 	MSR	CPSR_c, R0				@ IRQ & FIQ
 	ADD	SP, R1, #0x2800				@ Set stack to 0x2800
@@ -57,15 +59,11 @@ _reset:
 
 							@ Stay in SYS MODE
 
-	@ TODO Move clslib init to later in sys_init
 	LDR	R0, =_USR_LOAD				@ Load clslib from
 	LDR	R1, =_USR_SIZE				@ its load address
 	LDR	R2, =0x1000000				@ to user space
 	BL	kmemcopy
 
-	@ TODO Move cls_knl mm to kernel space instead of clslib
-
-	BL	cls_knl_heap_init			@ Initialize knl heap
 	@ BL	csudUsbInitialise			@ Initialize CSUD USB
 
 	B	sys_init				@ Initialize system

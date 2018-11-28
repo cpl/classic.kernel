@@ -85,7 +85,6 @@ sys_init:
 	LDR	R0, =_str_init_util	@ ! DEBUG
 	BL	vfb_println		@
 
-
 	LDR	R0, =_str_init_kernel	@ ! DEBUG
 	BL	vfb_println		@
 
