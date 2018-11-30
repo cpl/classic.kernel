@@ -115,7 +115,7 @@ draw_pixel:
 	.unreq width
 
 
-@ draw_fill_fb (color 16 bit)
+@ void draw_fill_fb(u16 color)
 @ Fills the framebuffer with a single color.
 .globl draw_fill_fb
 draw_fill_fb:
@@ -135,7 +135,7 @@ draw_fill_fb:
 	BX	LR			@ Return
 
 
-@ draw_char (char, x, y)
+@ void draw_char(u8 c, u16 x, u16 y)
 @ Takes the ASCII value of the char in R0, and the x R1, y R2 then
 @ draws the char using the "font.bin" data, colorF for the 1 bits and colorB
 @ for the 0 bits.
@@ -194,7 +194,7 @@ draw_char:
 	POP	{R4-R8, PC}		@ Return
 
 
-@ draw_string (*str, x, y)
+@ void draw_string(char* str, u16 x, u16 y)
 @ Draw a given string starting from given X and Y, does not wrap or scroll
 @ the framebuffer when the screen edge is reached.
 .globl draw_string

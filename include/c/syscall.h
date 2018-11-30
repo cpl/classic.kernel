@@ -45,4 +45,8 @@ extern void* syscall_kmalloc(u32 size);
 extern void* syscall_kcalloc(u32 size);
 extern void  syscall_kfree(void* addr);
 
+extern void  syscall_cdraw(u8 c, u16 x, u16 y);
+extern void  syscall_fdraw(u16 color);
+extern void  syscall_sdraw(char* str, u16 x, u16 y);
+
 #endif

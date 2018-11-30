@@ -74,6 +74,10 @@ _SWI_JUMP_TABLE:
 	MACRO_SWI_ENTRY		kcalloc,	kcalloc
 	MACRO_SWI_ENTRY		kfree,		kfree
 
+	MACRO_SWI_ENTRY		cdraw,		draw_char
+	MACRO_SWI_ENTRY		fdraw,		draw_fill_fb
+	MACRO_SWI_ENTRY		sdraw,		draw_string
+
 /*****************************************************************************/
 
 
