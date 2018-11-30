@@ -78,6 +78,10 @@ _SWI_JUMP_TABLE:
 	MACRO_SWI_ENTRY		fdraw,		draw_fill_fb
 	MACRO_SWI_ENTRY		sdraw,		draw_string
 
+	MACRO_SWI_ENTRY		malloc,		_swi_undefined
+	MACRO_SWI_ENTRY		calloc,		_swi_undefined
+	MACRO_SWI_ENTRY		free,		_swi_undefined
+
 /*****************************************************************************/
 
 

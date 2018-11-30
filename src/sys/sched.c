@@ -24,6 +24,7 @@
 #include "asm.h"
 #include "mm.h"
 #include "error.h"
+#include "ctx.h"
 
 
 // Location of context saved by interrupt exception

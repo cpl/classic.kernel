@@ -49,4 +49,8 @@ extern void  syscall_cdraw(u8 c, u16 x, u16 y);
 extern void  syscall_fdraw(u16 color);
 extern void  syscall_sdraw(char* str, u16 x, u16 y);
 
+extern void  syscall_malloc(u32 size);
+extern void  syscall_calloc(u32 size);
+extern void  syscall_free(void* addr);
+
 #endif

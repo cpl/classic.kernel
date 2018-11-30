@@ -25,3 +25,7 @@
 ### Stack
 
 ![Stack](schematics/stack.svg)
+
+### Virtual Space
+
+![Virtual Space](schematics/cls.userland-mem.svg)
