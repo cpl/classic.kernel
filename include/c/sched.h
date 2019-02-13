@@ -32,26 +32,27 @@
 typedef enum task_state {
     TASK_STATE_RUNNING,
     TASK_STATE_READY,
-    TASK_STATE_ZOMBIE,
     TASK_STATE_SLEEPING,
     TASK_STATE_BLOCKED,
 
-    TASK_STATE_COUNT = 5,
+    TASK_STATE_COUNT = 4,
 } task_state;
 
 typedef enum task_prior {
-    TASK_PRIOR_LOW = 0,
-    TASK_PRIOR_MED = 1,
-    TASK_PRIOR_HIG = 2,
+    TASK_PRIOR_KNL = 0,
 
-    TASK_PRIOR_COUNT = 3,
+    TASK_PRIOR_LOW = 1,
+    TASK_PRIOR_MED = 2,
+    TASK_PRIOR_HIG = 3,
+
+    TASK_PRIOR_COUNT = 4,
 } task_prior;
 
 typedef struct task {
-
     u16           PID;
-    u16           slice;
     u16           flags;
+
+    u32           quantum;
 
     u32           size;
     void(*entry)(void);

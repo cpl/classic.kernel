@@ -48,8 +48,8 @@ sys_init:
 	BL	uart_send_string	@
 	BL	uart_clrf		@
 
-	MOV	R0, #1280		@ Initialize framebuffer
-	MOV	R1, #1024		@ 1280x1024, 16bit depth
+	MOV	R0, #1920		@ Initialize framebuffer
+	MOV	R1, #1200		@ 1280x1024, 16bit depth
 	MOV	R2, #16			@
 	BL	fb_init			@
 

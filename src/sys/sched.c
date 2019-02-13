@@ -27,6 +27,15 @@
 #include "ctx.h"
 
 
+// ! FIX ISSUE WITH NEW SCHED.
+// tries to sched same task
+// fails
+// tries to sched kernel
+// failes
+// loads same task
+
+static u32 entry_timestamp = 0;
+
 // Location of context saved by interrupt exception
 static ctx* CTX_IRQ = (ctx*)(0x2C00-0x40);
 
@@ -36,30 +45,29 @@ extern task _KERNEL_TASK;
 // Current executed task
 static task* CURRENT = &_KERNEL_TASK;
 
+// Priority round robins
+static task* _TASK_LOW = NULL;
+static task* _TASK_MED = NULL;
+static task* _TASK_HIG = NULL;
 
-// TODO Upgrade scheduler task list/queue to support multi-priority execution
-// static task* _TASK_LOW = NULL;
-// static task* _TASK_MED = NULL;
-// static task* _TASK_HIG = NULL;
-
+// TODO implement sleeping queue
 // Sleeping queue
 // static task* _TASK_SLEEPING = NULL;
 
 
 // List of task quantum size based on priority
-u16 prior_to_slice[TASK_PRIOR_COUNT] = {
-    [TASK_PRIOR_LOW] = 0x1,
-    [TASK_PRIOR_MED] = 0x2,
-    [TASK_PRIOR_HIG] = 0x3,
+u32 prior_to_qunatum[TASK_PRIOR_COUNT] = {
+    [TASK_PRIOR_LOW] = 3000,
+    [TASK_PRIOR_MED] = 4000,
+    [TASK_PRIOR_HIG] = 5000,
 };
 
-// TODO Upgrade scheduler task list/queue to support multi-priority execution
 // Pointers to task priority lists based on task priority
-// task** prior_to_list[TASK_PRIOR_COUNT] = {
-//     [TASK_PRIOR_LOW] = &_TASK_LOW,
-//     [TASK_PRIOR_MED] = &_TASK_MED,
-//     [TASK_PRIOR_HIG] = &_TASK_HIG,
-// };
+task** prior_to_list[TASK_PRIOR_COUNT] = {
+    [TASK_PRIOR_LOW] = &_TASK_LOW,
+    [TASK_PRIOR_MED] = &_TASK_MED,
+    [TASK_PRIOR_HIG] = &_TASK_HIG,
+};
 
 
 // Initialize kernel task for idle state
@@ -73,24 +81,49 @@ void sched_enqueue(register task* new) {
     // Include new task as the next READY task
     // making sure it gets acknowledged and
     // gets executed on the next cycle
+
+    // Get the priority list current task
+    task** plist = prior_to_list[new -> prior];
+
+    // Set as first task in priority round robin, if it's empty or append it
+    // as the next task to the current task in the round robin
+    if ((*plist) == NULL) {
+        (*plist) = new;
+        new -> next = new;
+    } else {
+        new -> next = (*plist) -> next;
+        (*plist) -> next = new;
+    }
+
+    // Mark newly added task as READY and set the quantum
     new -> state = TASK_STATE_READY;
-    new -> next = CURRENT -> next;
-    CURRENT -> next = new;
+    new -> quantum = prior_to_qunatum[new -> prior];
 }
 
 
 void sched_tick() {
 
+    syscall_println("tick();");
+
+    // ! DEBUG
     // If no running task, panic
     if(CURRENT == NULL)
         _panic("no active running task");
 
-    // Decrement current time slice
-    if(--(CURRENT->slice))
+    // Check time quantum and continue if within limits
+    if(syscall_time() < entry_timestamp + CURRENT -> quantum)
         return;
 
-    // Update time slice for executed task
-    CURRENT -> slice = prior_to_slice[CURRENT -> prior];
+    // Set current task as READY after RUNNING
+    CURRENT -> state = TASK_STATE_READY;
+
+    // Imidiatlly attempt to schedule next task
+    if(CURRENT == &_KERNEL_TASK)
+        return sched_next();
+
+    // Set the next task in the list
+    task** cplist = prior_to_list[CURRENT -> prior];
+    *cplist = CURRENT -> next;
 
     // And schdule next task
     sched_next();
@@ -99,40 +132,56 @@ void sched_tick() {
 
 void sched_next() {
 
-    register task* next = CURRENT -> next;
+    syscall_println(" ---- next(); ----");
 
-    // Skip schedueling the same task again
-    if(next == CURRENT)
-        return;
-
-    // Skip kernel task if other tasks are in the list
-    if(next == &_KERNEL_TASK && _KERNEL_TASK.next != &_KERNEL_TASK)
-        next = _KERNEL_TASK.next;
-
-    // Save ref to previous task
     task* prev = CURRENT;
+    task* temp = &_KERNEL_TASK;
+    task* next;
 
-    // Skip non-running tasks
-    while(next -> state != TASK_STATE_RUNNING) {
-        // Prepare ready tasks for running
-        if(next -> state == TASK_STATE_READY) {
-            next -> state = TASK_STATE_RUNNING;
-            next -> slice = prior_to_slice[next -> prior];
-        }
-
-        // Skip
-        next = next -> next;
-
-        // Return if nothing new to be run
-        if(next == prev)
-            return;
+    // Decide from which list to take a task, fallback is KERNEL TASK
+    if(_TASK_LOW != NULL) {
+        temp = _TASK_LOW;
+    }
+    if(_TASK_MED != NULL) {
+        temp = _TASK_MED;
+    }
+    if(_TASK_HIG != NULL) {
+        temp = _TASK_HIG;
     }
 
-    // Assign next task to run
-    CURRENT = next;
+    // Search for a READY task
+    next = temp;
+    while(temp -> state != TASK_STATE_READY) {
+
+        syscall_println("NOT READY!!!!!!");
+
+        temp = temp -> next;
+
+        // Searched entire list, fallback to kernel task
+        if(temp == next) {
+            syscall_println("SCHED KERNEL!!!!!");
+
+            temp = &_KERNEL_TASK;
+            break;
+        }
+    }
+
+    // Update next task with the proper task
+    next = temp;
+    next -> state = TASK_STATE_RUNNING;
+
+    // Update entry timestamp
+    entry_timestamp = syscall_time();
+
+    // If same task, return
+    if(next == prev) {
+        syscall_println(">>>>>>> SCHED SAME <<<<<<");
+        return;
+    }
 
     // Update memory maps
     // task_mm_set(next);
+
 
     // Perform context switch
     memcopy(CTX_IRQ, sizeof(ctx), &(prev -> context));

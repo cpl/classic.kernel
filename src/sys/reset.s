@@ -36,8 +36,8 @@ _reset:
 	SUB	R1, R1, R0			@
 	BL	kmemzero			@
 
-	@ MOV	R1, #0x80000000			@ Stack pointers storage
-	MOV	R1, #0				@
+	MOV	R1, #0x80000000			@ Stack pointers storage
+	@ MOV	R1, #0				@
 
 	MOV	R0, #(PSR_MODE_SVC|PSR_IRQ|PSR_FIQ)	@ SVC, DISABLE:
 	MSR	CPSR_c, R0				@ IRQ & FIQ

@@ -27,13 +27,13 @@ void _kernel();
 
 task _KERNEL_TASK = {
     PID:   0,
-    slice: 1,
+    quantum: 10000000,
     flags: 0,
 
     size: 0x100,
     entry: &_kernel,
 
-    prior: TASK_PRIOR_LOW,
+    prior: TASK_PRIOR_KNL,
     state: TASK_STATE_RUNNING,
 
     mm_page_count: 0,
@@ -52,5 +52,12 @@ task _KERNEL_TASK = {
 
 void _kernel() {
     syscall_println(" KERNEL    START: OK");
-    while(1);
+    u32 timestamp = 0;
+    while(1) {
+        u32 timenow = syscall_time();
+        if (timenow > timestamp + 1000000) {
+            timestamp = timenow;
+            syscall_println("********** IDLE **********");
+        }
+    }
 }
