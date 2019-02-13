@@ -29,3 +29,7 @@
 ### Virtual Space
 
 ![Virtual Space](schematics/cls.userland-mem.svg)
+
+### Initialization modes
+
+![Init modes](schematics/cls.init.svg)
