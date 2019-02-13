@@ -46,6 +46,13 @@ OBJECTS += $(patsubst $(SOURCE)/%.c, $(BUILD)/%.o, $(shell find $(SOURCE) -type 
 CFLAGS := -std=c99 -fpack-struct -fno-builtin -Wno-packed-bitfield-compat -fshort-wchar -Wall -c -nostdlib -nostartfiles -ffreestanding -O2
 
 
+help:
+	@echo "  make clean"
+	@echo "    - removes all build files and generated files"
+	@echo "  make deploy"
+	@echo "    - starts polling the microSD card for uploading kernel files"
+
+
 # Make all
 all: $(TARGET) $(LIST)
 rebuild: all
