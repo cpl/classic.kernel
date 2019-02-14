@@ -46,16 +46,17 @@ OBJECTS += $(patsubst $(SOURCE)/%.c, $(BUILD)/%.o, $(shell find $(SOURCE) -type 
 CFLAGS := -std=c99 -fpack-struct -fno-builtin -Wno-packed-bitfield-compat -fshort-wchar -Wall -c -nostdlib -nostartfiles -ffreestanding -O2
 
 
+# Make all
+all: $(TARGET) $(LIST)
+rebuild: all
+
+
+# Help message
 help:
 	@echo "  make clean"
 	@echo "    - removes all build files and generated files"
 	@echo "  make deploy"
 	@echo "    - starts polling the microSD card for uploading kernel files"
-
-
-# Make all
-all: $(TARGET) $(LIST)
-rebuild: all
 
 # Generate - Code listing
 $(LIST) : $(BUILD)/output.elf
@@ -92,6 +93,8 @@ firmware:
 	@echo found
 	@make -C "boot"
 
+# Simple build of target
+build: $(TARGET)
 
 # Deploy kernel image to SD card
 deploy: $(TARGET)

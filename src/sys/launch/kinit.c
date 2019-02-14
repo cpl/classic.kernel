@@ -78,13 +78,13 @@ task _LOW1 = {
 
 void _low0() {
     while(1) {
-        syscall_println("LOW - 0");
+        syscall_print(".");
     }
 }
 
 void _low1() {
     while(1) {
-        syscall_println("LOW - 1");
+        syscall_print("+");
     }
 }
 
@@ -106,11 +106,11 @@ void _kinit(void) {
 
     // Queue initial tasks
     sched_enqueue(&_LOW0);
-    // sched_enqueue(&_LOW1);
+    sched_enqueue(&_LOW1);
 
     // Pass execution control to scheduler
     sched_init();
 
     // Catch
-    _panic("catch kernel ilegal exit");
+    _panic("catch scheduler ilegal exit");
 }

@@ -28,15 +28,13 @@
 // #define TASK_MM_TLBS ((TASK_MAX_MEM/MM_PAGE_SIZE)/MM_PAGES_PER_TLB)
 #define TASK_MM_TLBS 8
 
-
 typedef enum task_state {
     TASK_STATE_RUNNING,
     TASK_STATE_READY,
     TASK_STATE_SLEEPING,
     TASK_STATE_BLOCKED,
-
-    TASK_STATE_COUNT = 4,
 } task_state;
+#define TASK_STATE_COUNT 4
 
 typedef enum task_prior {
     TASK_PRIOR_KNL = 0,
@@ -44,9 +42,8 @@ typedef enum task_prior {
     TASK_PRIOR_LOW = 1,
     TASK_PRIOR_MED = 2,
     TASK_PRIOR_HIG = 3,
-
-    TASK_PRIOR_COUNT = 4,
 } task_prior;
+#define TASK_PRIOR_COUNT 4
 
 typedef struct task {
     u16           PID;
@@ -69,6 +66,9 @@ typedef struct task {
 } task;
 
 void task_mm_set(task* t);
+
+extern u32 prior_to_qunatum[TASK_PRIOR_COUNT];
+extern task** prior_to_list[TASK_PRIOR_COUNT];
 
 // SCHED
 
