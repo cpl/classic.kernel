@@ -33,8 +33,9 @@ typedef enum task_state {
     TASK_STATE_READY,
     TASK_STATE_SLEEPING,
     TASK_STATE_BLOCKED,
+    TASK_STATE_KILLED,
 } task_state;
-#define TASK_STATE_COUNT 4
+#define TASK_STATE_COUNT 5
 
 typedef enum task_prior {
     TASK_PRIOR_KNL = 0,
@@ -62,6 +63,8 @@ typedef struct task {
 
 
     struct task* next;
+    struct task* prev;
+
     ctx          context;
 } task;
 
@@ -72,10 +75,13 @@ extern task** prior_to_list[TASK_PRIOR_COUNT];
 
 // SCHED
 
-void sched_enqueue(task* new);
+void sched_init(void);
 void sched_next(void);
 void sched_tick(void);
-void sched_init(void);
+
+void  sched_enqueue(task* new);
+task* sched_find(u16 pid);
+u8    sched_kill(u16 pid, u8 code);
 
 task* sched_spawn(void* entry, u32 size, u16 flags, task_prior prior);
 

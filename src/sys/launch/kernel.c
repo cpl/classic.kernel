@@ -40,6 +40,8 @@ task _KERNEL_TASK = {
     mm_tables: {NULL},
 
     next: &_KERNEL_TASK,
+    prev: &_KERNEL_TASK,
+
     context: {
         0,0,0,0,0,0,0,0,0,0,0,0,0,
         SP: 0x1800,

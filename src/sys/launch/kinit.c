@@ -77,8 +77,14 @@ task _LOW1 = {
 
 
 void _low0() {
-    while(1) {
+    for(u16 i = 100; i; i--) {
         syscall_print(".");
+    }
+
+    syscall_kill(1, 0);
+
+    while(1) {
+        syscall_println("CATCH ]]]]]]]]]]]]]]]]]]]]]]]]");
     }
 }
 
@@ -105,7 +111,7 @@ void _kinit(void) {
     vfb_printf("   PAGE COUNT: %x\n\n", MM_PAGES_TTL);
 
     // Queue initial tasks
-    sched_enqueue(&_LOW0);
+    // sched_enqueue(&_LOW0);
     sched_enqueue(&_LOW1);
 
     // Pass execution control to scheduler

@@ -50,7 +50,7 @@ _str_swi_test:		.ascii "SWI WORKS!\n\r\0"
 _SWI_JUMP_TABLE:
 
 	MACRO_SWI_ENTRY		exit,		_swi_undefined
-	MACRO_SWI_ENTRY		kill,		_swi_undefined
+	MACRO_SWI_ENTRY		kill,		sched_kill
 	MACRO_SWI_ENTRY		spawn,		_swi_undefined
 	MACRO_SWI_ENTRY		yield,		_swi_undefined
 

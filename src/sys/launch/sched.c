@@ -25,6 +25,7 @@
 #include "mm.h"
 #include "error.h"
 #include "ctx.h"
+#include "vfb.h"
 
 
 // Timestamp used to determine premtive scheduling based on time quantum
@@ -51,9 +52,9 @@ static task* _TASK_HIG = NULL;
 
 // List of task quantum size based on priority
 u32 prior_to_qunatum[TASK_PRIOR_COUNT] = {
-    [TASK_PRIOR_LOW] = 5000,
-    [TASK_PRIOR_MED] = 7500,
-    [TASK_PRIOR_HIG] = 10000,
+    [TASK_PRIOR_LOW] = 100000,
+    [TASK_PRIOR_MED] = 200000,
+    [TASK_PRIOR_HIG] = 300000,
 };
 
 // Pointers to task priority lists based on task priority
@@ -80,8 +81,10 @@ void sched_enqueue(register task* new) {
     if (*plist == NULL) {
         *plist = new;
         new -> next = new;
+        new -> prev = new;
     } else {
         new -> next = (*plist) -> next;
+        new -> prev = (*plist);
         (*plist) -> next = new;
     }
 
@@ -93,10 +96,14 @@ void sched_enqueue(register task* new) {
 
 void sched_tick() {
 
-    // ! DEBUG
-    // If no running task, panic
-    if(CURRENT == NULL || CURRENT -> state != TASK_STATE_RUNNING)
-        _panic("no active running task");
+    syscall_println("tick()");
+
+    // Panic
+    if(CURRENT == NULL)
+        _panic("CURRENT task is NULL");
+
+    if(CURRENT -> state != TASK_STATE_RUNNING)
+        return sched_next();
 
     // Check time quantum and continue if within limits
     if(syscall_time() < entry_timestamp + CURRENT -> quantum)
@@ -120,12 +127,15 @@ void sched_tick() {
 
 void sched_next() {
 
+    syscall_println("--------- next ---------");
+
     task* prev = CURRENT;
     task* next = &_KERNEL_TASK;
     task* temp;
 
     // Decide from which list to take a task, fallback is KERNEL TASK
     if(_TASK_LOW != NULL) {
+        syscall_println("GOT LOW");
         next = _TASK_LOW;
     }
     if(_TASK_MED != NULL) {
@@ -138,6 +148,7 @@ void sched_next() {
     // Search for a READY task
     temp = next;
     while(temp -> state != TASK_STATE_READY) {
+        syscall_println("NOT READY");
         temp = temp -> next;
 
         // Searched entire list, fallback to kernel task
@@ -156,6 +167,7 @@ void sched_next() {
 
     // If same task, return without switching context
     if(next == prev) {
+        syscall_println("SCHED SAME");
         return;
     }
 
@@ -230,4 +242,94 @@ task* sched_spawn(void* entry, u32 size, u16 flags, task_prior prior) {
     task_mm_add(new, size>>MM_PAGE_SHIFT);
 
     return new;
+}
+
+task* sched_find(u16 pid) {
+
+    task* plist = _TASK_HIG;
+    task* temp  = _TASK_HIG;
+
+    while(temp -> PID != pid) {
+        temp = temp -> next;
+
+        if(temp == plist)
+            break;
+    }
+
+    if(temp -> PID == pid)
+        return temp;
+
+    plist = _TASK_MED;
+    temp  = _TASK_MED;
+
+    while(temp -> PID != pid) {
+        temp = temp -> next;
+
+        if(temp == plist)
+            break;
+    }
+
+    if(temp -> PID == pid)
+        return temp;
+
+    plist = _TASK_LOW;
+    temp  = _TASK_LOW;
+
+    while(temp -> PID != pid) {
+        temp = temp -> next;
+
+        if(temp == plist)
+            break;
+    }
+
+    if(temp -> PID == pid)
+        return temp;
+
+    return NULL;
+}
+
+// ! TODO add removal of task struct from memory after implementation of mmap
+// ! and sched_spawn()
+
+// ! TODO implement kill codes
+// ! - SOFT (signal)
+// ! - HARD (do it )
+
+u8 sched_kill(u16 pid, u8 code) {
+
+    vfb_println("KILL CALLED");
+
+    task* target = sched_find(pid);
+    if(target == NULL) {
+        vfb_println("FIND FAILED");
+        return -1;
+    }
+
+    task** plist = prior_to_list[target -> prior];
+    if(target == *plist) {
+        vfb_println("TARGET IS PLIST");
+
+        if(target -> next == target) {
+            vfb_println("SET PLIST TO NULL");
+            *plist = NULL;
+        } else {
+            vfb_println("SET PLIST TO NEXT");
+            *plist = target -> next;
+        }
+    }
+
+    if(target -> next != target) {
+        vfb_println("TARGET IS NOT ALONE");
+
+        target -> next -> prev = target -> prev;
+        target -> prev -> next = target -> next;
+
+        target -> prev = target;
+        target -> next = target;
+    }
+
+    target -> state = TASK_STATE_KILLED;
+
+    vfb_println("KILL EXIT");
+    return 0;
 }

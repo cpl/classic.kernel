@@ -21,7 +21,7 @@
 #include "types.h"
 
 extern void syscall_exit(void);
-extern void syscall_kill(void);
+extern u8 syscall_kill(u16 pid, u8 code);
 extern void syscall_spawn(void);
 extern void syscall_yield(void);
 
