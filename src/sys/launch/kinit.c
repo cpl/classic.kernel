@@ -20,6 +20,7 @@
 #include "syscall.h"
 #include "error.h"
 #include "vfb.h"
+#include "fifo.h"
 
 
 void _low0();
@@ -110,12 +111,46 @@ void _kinit(void) {
     vfb_printf("   PHYS MEM USR: %x\n\n", MM_PHYS_USR);
     vfb_printf("   PAGE COUNT: %x\n\n", MM_PAGES_TTL);
 
+    // Testing area
+
+
+    vfb_printf("CREATING: FIFO\n");
+    fifo* FIFO = fifo_new(40);
+    fifo_print(FIFO);
+
+    u32 val;
+
+
+    vfb_printf("...\n");
+
+    fifo_write(FIFO, 0x10);
+    vfb_printf("WRITING\n");
+    fifo_print(FIFO);
+
+    fifo_write(FIFO, 0x1B);
+    vfb_printf("WRITING\n");
+    fifo_print(FIFO);
+
+    fifo_write(FIFO, 0x30);
+    vfb_printf("WRITING\n");
+    fifo_print(FIFO);
+
+    fifo_write(FIFO, 0x4A);
+    vfb_printf("WRITING\n");
+    fifo_print(FIFO);
+
+    vfb_printf("IS FIFO: %x\n", FIFO -> is_a_fifo);
+    fifo_free(FIFO);
+
+
     // Queue initial tasks
     // sched_enqueue(&_LOW0);
-    sched_enqueue(&_LOW1);
+    // sched_enqueue(&_LOW1);
 
     // Pass execution control to scheduler
-    sched_init();
+    // sched_init();
+
+    while(1);
 
     // Catch
     _panic("catch scheduler ilegal exit");
