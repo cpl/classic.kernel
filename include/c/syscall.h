@@ -20,13 +20,14 @@
 
 #include "types.h"
 
-extern void syscall_exit(void);
-extern u8 syscall_kill(u16 pid, u8 code);
-extern void syscall_spawn(void);
-extern void syscall_yield(void);
+// extern void syscall_exit(void);
+// extern u8   syscall_kill(u16 pid, u8 code);
+// extern void syscall_spawn(void);
+// extern void syscall_yield(void);
 
 extern u32  syscall_time(void);
 extern void syscall_sleep(u32 ms);
+extern u16  syscall_getpid(void);
 
 extern void syscall_uputc(u8 c);
 extern void syscall_uputs(char* str);

@@ -33,3 +33,7 @@
 ### Initialization modes
 
 ![Init modes](schematics/cls.init.svg)
+
+### Sleep Q
+
+![Sleep Q](schematics/)

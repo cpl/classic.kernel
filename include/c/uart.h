@@ -14,21 +14,25 @@
    limitations under the License.
 */
 
-/* stack.h - Stack operations and constants
+
+/* uart.h - mini UART (Universal asynchronous receiver/transmitter)
+
+Function definitions for mini-UART interactions.
 
 */
 
 
-#ifndef _INC_STACK_H
-#define _INC_STACK_H
+#ifndef _INC_UART_H
+#define _INC_UART_H
 
 #include "types.h"
 
-#define _STACK_SYS 0x3C00
-#define _STACK_SVC 0x2400
-#define _STACK_ABT 0x2800
-#define _STACK_IRQ 0x2C00
+extern void uart_init(void);
 
-void stack_dump(void* addr, u32 SP);
+extern void uart_send(u8 byte);
+extern void uart_send_string(char* str);
+extern u8   uart_recv(void);
+extern void uart_clrf(void);
+extern void uart_send_hex(u32 val);
 
 #endif

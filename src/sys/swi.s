@@ -49,13 +49,14 @@ _str_swi_test:		.ascii "SWI WORKS!\n\r\0"
 .align 4
 _SWI_JUMP_TABLE:
 
-	MACRO_SWI_ENTRY		exit,		_swi_undefined
-	MACRO_SWI_ENTRY		kill,		sched_kill
-	MACRO_SWI_ENTRY		spawn,		_swi_undefined
-	MACRO_SWI_ENTRY		yield,		_swi_undefined
+	@ MACRO_SWI_ENTRY		exit,		_swi_undefined
+	@ MACRO_SWI_ENTRY		kill,		sched_kill
+	@ MACRO_SWI_ENTRY		spawn,		_swi_undefined
+	@ MACRO_SWI_ENTRY		yield,		_swi_undefined
 
 	MACRO_SWI_ENTRY		time,		clk_sys_epoch
-	MACRO_SWI_ENTRY		sleep,		_swi_undefined
+	MACRO_SWI_ENTRY		sleep,		sched_sleep
+	MACRO_SWI_ENTRY		getpid,		sched_pid
 
 	MACRO_SWI_ENTRY		uputc,		uart_send
 	MACRO_SWI_ENTRY		uputs,		uart_send_string

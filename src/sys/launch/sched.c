@@ -45,9 +45,8 @@ static task* _TASK_LOW = NULL;
 static task* _TASK_MED = NULL;
 static task* _TASK_HIG = NULL;
 
-// TODO implement sleeping queue
 // Sleeping queue
-// static task* _TASK_SLEEPING = NULL;
+static sleep_node* _TASK_SLEEPING = NULL;
 
 
 // List of task quantum size based on priority
@@ -99,6 +98,11 @@ void sched_tick() {
     if(CURRENT == NULL)
         _panic("CURRENT task is NULL");
 
+    // Get time and check sleeping Q
+    u32 t = syscall_time();
+    if(_TASK_SLEEPING != NULL && t > _TASK_SLEEPING -> _ms)
+        sched_wake();
+
     // Imidiatlly attempt to schedule next task
     if(CURRENT == &_KERNEL_TASK)
         return sched_next();
@@ -108,7 +112,7 @@ void sched_tick() {
         return sched_next();
 
     // Check time quantum and continue if within limits
-    if(syscall_time() < entry_timestamp + CURRENT -> quantum)
+    if(t < entry_timestamp + CURRENT -> quantum)
         return;
 
     // Set current task as READY after RUNNING
@@ -179,6 +183,107 @@ void sched_next() {
 }
 
 
+// sched_pid returns the PID of the CURRENT running task
+u16 sched_pid() {
+    return CURRENT -> PID;
+}
+
+
+// sched_sleep puts the CURRENT running task to sleep for the given number
+// of miliseconds
+void sched_sleep(u32 ms) {
+
+    uart_send_string("testing"); uart_clrf();
+    uart_send_hex(0x41); uart_clrf();
+    uart_send_hex(0x42); uart_clrf();
+    uart_send_hex(0x43); uart_clrf();
+    uart_send_hex(0x44); uart_clrf();
+    uart_send_hex(0x45); uart_clrf();
+    uart_send_hex(0x46); uart_clrf();
+
+    // transform given miliseconds into TIME + miliseconds_to_wake_up_after
+    ms = clk_sys_epoch() + ms*1000;
+
+    // first sleeping node
+    if(_TASK_SLEEPING == NULL) {
+        uart_send_hex(0xAA); uart_clrf();
+
+        _TASK_SLEEPING = (sleep_node*)kmalloc(sizeof(sleep_node));
+
+        uart_send_hex(0xBB); uart_clrf();
+
+        _TASK_SLEEPING -> _t   = CURRENT;
+        _TASK_SLEEPING -> _ms  = ms;
+        _TASK_SLEEPING -> next = NULL;
+        _TASK_SLEEPING -> prev = NULL;
+
+        CURRENT -> state = TASK_STATE_SLEEPING;
+
+        uart_send_hex(0xCC); uart_clrf();
+
+        return;
+    }
+
+
+    // find insert position
+    sleep_node* node = _TASK_SLEEPING;
+    while(node -> next != NULL && ms > node -> _ms) {
+        node = node -> next;
+    }
+
+    // left
+    if(ms < node -> _ms) {
+        // left new
+        if(node -> prev == NULL) {
+            node -> prev = (sleep_node*)kmalloc(sizeof(sleep_node));
+            node -> prev -> next = node;
+
+            node = node -> prev;
+
+            node -> prev = NULL;
+            node -> _t   = CURRENT;
+            node -> _ms  = ms;
+
+            _TASK_SLEEPING = node;
+
+            CURRENT -> state = TASK_STATE_SLEEPING;
+            return;
+        }
+
+        // left insert
+        sleep_node* new_node = (sleep_node*)kmalloc(sizeof(sleep_node));
+        new_node -> _ms = ms;
+        new_node -> _t  = CURRENT;
+
+        node -> prev -> next = new_node;
+        new_node -> prev = node -> prev;
+        new_node -> next = node;
+        node -> prev = new_node;
+
+        CURRENT -> state = TASK_STATE_SLEEPING;
+        return;
+    }
+
+
+    // Append sleep node at the end of sleep q
+    node -> next = (sleep_node*)kmalloc(sizeof(sleep_node));
+    node -> next -> prev = node;
+    node = node -> next;
+    node -> _ms  = ms;
+    node -> _t   = CURRENT;
+    node -> next = NULL;
+}
+
+
+// sched_wake will wake up the FIRST task and only the first task from the
+// sleeping q. Next sleeping tasks will be handled on the next tick.
+void sched_wake() {
+    syscall_uputs("wake up"); syscall_uputnl();
+    return;
+}
+
+
+/*
 void task_mm_set(task* t) {
     for(u8 index = 0; index < TASK_MM_TLBS; index++)
         for(u8 tindex = 0x0; tindex < 0x1000; tindex+=0x400)
@@ -188,6 +293,8 @@ void task_mm_set(task* t) {
 }
 
 
+
+! DEBUG
 void task_mm_add(task* t, u32 page_count) {
 
     // Optimie frequent variables
@@ -238,93 +345,4 @@ task* sched_spawn(void* entry, u32 size, u16 flags, task_prior prior) {
 
     return new;
 }
-
-task* sched_find(u16 pid) {
-
-    task* plist = _TASK_HIG;
-    task* temp  = _TASK_HIG;
-
-    while(temp -> PID != pid) {
-        temp = temp -> next;
-
-        if(temp == plist)
-            break;
-    }
-
-    if(temp -> PID == pid)
-        return temp;
-
-    plist = _TASK_MED;
-    temp  = _TASK_MED;
-
-    while(temp -> PID != pid) {
-        temp = temp -> next;
-
-        if(temp == plist)
-            break;
-    }
-
-    if(temp -> PID == pid)
-        return temp;
-
-    plist = _TASK_LOW;
-    temp  = _TASK_LOW;
-
-    while(temp -> PID != pid) {
-        temp = temp -> next;
-
-        if(temp == plist)
-            break;
-    }
-
-    if(temp -> PID == pid)
-        return temp;
-
-    return NULL;
-}
-
-// ! TODO add removal of task struct from memory after implementation of mmap
-// ! and sched_spawn()
-
-// ! TODO implement kill codes
-// ! - SOFT (signal)
-// ! - HARD (do it )
-
-u8 sched_kill(u16 pid, u8 code) {
-
-    vfb_println("KILL CALLED");
-
-    task* target = sched_find(pid);
-    if(target == NULL) {
-        vfb_println("FIND FAILED");
-        return -1;
-    }
-
-    task** plist = prior_to_list[target -> prior];
-    if(target == *plist) {
-        vfb_println("TARGET IS PLIST");
-
-        if(target -> next == target) {
-            vfb_println("SET PLIST TO NULL");
-            *plist = NULL;
-        } else {
-            vfb_println("SET PLIST TO NEXT");
-            *plist = target -> next;
-        }
-    }
-
-    if(target -> next != target) {
-        vfb_println("TARGET IS NOT ALONE");
-
-        target -> next -> prev = target -> prev;
-        target -> prev -> next = target -> next;
-
-        target -> prev = target;
-        target -> next = target;
-    }
-
-    target -> state = TASK_STATE_KILLED;
-
-    vfb_println("KILL EXIT");
-    return 0;
-}
+*/

@@ -73,16 +73,25 @@ void task_mm_set(task* t);
 extern u32 prior_to_qunatum[TASK_PRIOR_COUNT];
 extern task** prior_to_list[TASK_PRIOR_COUNT];
 
+// SLEEP
+
+typedef struct sleep_node {
+    struct sleep_node* next;
+    struct sleep_node* prev;
+
+    task* _t;
+    u32   _ms;
+} sleep_node;
+
 // SCHED
 
 void sched_init(void);
 void sched_next(void);
 void sched_tick(void);
 
-void  sched_enqueue(task* new);
-task* sched_find(u16 pid);
-u8    sched_kill(u16 pid, u8 code);
-
-task* sched_spawn(void* entry, u32 size, u16 flags, task_prior prior);
+u16  sched_pid(void);
+void sched_enqueue(task* new);
+void sched_sleep(u32 ms);
+void sched_wake(void);
 
 #endif
