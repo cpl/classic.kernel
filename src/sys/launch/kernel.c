@@ -59,7 +59,7 @@ void _kernel() {
         u32 timenow = syscall_time();
         if (timenow > timestamp + 1000000) {
             timestamp = timenow;
-            syscall_println("********** IDLE **********");
+            syscall_println("_kernel();");
         }
     }
 }

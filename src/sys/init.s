@@ -63,12 +63,12 @@ sys_init:
 	LDR	R0, =_str_init_vtfb	@ ! DEBUG
 	BL	vfb_println		@
 
-	@ BL	clk_arm_init		@ Initialize ARM CLK
+	BL	clk_arm_init		@ Initialize ARM CLK
 
 	LDR	R0, =_str_init_clk	@ ! DEBUG
 	BL	vfb_println		@
 
-	@ BL	irq_cpsr_enable		@ Initialize Interrupts
+	BL	irq_cpsr_enable		@ Initialize Interrupts
 
 	LDR	R0, =_str_init_irq	@ ! DEBUG
 	BL	vfb_println		@

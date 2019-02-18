@@ -86,8 +86,8 @@ irq_handler:
 	LDR	R4, =INTERRUPTS_BASE		@ Load IRQ base
 	LDR	R4, [R4, #IRQ_BASIC_PENDING]	@ Load IRQ pending
 
-	@ TST	R4, #IRQ_CLK_ARM		@ Tick the scheduler
-	@ BLNE	sched_tick			@
+	TST	R4, #IRQ_CLK_ARM		@ Tick the scheduler
+	BLNE	sched_tick			@
 
 	TST	R4, #IRQ_CLK_ARM		@ Check for timer interrupt
 	BLNE	clk_arm_isr			@ Handle    timer interrupt

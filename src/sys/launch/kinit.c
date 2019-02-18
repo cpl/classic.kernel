@@ -20,11 +20,11 @@
 #include "syscall.h"
 #include "error.h"
 #include "vfb.h"
-#include "fifo.h"
 
 
 void _low0();
 void _low1();
+void _high();
 
 task _LOW0 = {
     PID:   1,
@@ -76,31 +76,64 @@ task _LOW1 = {
     },
 };
 
+task _HIGH = {
+    PID:   10,
+    quantum: 5000,
+    flags: 0,
+
+    size: 0x100,
+    entry: &_high,
+
+    prior: TASK_PRIOR_HIG,
+    state: TASK_STATE_READY,
+
+    mm_page_count: 0,
+    mm_tables: {NULL},
+
+    next: NULL,
+    context: {
+        0,0,0,0,0,0,0,0,0,0,0,0,0,
+        SP: 0x1400,
+        LR: 0x0,
+        PC: ((u32)&_high),
+        CPSR: 0x0000015F,
+    },
+};
+
 
 void _low0() {
-    for(u16 i = 100; i; i--) {
-        syscall_print(".");
-    }
+    for(u16 i = 100; i; i--)
+        syscall_println("_low_0(default);");
 
-    syscall_kill(1, 0);
-
-    while(1) {
-        syscall_println("CATCH ]]]]]]]]]]]]]]]]]]]]]]]]");
-    }
+    while(1)
+        syscall_println("_low_0(alternative);");
 }
 
 void _low1() {
+    for(u16 i = 200; i; i--)
+        syscall_println("_low_1(start);");
+
+    sched_enqueue(&_HIGH);
+
     while(1) {
-        syscall_print("+");
+        syscall_println("_low_1();");
     }
 }
+
+
+void _high() {
+    while(1) {
+        syscall_println("_high();");
+    }
+}
+
 
 // ----
 
 
 void _kinit(void) {
-    // DEADBEEF on entry
-    syscall_uputx(0xDEADBEEF); syscall_uputnl();
+    // 0xF1F0CAFE signature on entry
+    syscall_uputx(0xF1F0CAFE); syscall_uputnl();
 
     // ! DEBUG mmap intial allocations
     vfb_println("\n MMAP INITIAL ALLOCATIONS");
@@ -111,47 +144,12 @@ void _kinit(void) {
     vfb_printf("   PHYS MEM USR: %x\n\n", MM_PHYS_USR);
     vfb_printf("   PAGE COUNT: %x\n\n", MM_PAGES_TTL);
 
-
-    // FIFO TESTING CODE
-    // vfb_printf("CREATING: FIFO\n");
-    // fifo* FIFO = fifo_new(40);
-    // if(FIFO == NULL)
-    //     _panic("FIFO IS NULL!");
-
-    // for(u32 count = 40; count; count--)
-    //     if(fifo_write(FIFO, count) == 0)
-    //         vfb_printf("FIFO failed to write %x\n", count);
-    // fifo_print(FIFO);
-
-    // u32 read_val = 0;
-
-    // while(fifo_read(FIFO, &read_val) == 1)
-    //     vfb_printf("FIFO read %x\n", read_val);
-
-    // for(u32 count = 40; count; count--)
-    //     if(fifo_write(FIFO, count) == 0)
-    //         vfb_printf("FIFO failed to write %x\n", count);
-    // fifo_print(FIFO);
-
-    // for(u32 count = 20; count; count--)
-    //     if(fifo_read(FIFO, &read_val) == 1)
-    //         vfb_printf("FIFO read %x\n", read_val);
-    //     else vfb_printf("FIFO failed read %x\n", count);
-
-    // for(u32 count = 40; count; count--)
-    //     if(fifo_write(FIFO, count) == 0)
-    //         vfb_printf("FIFO failed to write %x\n", count);
-    // fifo_print(FIFO);
-
-
     // Queue initial tasks
-    // sched_enqueue(&_LOW0);
-    // sched_enqueue(&_LOW1);
+    sched_enqueue(&_LOW0);
+    sched_enqueue(&_LOW1);
 
     // Pass execution control to scheduler
-    // sched_init();
-
-    while(1);
+    sched_init();
 
     // Catch
     _panic("catch scheduler ilegal exit");

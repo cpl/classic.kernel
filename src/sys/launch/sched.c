@@ -95,23 +95,21 @@ void sched_enqueue(register task* new) {
 
 
 void sched_tick() {
-
-    syscall_println("tick()");
-
-    // Panic
+    // Panic if no current task
     if(CURRENT == NULL)
         _panic("CURRENT task is NULL");
 
+    // Imidiatlly attempt to schedule next task
+    if(CURRENT == &_KERNEL_TASK)
+        return sched_next();
+
+    // Current task is no longer running, schedule another
     if(CURRENT -> state != TASK_STATE_RUNNING)
         return sched_next();
 
     // Check time quantum and continue if within limits
     if(syscall_time() < entry_timestamp + CURRENT -> quantum)
         return;
-
-    // Imidiatlly attempt to schedule next task
-    if(CURRENT == &_KERNEL_TASK)
-        return sched_next();
 
     // Set current task as READY after RUNNING
     CURRENT -> state = TASK_STATE_READY;
@@ -126,50 +124,47 @@ void sched_tick() {
 
 
 void sched_next() {
-
-    syscall_println("--------- next ---------");
-
-    task* prev = CURRENT;
-    task* next = &_KERNEL_TASK;
-    task* temp;
+    task* prev = CURRENT;           // save current task as "previous"
+    task* next;
 
     // Decide from which list to take a task, fallback is KERNEL TASK
-    if(_TASK_LOW != NULL) {
-        syscall_println("GOT LOW");
-        next = _TASK_LOW;
-    }
-    if(_TASK_MED != NULL) {
-        next = _TASK_MED;
-    }
     if(_TASK_HIG != NULL) {
         next = _TASK_HIG;
+    } else
+    if(_TASK_MED != NULL) {
+        next = _TASK_MED;
+    } else
+    if(_TASK_LOW != NULL) {
+        next = _TASK_LOW;
+    } else {
+        next = &_KERNEL_TASK;
     }
 
-    // Search for a READY task
-    temp = next;
-    while(temp -> state != TASK_STATE_READY) {
-        syscall_println("NOT READY");
-        temp = temp -> next;
+    // Ignore if only task is kernel
+    if(next != &_KERNEL_TASK) {
+        // Search for a READY task
+        task* temp = next;
+        while(temp -> state != TASK_STATE_READY) {
+            temp = temp -> next;
 
-        // Searched entire list, fallback to kernel task
-        if(temp == next) {
-            next = &_KERNEL_TASK;
-            break;
+            // Searched entire list, fallback to kernel task
+            if(temp == next) {
+                next = &_KERNEL_TASK;
+                break;
+            }
         }
+
+        // Update next task with the proper task
+        next = temp;
+        next -> state = TASK_STATE_RUNNING;
+
+        // Update entry timestamp
+        entry_timestamp = syscall_time();
     }
-
-    // Update next task with the proper task
-    next = temp;
-    next -> state = TASK_STATE_RUNNING;
-
-    // Update entry timestamp
-    entry_timestamp = syscall_time();
 
     // If same task, return without switching context
-    if(next == prev) {
-        syscall_println("SCHED SAME");
+    if(next == prev)
         return;
-    }
 
     // Update CURRENT task
     CURRENT = next;
