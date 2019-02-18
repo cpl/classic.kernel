@@ -63,6 +63,9 @@ void kheap_init() {
 }
 
 
+// kmalloc takes the allocation size in bytes and returns a pointer on the
+// kernel heap that will have the given reserved space or a NULL pointer in
+// the case of an error
 void* kmalloc(u32 size) {
 
     // align malloc request size to 0x40 bytes (16 words)

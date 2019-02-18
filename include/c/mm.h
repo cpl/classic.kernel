@@ -27,6 +27,7 @@ Define the types, functions, macros and pointers used by the memory allocator.
 
 #include "types.h"
 
+// Minimum allocation size is 16 words or 64 bytes
 #define _MIN_ALOC_SIZE 16*4
 
 typedef struct mem_block {
@@ -45,6 +46,7 @@ typedef struct mem_block {
 
 extern void*        _KERNEL_HEAP;
 
+// sizes are in bytes
 void  kheap_init(void);
 void* kmalloc(u32 size);
 void  kfree(void* addr);

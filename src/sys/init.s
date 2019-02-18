@@ -48,11 +48,10 @@ sys_init:
 	BL	uart_send_string	@
 	BL	uart_clrf		@
 
-	MOV	R0, #1920		@ Initialize framebuffer
-	MOV	R1, #1200		@ 1280x1024, 16bit depth
-	MOV	R2, #16			@
+	MOV	R0, #1280		@ Initialize framebuffer
+	MOV	R1, #1024		@ WxH
+	MOV	R2, #16			@ 16bit depth
 	BL	fb_init			@
-
 	TEQ	R0, #0			@ Check for errors
 	BEQ	_hang			@
 
@@ -64,7 +63,7 @@ sys_init:
 	LDR	R0, =_str_init_vtfb	@ ! DEBUG
 	BL	vfb_println		@
 
-	BL	clk_arm_init		@ Initialize ARM CLK
+	@ BL	clk_arm_init		@ Initialize ARM CLK
 
 	LDR	R0, =_str_init_clk	@ ! DEBUG
 	BL	vfb_println		@

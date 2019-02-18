@@ -111,36 +111,37 @@ void _kinit(void) {
     vfb_printf("   PHYS MEM USR: %x\n\n", MM_PHYS_USR);
     vfb_printf("   PAGE COUNT: %x\n\n", MM_PAGES_TTL);
 
-    // Testing area
 
+    // FIFO TESTING CODE
+    // vfb_printf("CREATING: FIFO\n");
+    // fifo* FIFO = fifo_new(40);
+    // if(FIFO == NULL)
+    //     _panic("FIFO IS NULL!");
 
-    vfb_printf("CREATING: FIFO\n");
-    fifo* FIFO = fifo_new(40);
-    fifo_print(FIFO);
+    // for(u32 count = 40; count; count--)
+    //     if(fifo_write(FIFO, count) == 0)
+    //         vfb_printf("FIFO failed to write %x\n", count);
+    // fifo_print(FIFO);
 
-    u32 val;
+    // u32 read_val = 0;
 
+    // while(fifo_read(FIFO, &read_val) == 1)
+    //     vfb_printf("FIFO read %x\n", read_val);
 
-    vfb_printf("...\n");
+    // for(u32 count = 40; count; count--)
+    //     if(fifo_write(FIFO, count) == 0)
+    //         vfb_printf("FIFO failed to write %x\n", count);
+    // fifo_print(FIFO);
 
-    fifo_write(FIFO, 0x10);
-    vfb_printf("WRITING\n");
-    fifo_print(FIFO);
+    // for(u32 count = 20; count; count--)
+    //     if(fifo_read(FIFO, &read_val) == 1)
+    //         vfb_printf("FIFO read %x\n", read_val);
+    //     else vfb_printf("FIFO failed read %x\n", count);
 
-    fifo_write(FIFO, 0x1B);
-    vfb_printf("WRITING\n");
-    fifo_print(FIFO);
-
-    fifo_write(FIFO, 0x30);
-    vfb_printf("WRITING\n");
-    fifo_print(FIFO);
-
-    fifo_write(FIFO, 0x4A);
-    vfb_printf("WRITING\n");
-    fifo_print(FIFO);
-
-    vfb_printf("IS FIFO: %x\n", FIFO -> is_a_fifo);
-    fifo_free(FIFO);
+    // for(u32 count = 40; count; count--)
+    //     if(fifo_write(FIFO, count) == 0)
+    //         vfb_printf("FIFO failed to write %x\n", count);
+    // fifo_print(FIFO);
 
 
     // Queue initial tasks
