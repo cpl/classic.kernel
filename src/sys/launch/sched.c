@@ -278,7 +278,22 @@ void sched_sleep(u32 ms) {
 // sched_wake will wake up the FIRST task and only the first task from the
 // sleeping q. Next sleeping tasks will be handled on the next tick.
 void sched_wake() {
-    syscall_uputs("wake up"); syscall_uputnl();
+    // mark task as READY
+    _TASK_SLEEPING -> _t -> state = TASK_STATE_READY;
+
+    // if removing the only item, free, set NULL and return
+    if(_TASK_SLEEPING -> next == NULL) {
+        kfree(_TASK_SLEEPING);
+        _TASK_SLEEPING = NULL;
+        return;
+    }
+
+    // if other items in Q, set next as head of sleeping Q then free the
+    // previous node (first node) and mark prev as NULL
+    _TASK_SLEEPING = _TASK_SLEEPING -> next;
+    kfree(_TASK_SLEEPING -> prev);
+    _TASK_SLEEPING -> prev = NULL;
+
     return;
 }
 
