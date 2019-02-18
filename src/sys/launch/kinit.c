@@ -113,8 +113,6 @@ void _low1() {
     for(u16 i = 80; i; i--)
         syscall_println("_low_1(start);");
 
-    syscall_sleep(10000);
-
     while(1) {
         syscall_println("_low_1();");
     }
@@ -123,7 +121,10 @@ void _low1() {
 
 void _high() {
     while(1) {
-        syscall_println("_high();");
+        for(u16 i = 20; i; i--) {
+            syscall_println("_high(!priority!);");
+        }
+        syscall_sleep(10000);
     }
 }
 
@@ -147,13 +148,7 @@ void _kinit(void) {
     // Queue initial tasks
     sched_enqueue(&_LOW0);
     sched_enqueue(&_LOW1);
-
-
-
-
-
-
-
+    sched_enqueue(&_HIGH);
 
     // Pass execution control to scheduler
     sched_init();

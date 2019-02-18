@@ -19,13 +19,13 @@
 #include "mmap.h"
 #include "mmu.h"
 #include "uart.h"
-#include "syscall.h"
 #include "memutil.h"
 #include "asm.h"
 #include "mm.h"
 #include "error.h"
 #include "ctx.h"
 #include "vfb.h"
+#include "clk.h"
 
 
 // Timestamp used to determine premtive scheduling based on time quantum
@@ -51,6 +51,8 @@ static sleep_node* _TASK_SLEEPING = NULL;
 
 // List of task quantum size based on priority
 u32 prior_to_qunatum[TASK_PRIOR_COUNT] = {
+    [TASK_PRIOR_KNL] = 0,
+
     [TASK_PRIOR_LOW] = 100000,
     [TASK_PRIOR_MED] = 200000,
     [TASK_PRIOR_HIG] = 300000,
@@ -58,6 +60,8 @@ u32 prior_to_qunatum[TASK_PRIOR_COUNT] = {
 
 // Pointers to task priority lists based on task priority
 task** prior_to_list[TASK_PRIOR_COUNT] = {
+    [TASK_PRIOR_KNL] = NULL,
+
     [TASK_PRIOR_LOW] = &_TASK_LOW,
     [TASK_PRIOR_MED] = &_TASK_MED,
     [TASK_PRIOR_HIG] = &_TASK_HIG,
@@ -66,7 +70,7 @@ task** prior_to_list[TASK_PRIOR_COUNT] = {
 
 // Initialize kernel task for idle state
 void sched_init() {
-    syscall_println(" SCHEDULER START: OK");
+    vfb_println(" SCHEDULER START: OK");
     CURRENT -> entry();
 }
 
@@ -99,7 +103,7 @@ void sched_tick() {
         _panic("CURRENT task is NULL");
 
     // Get time and check sleeping Q
-    u32 t = syscall_time();
+    u32 t = clk_sys_epoch();
     if(_TASK_SLEEPING != NULL && t > _TASK_SLEEPING -> _ms)
         sched_wake();
 
@@ -129,42 +133,52 @@ void sched_tick() {
 
 void sched_next() {
     task* prev = CURRENT;           // save current task as "previous"
-    task* next;
+    task* next = &_KERNEL_TASK;
 
     // Decide from which list to take a task, fallback is KERNEL TASK
+
     if(_TASK_HIG != NULL) {
         next = _TASK_HIG;
-    } else
+        while(next -> state != TASK_STATE_READY) {
+            next = next -> next;
+
+            if(next == _TASK_HIG)
+                goto _sched_next_check_med;
+        }
+        goto _sched_next_prep;
+    }
+
+
+    _sched_next_check_med:
     if(_TASK_MED != NULL) {
         next = _TASK_MED;
-    } else
+        while(next -> state != TASK_STATE_READY) {
+            next = next -> next;
+
+            if(next == _TASK_MED)
+                goto _sched_next_check_low;
+        }
+        goto _sched_next_prep;
+    }
+
+    _sched_next_check_low:
     if(_TASK_LOW != NULL) {
         next = _TASK_LOW;
-    } else {
-        next = &_KERNEL_TASK;
-    }
-
-    // Ignore if only task is kernel
-    if(next != &_KERNEL_TASK) {
-        // Search for a READY task
-        task* temp = next;
-        while(temp -> state != TASK_STATE_READY) {
-            temp = temp -> next;
-
-            // Searched entire list, fallback to kernel task
-            if(temp == next) {
-                next = &_KERNEL_TASK;
-                break;
-            }
+        while(next -> state != TASK_STATE_READY) {
+            next = next -> next;
         }
-
-        // Update next task with the proper task
-        next = temp;
-        next -> state = TASK_STATE_RUNNING;
-
-        // Update entry timestamp
-        entry_timestamp = syscall_time();
     }
+
+
+    _sched_next_prep:
+    if(next -> state != TASK_STATE_READY)
+        next = &_KERNEL_TASK;
+    else
+        entry_timestamp = clk_sys_epoch();
+
+
+    // Set task as running
+    next -> state = TASK_STATE_RUNNING;
 
     // If same task, return without switching context
     if(next == prev)
@@ -172,6 +186,7 @@ void sched_next() {
 
     // Update CURRENT task
     CURRENT = next;
+    CURRENT -> quantum = prior_to_qunatum[CURRENT -> prior];
 
     // Update memory maps
     // task_mm_set(next);
@@ -193,24 +208,17 @@ u16 sched_pid() {
 // of miliseconds
 void sched_sleep(u32 ms) {
 
-    uart_send_string("testing"); uart_clrf();
-    uart_send_hex(0x41); uart_clrf();
-    uart_send_hex(0x42); uart_clrf();
-    uart_send_hex(0x43); uart_clrf();
-    uart_send_hex(0x44); uart_clrf();
-    uart_send_hex(0x45); uart_clrf();
-    uart_send_hex(0x46); uart_clrf();
+    // ignore
+    if(CURRENT -> state != TASK_STATE_RUNNING)
+        return;
 
     // transform given miliseconds into TIME + miliseconds_to_wake_up_after
     ms = clk_sys_epoch() + ms*1000;
 
     // first sleeping node
     if(_TASK_SLEEPING == NULL) {
-        uart_send_hex(0xAA); uart_clrf();
 
         _TASK_SLEEPING = (sleep_node*)kmalloc(sizeof(sleep_node));
-
-        uart_send_hex(0xBB); uart_clrf();
 
         _TASK_SLEEPING -> _t   = CURRENT;
         _TASK_SLEEPING -> _ms  = ms;
@@ -219,8 +227,7 @@ void sched_sleep(u32 ms) {
 
         CURRENT -> state = TASK_STATE_SLEEPING;
 
-        uart_send_hex(0xCC); uart_clrf();
-
+        CURRENT -> quantum = 0;
         return;
     }
 
@@ -247,6 +254,8 @@ void sched_sleep(u32 ms) {
             _TASK_SLEEPING = node;
 
             CURRENT -> state = TASK_STATE_SLEEPING;
+
+            CURRENT -> quantum = 0;
             return;
         }
 
@@ -261,6 +270,8 @@ void sched_sleep(u32 ms) {
         node -> prev = new_node;
 
         CURRENT -> state = TASK_STATE_SLEEPING;
+
+        CURRENT -> quantum = 0;
         return;
     }
 
@@ -272,6 +283,9 @@ void sched_sleep(u32 ms) {
     node -> _ms  = ms;
     node -> _t   = CURRENT;
     node -> next = NULL;
+
+    CURRENT -> quantum = 0;
+    return;
 }
 
 
