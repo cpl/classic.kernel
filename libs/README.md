@@ -30,7 +30,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 ## [libcls](https://github.com/thee-engineer/classic.clslib)
 
 ``` text
-   Copyright 2018 Alexandru-Paul Copil
+   Copyright 2018-2019 Alexandru-Paul Copil
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
