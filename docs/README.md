@@ -36,4 +36,4 @@
 
 ### Sleep Q
 
-![Sleep Q](schematics/)
+![Sleep Q](schematics/sched_sleep.svg)
