@@ -25,6 +25,7 @@
 void _low0();
 void _low1();
 void _high();
+void _kbd();
 
 task _LOW0 = {
     PID:   1,
@@ -100,6 +101,30 @@ task _HIGH = {
     },
 };
 
+task _KBD = {
+    PID:   20,
+    quantum: 5000,
+    flags: 0,
+
+    size: 0x100,
+    entry: &_kbd,
+
+    prior: TASK_PRIOR_LOW,
+    state: TASK_STATE_READY,
+
+    mm_page_count: 0,
+    mm_tables: {NULL},
+
+    next: NULL,
+    context: {
+        0,0,0,0,0,0,0,0,0,0,0,0,0,
+        SP: 0x1400,
+        LR: 0x0,
+        PC: ((u32)&_kbd),
+        CPSR: 0x0000015F,
+    },
+};
+
 
 void _low0() {
     for(u16 i = 50; i; i--)
@@ -129,6 +154,17 @@ void _high() {
 }
 
 
+
+// ! DEBUG test code code keyboard
+void _kbd() {
+    char* c = "\0\0";
+    while(1) {
+        *c = syscall_getc();
+        syscall_print(c);
+    }
+}
+
+
 // ----
 
 
@@ -146,9 +182,12 @@ void _kinit(void) {
     vfb_printf("   PAGE COUNT: %x\n\n", MM_PAGES_TTL);
 
     // Queue initial tasks
-    sched_enqueue(&_LOW0);
-    sched_enqueue(&_LOW1);
-    sched_enqueue(&_HIGH);
+    // sched_enqueue(&_LOW0);
+    // sched_enqueue(&_LOW1);
+    // sched_enqueue(&_HIGH);
+
+    sched_enqueue(&_KBD);
+
 
     // Pass execution control to scheduler
     sched_init();

@@ -54,4 +54,6 @@ extern void  syscall_malloc(u32 size);
 extern void  syscall_calloc(u32 size);
 extern void  syscall_free(void* addr);
 
+extern char  syscall_getc(void);
+
 #endif

@@ -64,7 +64,7 @@ _reset:
 	LDR	R2, =0x1000000				@ to user space
 	BL	kmemcopy
 
-	@ BL	csudUsbInitialise			@ Initialize CSUD USB
+	BL	csudUsbInitialise			@ Initialize CSUD USB
 
 	B	sys_init				@ Initialize system
 							@ - LED

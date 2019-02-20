@@ -83,6 +83,8 @@ _SWI_JUMP_TABLE:
 	MACRO_SWI_ENTRY		calloc,		_swi_undefined
 	MACRO_SWI_ENTRY		free,		_swi_undefined
 
+	MACRO_SWI_ENTRY		getc,		getc
+
 /*****************************************************************************/
 
 
