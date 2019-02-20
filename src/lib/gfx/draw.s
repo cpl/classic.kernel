@@ -20,21 +20,30 @@
 
 .section .rodata
 
-
 .align 4
 font:		.incbin "data/font.bin"
+
+.align 2
+.globl logo
+logo:		.incbin "data/logo.bin"
+
 
 
 .section .data
 
 
+@ 16 bit color depth
+@ 5 bits red, 6 bits green, 5 bits blue
+@ RRRRR GGGGGG BBBBB
+@ RRRR RGGG GGGB BBBB
+
 .globl colorF
 .align 1
-colorF:		.hword 0x0000
+colorF:		.hword 0xFFFF
 
 .globl colorB
 .align 1
-colorB:		.hword 0xFFFF
+colorB:		.hword 0x0000
 
 
 .section .text

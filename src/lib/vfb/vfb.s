@@ -56,7 +56,7 @@ vfb_init:
 	MOV	R0, #0			@ Reset cursor x and y to 0
 	STRH	R0, [R5, #0]		@
 
-	MVN	R0, #0			@ Make framebuffer white
+	MOV	R0, #0			@ Make framebuffer black
 	BL	draw_fill_fb		@
 
 	POP	{R4-R5, PC}		@ Return
