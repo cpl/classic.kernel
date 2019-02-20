@@ -18,8 +18,12 @@
 #ifndef _INC_VFB_H
 #define _INC_VFB_H
 
+#include "varg.h"
+
+extern void printf(const char* str, ...);
+
 extern void vfb_print(const char* str);
-extern void vfb_printf(const char* fmt, ...);
+extern void vfb_printf(const char* fmt, va_list VA_ARGS);
 extern void vfb_println(const char* str);
 extern void vfb_printdump(void* addr, unsigned int len);
 

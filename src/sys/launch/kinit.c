@@ -128,18 +128,18 @@ task _KBD = {
 
 void _low0() {
     for(u16 i = 50; i; i--)
-        syscall_println("_low_0(default);");
+        printf("_low_0(default);\n");
 
     while(1)
-        syscall_println("_low_0(alternative);");
+        printf("_low_0(alternative);\n");
 }
 
 void _low1() {
     for(u16 i = 80; i; i--)
-        syscall_println("_low_1(start);");
+        printf("_low_1(start);\n");
 
     while(1) {
-        syscall_println("_low_1();");
+        printf("_low_1();\n");
     }
 }
 
@@ -147,7 +147,7 @@ void _low1() {
 void _high() {
     while(1) {
         for(u16 i = 20; i; i--) {
-            syscall_println("_high(!priority!);");
+            printf("_high(!priority!);");
         }
         syscall_sleep(10000);
     }
@@ -168,26 +168,27 @@ void _kbd() {
 // ----
 
 
+extern void printf(const char* s, ...);
+
 void _kinit(void) {
     // 0xF1F0CAFE signature on entry
     syscall_uputx(0xF1F0CAFE); syscall_uputnl();
 
     // ! DEBUG mmap intial allocations
-    vfb_println("\n MMAP INITIAL ALLOCATIONS");
-    vfb_printf("   PHYS MEM SYS: %x\n",   MM_PHYS_SYS);
-    vfb_printf("   PHYS MEM GPU: %x\n",   MM_PHYS_GPU);
-    vfb_printf("   PHYS MEM KNL: %x\n",   MM_PHYS_KNL);
-    vfb_printf("   PHYS MEM LIB: %x\n",   MM_PHYS_LIB);
-    vfb_printf("   PHYS MEM USR: %x\n\n", MM_PHYS_USR);
-    vfb_printf("   PAGE COUNT: %x\n\n", MM_PAGES_TTL);
+    printf("\n MMAP INITIAL ALLOCATIONS");
+    printf("   PHYS MEM SYS: %x\n",   MM_PHYS_SYS);
+    printf("   PHYS MEM GPU: %x\n",   MM_PHYS_GPU);
+    printf("   PHYS MEM KNL: %x\n",   MM_PHYS_KNL);
+    printf("   PHYS MEM LIB: %x\n",   MM_PHYS_LIB);
+    printf("   PHYS MEM USR: %x\n\n", MM_PHYS_USR);
+    printf("   PAGE COUNT: %x\n\n", MM_PAGES_TTL);
 
     // Queue initial tasks
-    // sched_enqueue(&_LOW0);
-    // sched_enqueue(&_LOW1);
-    // sched_enqueue(&_HIGH);
+    sched_enqueue(&_LOW0);
+    sched_enqueue(&_LOW1);
+    sched_enqueue(&_HIGH);
 
-    sched_enqueue(&_KBD);
-
+    // sched_enqueue(&_KBD);
 
     // Pass execution control to scheduler
     sched_init();

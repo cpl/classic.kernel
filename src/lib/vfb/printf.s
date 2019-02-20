@@ -19,17 +19,36 @@
 .include "asm/ascii.s"
 
 
+.section .text.usr
+
+
+@ printf
+@ void printf (const char* fmt, ...)
+.globl printf
+printf:
+	PUSH	{R1-R3}			@ Save VA_ARGS
+	PUSH	{LR}			@ Save return
+	ADD	R1, SP, #4		@ Move SP to VA_ARGS and pass to builtin
+					@ printf as R1 arg
+
+	BL	syscall_builtin_printf	@ SYSCALL to printf
+
+	POP	{LR}			@ Get return
+	SUB	SP, #12			@ Remove args
+	BX	LR			@ Return
+
 .section .text
 
 
 @ vfb_printf
-@ void printf (const char* fmt, ...)
+@ void printf (const char* fmt, VA_ARGS)
 @ Takes a format string pointer (R0) and a set of variable arguments which
 @ are stored on the stack, starting from SP and going UP.
 @ Table of format flags:
 .globl vfb_printf
 vfb_printf:
 	TEQ	R0, #0			@ Ignore NULL string
+	TEQNE	R1, #0			@ Ignore NULL args
 	BXEQ	LR			@
 
 	char	.req R0			@ Alias registers to make
@@ -42,13 +61,14 @@ vfb_printf:
 	vfbdat	.req R10		@
 	cvbufr	.req R11		@
 
-	PUSH	{R1-R3}			@ Push all variable arguments
+	@ PUSH	{R2-R3}			@ Push all variable arguments
 					@ R0 (const char* fmt) is ignored
+					@ R1 (pointer to stack) is ignored
 
 	PUSH	{R4-R12, LR}		@ Normal context save
 
 	MOV	fmts, R0		@ Save format string pointer
-	ADD	args, SP, #(10*4)	@ Save varg stack pointer
+	MOV	args, R1		@ Save varg stack pointer
 
 	LDR	vfbdat, =vfb_data	@ Get vfb data address
 	LDR	R1, [vfbdat]		@ Get vfb data
@@ -62,7 +82,7 @@ vfb_printf:
 	AND	curs_x, R1, #0xFF	@
 
 	MOV	R0, #0x40		@ Allocate conversion buffer
-	BL	syscall_kmalloc		@
+	BL	kmalloc			@
 	MOV	cvbufr, R0		@ Save pointer
 
  _vfb_printf_loop:
@@ -111,11 +131,10 @@ vfb_printf:
 	STRB	curs_y, [vfbdat, #1]	@ Save new curs y
 
 	MOV	R0, cvbufr		@ Free conversion buffer
-	BL	syscall_kfree		@
+	BL	kfree			@
 
-	POP	{R4-R12, LR}		@ Restore context
-	ADD	SP, #(3*4)		@
-	BX	LR			@ Return
+	POP	{R4-R12, PC}		@ Restore context
+					@ Return
 
  _vfb_printf_fmt:
 	LDRB	char, [fmts], #1	@ Load arg type char

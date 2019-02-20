@@ -94,8 +94,8 @@ u8 fifo_read(fifo* f, u32* ret) {
 
 
 // ! DEBUG fifo_print is a debug function.
-void fifo_print(fifo* f) {
-    vfb_printf("-- FIFO --\n");
-    vfb_printf("HEAD: %x | TAIL: %x\n", f -> head, f -> tail);
-    vfb_printf("CAP:  %x | LEN:  %x\n", f -> cap, f -> len);
-}
+// void fifo_print(fifo* f) {
+//     vfb_printf("-- FIFO --\n");
+//     vfb_printf("HEAD: %x | TAIL: %x\n", f -> head, f -> tail);
+//     vfb_printf("CAP:  %x | LEN:  %x\n", f -> cap, f -> len);
+// }
