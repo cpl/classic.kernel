@@ -34,7 +34,7 @@ printf:
 	BL	syscall_builtin_printf	@ SYSCALL to printf
 
 	POP	{LR}			@ Get return
-	SUB	SP, #12			@ Remove args
+	ADD	SP, #12			@ Remove args
 	BX	LR			@ Return
 
 .section .text

@@ -20,6 +20,7 @@
 #include "syscall.h"
 #include "error.h"
 #include "vfb.h"
+#include "asm.h"
 
 
 void _low0();
@@ -135,11 +136,9 @@ void _low0() {
 }
 
 void _low1() {
-    for(u16 i = 80; i; i--)
-        printf("_low_1(start);\n");
-
+    u32 count = 0;
     while(1) {
-        printf("_low_1();\n");
+        printf("%x: _low_1(); %x\n", count++, GETSP());
     }
 }
 
@@ -184,9 +183,9 @@ void _kinit(void) {
     printf("   PAGE COUNT: %x\n\n", MM_PAGES_TTL);
 
     // Queue initial tasks
-    sched_enqueue(&_LOW0);
+    // sched_enqueue(&_LOW0);
     sched_enqueue(&_LOW1);
-    sched_enqueue(&_HIGH);
+    // sched_enqueue(&_HIGH);
 
     // sched_enqueue(&_KBD);
 
