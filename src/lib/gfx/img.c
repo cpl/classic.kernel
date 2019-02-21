@@ -24,23 +24,18 @@ void draw_img(const u16* data, u32 x, u32 y, u32 width, u32 height) {
     if(data == NULL)
         return;
 
-    u32 dx = width;
+    u32 dx =  width-1;
     u32 dy = height-1;
-
-    u32 count = 0;
 
     while(dy) {
         while(dx) {
             draw_pixel(data[dy*width+dx], x+dx, y+dy);
             dx--;
-            count++;
         }
+
         dy--;
-        dx = width;
+        dx = width-1;
     }
-
-
-    syscall_uputx(count); syscall_uputnl();
 
     return;
 }
