@@ -62,6 +62,11 @@ vfb_print:
 
 	LDRB	R0, [R4], #1		@ Load char
 
+	TST	curs_x, #0		@ Ignore backspace on left edge
+	TEQEQ	R0, #ASCII_BS		@ Check for backspace
+	SUBEQ	curs_x, #1		@
+	BEQ	_vfb_print_loop		@
+
 	TEQ	R0, #ASCII_LF		@ Check for new line
 	ADDEQ	curs_y, #1		@
 	MOVEQ	curs_x, #0		@

@@ -102,6 +102,11 @@ vfb_printf:
 	TEQ	char, #'\\'		@ Check for escape flag
 	BEQ	_vfb_printf_esc		@ Parse escape
 
+	TST	curs_x, #0		@ Ignore backspace on left edge
+	TEQEQ	R0, #ASCII_BS		@ Check for backspace
+	SUBEQ	curs_x, #1		@
+	BEQ	_vfb_printf_loop	@
+
 	TEQ	char, #ASCII_LF		@ Check for new line
 	MOVEQ	curs_x, #0		@
 	ADDEQ	curs_y, #1		@
