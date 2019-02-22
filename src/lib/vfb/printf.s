@@ -96,6 +96,10 @@ vfb_printf:
 
 	LDRB	char, [fmts], #1	@ Load char from format string
 
+	TEQ	char, #ASCII_CR		@ Check for carriage return
+	MOVEQ	curs_x, #0		@
+	BEQ	_vfb_printf_loop	@
+
 	TEQ	char, #'%'		@ Check for arg flag
 	BEQ	_vfb_printf_fmt		@ Parse arg
 

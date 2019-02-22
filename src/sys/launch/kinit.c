@@ -22,6 +22,7 @@
 #include "vfb.h"
 #include "asm.h"
 #include "draw.h"
+#include "shell.h"
 
 
 void _low0();
@@ -160,7 +161,7 @@ void _kbd() {
     char* c = "\0\0";
     while(1) {
         *c = syscall_getc();
-        syscall_print(c);
+        printf(c);
     }
 }
 
@@ -173,7 +174,6 @@ extern void printf(const char* s, ...);
 void _kinit(void) {
     // 0xF1F0CAFE signature on entry
     syscall_uputx(0xF1F0CAFE); syscall_uputnl();
-    printf("LOGO ADDR: %x\n", &logo);
 
     // ! DEBUG mmap intial allocations
     printf("\n MMAP INITIAL ALLOCATIONS");
@@ -186,8 +186,6 @@ void _kinit(void) {
 
     draw_img(((u16*)(&logo)), 950, 0, 250, 250);
 
-
-
     // Queue initial tasks
     // sched_enqueue(&_LOW0);
     // sched_enqueue(&_LOW1);
@@ -196,10 +194,10 @@ void _kinit(void) {
     // sched_enqueue(&_KBD);
 
 
-    while(1);
+    shell_init();
 
     // Pass execution control to scheduler
-    sched_init();
+    // sched_init();
 
     // Catch
     _panic("catch scheduler ilegal exit");
