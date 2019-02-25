@@ -113,15 +113,15 @@ void shell_handlecmd(char* buf) {
     }
 
     // at this point argv[0] is the command
-    _shell_arg_debug(argc, argv);
-    return;
+    // _shell_arg_debug(argc, argv);
+    // return;
 
     // search commands
     for(u32 idx = 0; idx < SHELL_CMD_LIMIT; idx++) {
 
         // if match command
         if(strequ(argv[0], SHELL_CMDID_CMDSTR[idx])) {
-            SHELL_CMDID_CMDFN[idx]();
+            SHELL_CMDID_CMDFN[idx](argc, argv);
 
             printf(SHELL_END);
             return;
@@ -136,17 +136,19 @@ void shell_handlecmd(char* buf) {
 
 // CMD
 
-void _cmd_undefined(void) {
+void _cmd_undefined(u32 argc, char* argv[]) {
     printf("sorry, function not implemented");
 }
 
 
-void _cmd_notfound(void) {
+void _cmd_notfound() {
     printf("sorry, function not found, for more details type 'help'");
 }
 
 
-void _cmd_help(void) {
+
+
+void _cmd_help(u32 argc, char* argv[]) {
     printf("classic OS, type shell\navailable commands:\n\n");
     for(u32 idx = 0; idx < SHELL_CMD_LIMIT; idx++) {
         printf("  ");
@@ -155,6 +157,12 @@ void _cmd_help(void) {
         printf(SHELL_CMDID_CMDINS[idx]);
         printf(SHELL_END);
     }
+}
+
+
+void _cmd_clear(u32 argc, char* argv[]) {
+    vfb_clear();
+    vfb_reset();
 }
 
 
@@ -168,11 +176,5 @@ void _shell_arg_debug(u32 argc, char* argv[]) {
         printf(argv[idx]);
         printf("\n");
     }
-
-
-
-
 }
-
-
 

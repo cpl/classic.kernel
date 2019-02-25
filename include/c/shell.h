@@ -46,12 +46,13 @@ extern void _shell_arg_debug(u32 argc, char* argv[]);
 // CMD
 
 // cmd function format
-typedef void (*cmd_ptr)(void);
+typedef void (*cmd_ptr)(u32 argc, char* argv[]);
 
-extern void _cmd_undefined(void);
-extern void _cmd_help(void);
-extern void _cmd_notfound(void);
+extern void _cmd_undefined(u32 argc, char* argv[]);
+extern void _cmd_help(u32 argc, char* argv[]);
+extern void _cmd_clear(u32 argc, char* argv[]);
 
+extern void _cmd_notfound();
 
 #define _CMD_ID_HELP    0
 #define _CMD_ID_CLEAR   1
@@ -75,7 +76,7 @@ static const char SHELL_CMDID_CMDINS[][SHELL_CMD_MAX_LEN] = {
 
 static const cmd_ptr SHELL_CMDID_CMDFN[] = {
     [_CMD_ID_HELP]      = _cmd_help,
-    [_CMD_ID_CLEAR]     = _cmd_undefined,
+    [_CMD_ID_CLEAR]     = _cmd_clear,
     [_CMD_ID_PRINT]     = _cmd_undefined,
     [_CMD_ID_REBOOT]    = _cmd_undefined,
 };
