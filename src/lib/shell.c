@@ -16,7 +16,6 @@
 
 
 #include "shell.h"
-#include "types.h"
 #include "syscall.h"
 #include "vfb.h"
 #include "bool.h"
@@ -47,7 +46,10 @@ void shell_init() {
                 if(CMD_CURSOR == CMD_BUFFER)
                     break;
 
-                *CMD_CURSOR = ASCII_NULL; CMD_CURSOR--; *CMD_CURSOR = ' ';
+                *CMD_CURSOR = ASCII_NULL;
+                CMD_CURSOR--;
+                *CMD_CURSOR = ' ';
+
                 shell_refresh(CMD_BUFFER);
                 break;
 
@@ -83,14 +85,94 @@ void shell_init() {
 void shell_refresh(const char* buf) {
     printf(SHELL_SYMBOL);
     printf(buf);
+
+    return;
 }
 
 
-void shell_handlecmd(const char* buf) {
+void shell_handlecmd(char* buf) {
     printf("\n");
 
-    if(strequ(buf, "help\0"))
-        printf(SHELL_HELP_MSG);
+    // ignore empty buffer
+    if(*buf == ASCII_NULL)
+        return;
 
-    printf("\n");
+    char* argv[SHELL_MAX_ARGC];             // store argv pointers
+    argv[0]  = buf;                         // first argv is the command
+    u32 argc = 1;                           // count of arguments
+
+    // scan buffer for argc and argv
+    while(*buf) {
+
+        if(*buf == SHELL_SPLIT_SYMBOL) {    // check for split symbol
+            *buf = ASCII_NULL;              // null pad argv
+            argv[argc++] = (buf+1);         // set argv ptr start at next char
+        }
+
+        buf++;                              // move forward
+    }
+
+    // at this point argv[0] is the command
+    _shell_arg_debug(argc, argv);
+    return;
+
+    // search commands
+    for(u32 idx = 0; idx < SHELL_CMD_LIMIT; idx++) {
+
+        // if match command
+        if(strequ(argv[0], SHELL_CMDID_CMDSTR[idx])) {
+            SHELL_CMDID_CMDFN[idx]();
+
+            printf(SHELL_END);
+            return;
+        }
+    }
+
+    _cmd_notfound();
+    printf(SHELL_END);
+    return;
 }
+
+
+// CMD
+
+void _cmd_undefined(void) {
+    printf("sorry, function not implemented");
+}
+
+
+void _cmd_notfound(void) {
+    printf("sorry, function not found, for more details type 'help'");
+}
+
+
+void _cmd_help(void) {
+    printf("classic OS, type shell\navailable commands:\n\n");
+    for(u32 idx = 0; idx < SHELL_CMD_LIMIT; idx++) {
+        printf("  ");
+        printf(SHELL_CMDID_CMDSTR[idx]);
+        printf(" - ");
+        printf(SHELL_CMDID_CMDINS[idx]);
+        printf(SHELL_END);
+    }
+}
+
+
+void _shell_arg_debug(u32 argc, char* argv[]) {
+    printf("\n---- ARG DEBUG ----\n");
+    printf("command is: "); printf(argv[0]); printf("\n");
+    printf("command has %x [argc]\n", argc);
+    printf("----\n");
+    for(u32 idx = 1; idx < argc; idx++) {
+        printf("%x arg: ", idx);
+        printf(argv[idx]);
+        printf("\n");
+    }
+
+
+
+
+}
+
+
+
