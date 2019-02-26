@@ -17,12 +17,40 @@
 
 #include "shell.h"
 #include "syscall.h"
+#include "asm.h"
 #include "vfb.h"
 #include "bool.h"
 #include "string.h"
 
 
+// task _SHELL_TASK = {
+//     PID:   100,
+//     quantum: 5000,
+//     flags: 0,
+
+//     size: 0x100,
+//     entry: &shell_init,
+
+//     prior: TASK_PRIOR_LOW,
+//     state: TASK_STATE_READY,
+
+//     mm_page_count: 0,
+//     mm_tables: {NULL},
+
+//     next: NULL,
+//     context: {
+//         0,0,0,0,0,0,0,0,0,0,0,0,0,
+//         SP: 0x1400,
+//         LR: 0x0,
+//         PC: ((u32)&shell_init),
+//         CPSR: 0x0000015F,
+//     },
+// };
+
+
 void shell_init() {
+    printf("starting type shell in mode %x\n", GETCPSR());
+
     // create buffer for storing chars as they come in from the user
     char* CMD_BUFFER = syscall_kmalloc(SHELL_BUFFER_SIZE);
     // a pointer to the end of the command string on the command buffer

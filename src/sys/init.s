@@ -63,7 +63,8 @@ sys_init:
 	LDR	R0, =_str_init_vtfb	@ ! DEBUG
 	BL	vfb_println		@
 
-	BL	clk_arm_init		@ Initialize ARM CLK
+	@ BL	clk_arm_init		@ Initialize ARM CLK
+	BL	clk_sys_init		@ Initialize SYS CLK
 
 	LDR	R0, =_str_init_clk	@ ! DEBUG
 	BL	vfb_println		@

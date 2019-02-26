@@ -57,6 +57,7 @@ _irq:
 	SUB	SP, #0x40			@ "Allocate" space on stack
 						@ for context struct, 17 words
 
+
 	STR	LR, [SP, #0x3C]			@ Save PC+4
 	STMIA	SP, {R0-R12}			@ Save general registers
 
@@ -81,15 +82,22 @@ _irq:
 @ The interrupts handler checks which interrupt bits are active and runs the
 @ assigned service routine.
 irq_handler:
-	PUSH	{R4, LR}
+	PUSH	{R4, R5, LR}
 
-	LDR	R4, =INTERRUPTS_BASE		@ Load IRQ base
-	LDR	R4, [R4, #IRQ_BASIC_PENDING]	@ Load IRQ pending
+	LDR	R5, =INTERRUPTS_BASE		@ Load IRQ base
 
-	TST	R4, #IRQ_CLK_ARM		@ Tick the scheduler
-	BLNE	sched_tick			@
+	LDR	R4, [R5, #IRQ_BASIC_PENDING]	@ Load IRQ pending (ARM CLK)
 
 	TST	R4, #IRQ_CLK_ARM		@ Check for timer interrupt
 	BLNE	clk_arm_isr			@ Handle    timer interrupt
 
-	POP	{R4, PC}			@ Return
+	LDR	R4, [R5, #IRQ_PENDING_1]	@ Load IRQ PENDING (SYS CLK)
+
+	TST	R4, #2				@ Tick the scheduler
+	BLNE	sched_tick			@
+
+	TST	R4, #2				@ Handle timer interrupt
+	BLNE	clk_sys_isr			@
+
+
+	POP	{R4, R5, PC}			@ Return

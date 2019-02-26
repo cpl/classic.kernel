@@ -20,6 +20,10 @@
 
 #include "types.h"
 
+// #include "sched.h"
+// extern task _SHELL_TASK;
+
+
 #define SHELL_BUFFER_SIZE       512
 #define SHELL_SYMBOL            "\r$."
 #define SHELL_END               "\n"

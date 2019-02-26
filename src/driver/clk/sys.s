@@ -17,6 +17,14 @@
 
 .include "board/base.s"
 .include "board/clk.s"
+.include "board/irq.s"
+
+
+.section .data
+
+.align 4
+clk_sys_current:	.word	0
+
 
 
 .section .text
@@ -28,4 +36,37 @@
 clk_sys_epoch:
 	LDR	R0, =CLK_SYS_BASE		@ Get timer address
 	LDRD	R0, R1, [R0, #CLK_SYS_CLO]	@ Get timer value (64 bits)
+	BX	LR				@ Return
+
+
+
+.globl clk_sys_init
+clk_sys_init:
+	LDR	R0, =CLK_SYS_BASE		@ Prepare SYS CLK
+	LDR	R1, [R0, #CLK_SYS_CLO]		@
+	LDR	R2, =200000			@
+	ADD	R1, R1, R2			@
+	LDR	R2, =clk_sys_current		@
+	STR	R1, [R2]			@
+	STR	R1, [R0, #CLK_SYS_C1]		@
+
+	LDR	R0, =INTERRUPTS_BASE		@ Enable IRQ for SYS CLK compare
+	MOV	R1, #2				@
+	STR	R1, [R0, #IRQ_ENABLE_1]		@
+
+	BX	LR				@ Return
+
+
+.globl clk_sys_isr
+clk_sys_isr:
+	LDR	R0, =clk_sys_current		@ Handle SYS CLK IRQ
+	LDR	R1, [R0]			@
+	LDR	R2, =200000			@
+	ADD	R1, R1, R2			@
+	STR	R1, [R0]			@
+	LDR	R0, =CLK_SYS_BASE		@
+	STR	R1, [R0, #CLK_SYS_C1]		@
+	MOV	R1, #2				@
+	STR	R1, [R0, #CLK_SYS_CS]		@
+
 	BX	LR				@ Return
