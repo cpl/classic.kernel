@@ -145,9 +145,6 @@ void _cmd_notfound() {
     printf("sorry, function not found, for more details type 'help'");
 }
 
-
-
-
 void _cmd_help(u32 argc, char* argv[]) {
     printf("classic OS, type shell\navailable commands:\n\n");
     for(u32 idx = 0; idx < SHELL_CMD_LIMIT; idx++) {
@@ -159,12 +156,14 @@ void _cmd_help(u32 argc, char* argv[]) {
     }
 }
 
-
 void _cmd_clear(u32 argc, char* argv[]) {
     vfb_clear();
     vfb_reset();
 }
 
+void _cmd_time(u32 argc, char* argv[]) {
+    printf("%x", syscall_time());
+}
 
 void _shell_arg_debug(u32 argc, char* argv[]) {
     printf("\n---- ARG DEBUG ----\n");

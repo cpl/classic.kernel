@@ -44,9 +44,6 @@ clk_arm_init:
 
 	LDR	R0, =CLK_ARM_BASE		@ Load timer base
 
-	@ MOV	R1, #0x003E0000			@ Set pre-scalar
-	@ STR	R1, [R0, #CLK_ARM_CTL]		@
-
 	LDR	R1, =0x400			@ Set timer load and reload
 	STR	R1, [R0, #CLK_ARM_LOD]		@
 	STR	R1, [R0, #CLK_ARM_RLD]		@
@@ -61,7 +58,7 @@ clk_arm_init:
 	STR	R1, [R2, #IRQ_ENABLE_BASIC]	@
 
 	LDR	R1, =0x000000AA			@ Enable timer with interrupts
-	STR	R1, [R0, #CLK_ARM_CTL]		@
+	STR	R1, [R0, #CLK_ARM_CTL]		@ and set pre-scalar to clk/256
 
 	BX	LR				@ Return
 
@@ -70,10 +67,9 @@ clk_arm_init:
 @ Handle IRQ for ARM Local Timer.
 .globl clk_arm_isr
 clk_arm_isr:
-	PUSH	{LR}
 
 	LDR	R0, =CLK_ARM_BASE		@ Load  IRQ Clear REG
 	MOV	R1, #0				@ Clear IRQ
 	STR	R1, [R0, #CLK_ARM_CLI]		@
 
-	POP	{PC}				@ Return
+	BX	LR

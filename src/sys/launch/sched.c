@@ -70,7 +70,6 @@ task** prior_to_list[TASK_PRIOR_COUNT] = {
 
 // Initialize kernel task for idle state
 void sched_init() {
-    vfb_println(" SCHEDULER START: OK");
     CURRENT -> entry();
 }
 

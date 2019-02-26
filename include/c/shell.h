@@ -20,7 +20,6 @@
 
 #include "types.h"
 
-
 #define SHELL_BUFFER_SIZE       512
 #define SHELL_SYMBOL            "\r$."
 #define SHELL_END               "\n"
@@ -51,34 +50,35 @@ typedef void (*cmd_ptr)(u32 argc, char* argv[]);
 extern void _cmd_undefined(u32 argc, char* argv[]);
 extern void _cmd_help(u32 argc, char* argv[]);
 extern void _cmd_clear(u32 argc, char* argv[]);
+extern void _cmd_time(u32 argc, char* argv[]);
 
 extern void _cmd_notfound();
 
 #define _CMD_ID_HELP    0
 #define _CMD_ID_CLEAR   1
-#define _CMD_ID_PRINT   2
-#define _CMD_ID_REBOOT  3
+#define _CMD_ID_REBOOT  2
+#define _CMD_ID_TIME    3
 
 
 static const char SHELL_CMDID_CMDSTR[][SHELL_BUFFER_SIZE] = {
     [_CMD_ID_HELP]      = "help",
     [_CMD_ID_CLEAR]     = "clear",
-    [_CMD_ID_PRINT]     = "print",
     [_CMD_ID_REBOOT]    = "reboot",
+    [_CMD_ID_TIME]      = "time",
 };
 
 static const char SHELL_CMDID_CMDINS[][SHELL_CMD_MAX_LEN] = {
     [_CMD_ID_HELP]      = "display this help message",
     [_CMD_ID_CLEAR]     = "clear the framebuffer using the background color",
-    [_CMD_ID_PRINT]     = "print a formated string or standard string",
     [_CMD_ID_REBOOT]    = "restart the operating system",
+    [_CMD_ID_TIME]      = "display the system time",
 };
 
 static const cmd_ptr SHELL_CMDID_CMDFN[] = {
     [_CMD_ID_HELP]      = _cmd_help,
     [_CMD_ID_CLEAR]     = _cmd_clear,
-    [_CMD_ID_PRINT]     = _cmd_undefined,
     [_CMD_ID_REBOOT]    = _cmd_undefined,
+    [_CMD_ID_TIME]      = _cmd_time,
 };
 
 

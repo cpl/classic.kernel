@@ -138,9 +138,16 @@ void _low0() {
 }
 
 void _low1() {
-    u32 count = 0;
     while(1) {
-        printf("%x: _low_1(); %x\n", count++, GETSP());
+        syscall_gpio_set(18, 0);
+        syscall_gpio_sel(18, 1);
+
+        for(u32 i = 10000; i; i--);
+
+        syscall_gpio_set(18, 1);
+        syscall_gpio_sel(18, 1);
+
+        for(u32 i = 10000; i; i--);
     }
 }
 
@@ -169,22 +176,18 @@ void _kbd() {
 // ----
 
 
-extern void printf(const char* s, ...);
-
 void _kinit(void) {
     // 0xF1F0CAFE signature on entry
     syscall_uputx(0xF1F0CAFE); syscall_uputnl();
 
     // ! DEBUG mmap intial allocations
-    printf("\n MMAP INITIAL ALLOCATIONS");
+    printf("\n MMAP INITIAL ALLOCATIONS\n");
     printf("   PHYS MEM SYS: %x\n",   MM_PHYS_SYS);
     printf("   PHYS MEM GPU: %x\n",   MM_PHYS_GPU);
     printf("   PHYS MEM KNL: %x\n",   MM_PHYS_KNL);
     printf("   PHYS MEM LIB: %x\n",   MM_PHYS_LIB);
     printf("   PHYS MEM USR: %x\n\n", MM_PHYS_USR);
-    printf("   PAGE COUNT: %x\n\n", MM_PAGES_TTL);
-
-    draw_img(((u16*)(&logo)), 950, 0, 250, 250);
+    printf("   PAGE COUNT: %x\n\n",   MM_PAGES_TTL);
 
     // Queue initial tasks
     // sched_enqueue(&_LOW0);
@@ -192,7 +195,7 @@ void _kinit(void) {
     // sched_enqueue(&_HIGH);
 
     // sched_enqueue(&_KBD);
-
+    // sched_enqueue(&_SHELL_TASK);
 
     shell_init();
 
