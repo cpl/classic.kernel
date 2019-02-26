@@ -23,6 +23,8 @@
 .align 4
 font:		.incbin "data/font.bin"
 
+.section .rodata.usr
+
 .align 2
 .globl logo
 logo:		.incbin "data/logo.bin"

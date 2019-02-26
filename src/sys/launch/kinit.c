@@ -189,6 +189,9 @@ void _kinit(void) {
     printf("   PHYS MEM USR: %x\n\n", MM_PHYS_USR);
     printf("   PAGE COUNT: %x\n\n",   MM_PAGES_TTL);
 
+    draw_img((u16*)&logo, 950, 0, 250, 250);
+
+
     // Queue initial tasks
     // sched_enqueue(&_LOW0);
     // sched_enqueue(&_LOW1);
