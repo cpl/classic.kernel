@@ -23,29 +23,29 @@
 #include "string.h"
 
 
-// task _SHELL_TASK = {
-//     PID:   100,
-//     quantum: 5000,
-//     flags: 0,
+task _SHELL_TASK = {
+    PID:   100,
+    quantum: 100000,
+    flags: 0,
 
-//     size: 0x100,
-//     entry: &shell_init,
+    size: 0x100,
+    entry: &shell_init,
 
-//     prior: TASK_PRIOR_LOW,
-//     state: TASK_STATE_READY,
+    prior: TASK_PRIOR_LOW,
+    state: TASK_STATE_READY,
 
-//     mm_page_count: 0,
-//     mm_tables: {NULL},
+    mm_page_count: 0,
+    mm_tables: {NULL},
 
-//     next: NULL,
-//     context: {
-//         0,0,0,0,0,0,0,0,0,0,0,0,0,
-//         SP: 0x1400,
-//         LR: 0x0,
-//         PC: ((u32)&shell_init),
-//         CPSR: 0x0000015F,
-//     },
-// };
+    next: NULL,
+    context: {
+        0,0,0,0,0,0,0,0,0,0,0,0,0,
+        SP: 0x1400,
+        LR: 0x0,
+        PC: ((u32)&shell_init),
+        CPSR: 0x0000015F,
+    },
+};
 
 
 void shell_init() {
@@ -205,3 +205,23 @@ void _shell_arg_debug(u32 argc, char* argv[]) {
     }
 }
 
+
+// void _cmd_gpio(u32 argc, char* argv[]) {
+//     const char _help[] = "invalid args, usage:\ngpio:<sel|set>:<0-53>:<0-7>";
+
+//     if(argc != 4) {
+//         printf(_help);
+//         return;
+//     }
+
+//     if(strequ(argv[1], "sel")) {
+
+//     } else if(strequ(argv[1], "set")) {
+
+//     } else {
+//         printf(_help);
+//     }
+
+
+//     return;
+// }

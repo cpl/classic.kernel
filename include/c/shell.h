@@ -19,9 +19,9 @@
 #define _INC_SHELL_H
 
 #include "types.h"
+#include "sched.h"
 
-// #include "sched.h"
-// extern task _SHELL_TASK;
+extern task _SHELL_TASK;
 
 
 #define SHELL_BUFFER_SIZE       512
@@ -55,6 +55,7 @@ extern void _cmd_undefined(u32 argc, char* argv[]);
 extern void _cmd_help(u32 argc, char* argv[]);
 extern void _cmd_clear(u32 argc, char* argv[]);
 extern void _cmd_time(u32 argc, char* argv[]);
+// extern void _cmd_gpio(u32 argc, char* argv[]);
 
 extern void _cmd_notfound();
 
@@ -62,6 +63,7 @@ extern void _cmd_notfound();
 #define _CMD_ID_CLEAR   1
 #define _CMD_ID_REBOOT  2
 #define _CMD_ID_TIME    3
+// #define _CMD_ID_GPIO    4
 
 
 static const char SHELL_CMDID_CMDSTR[][SHELL_BUFFER_SIZE] = {
@@ -69,6 +71,7 @@ static const char SHELL_CMDID_CMDSTR[][SHELL_BUFFER_SIZE] = {
     [_CMD_ID_CLEAR]     = "clear",
     [_CMD_ID_REBOOT]    = "reboot",
     [_CMD_ID_TIME]      = "time",
+    // [_CMD_ID_GPIO]      = "gpio",
 };
 
 static const char SHELL_CMDID_CMDINS[][SHELL_CMD_MAX_LEN] = {
@@ -76,6 +79,7 @@ static const char SHELL_CMDID_CMDINS[][SHELL_CMD_MAX_LEN] = {
     [_CMD_ID_CLEAR]     = "clear the framebuffer using the background color",
     [_CMD_ID_REBOOT]    = "restart the operating system",
     [_CMD_ID_TIME]      = "display the system time",
+    // [_CMD_ID_GPIO]      = "control LOW/HIGH and FN SEL of GPIO"
 };
 
 static const cmd_ptr SHELL_CMDID_CMDFN[] = {
@@ -83,6 +87,7 @@ static const cmd_ptr SHELL_CMDID_CMDFN[] = {
     [_CMD_ID_CLEAR]     = _cmd_clear,
     [_CMD_ID_REBOOT]    = _cmd_undefined,
     [_CMD_ID_TIME]      = _cmd_time,
+    // [_CMD_ID_GPIO]      = _cmd_gpio,
 };
 
 

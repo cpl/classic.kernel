@@ -26,7 +26,9 @@
 #include "types.h"
 
 
-u32 clk_sys_epoch(void);
+u32  clk_sys_epoch(void);
+void clk_sys_init(u32 increment);
+void clk_sys_isr (u32 increment);
 
 
 #endif

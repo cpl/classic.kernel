@@ -82,7 +82,7 @@ _irq:
 @ The interrupts handler checks which interrupt bits are active and runs the
 @ assigned service routine.
 irq_handler:
-	PUSH	{R4, R5, LR}
+	PUSH	{R0, R4, R5, LR}
 
 	LDR	R5, =INTERRUPTS_BASE		@ Load IRQ base
 
@@ -96,8 +96,9 @@ irq_handler:
 	TST	R4, #2				@ Tick the scheduler
 	BLNE	sched_tick			@
 
-	TST	R4, #2				@ Handle timer interrupt
-	BLNE	clk_sys_isr			@
+	@ TST	R4, #2				@ Handle timer interrupt
+	@ LDRNE	R0, =200000
+	@ BLNE	clk_sys_isr			@
 
 
-	POP	{R4, R5, PC}			@ Return
+	POP	{R0, R4, R5, PC}		@ Return

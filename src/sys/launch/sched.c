@@ -28,8 +28,8 @@
 #include "clk.h"
 
 
-// Timestamp used to determine premtive scheduling based on time quantum
-static u32 entry_timestamp = 0;
+// // Timestamp used to determine premtive scheduling based on time quantum
+// static u32 entry_timestamp = 0;
 
 // Location of context saved by interrupt exception
 static ctx* CTX_IRQ = (ctx*)(0x2C00-0x40);
@@ -51,7 +51,7 @@ static sleep_node* _TASK_SLEEPING = NULL;
 
 // List of task quantum size based on priority
 u32 prior_to_qunatum[TASK_PRIOR_COUNT] = {
-    [TASK_PRIOR_KNL] = 0,
+    [TASK_PRIOR_KNL] = 1000,
 
     [TASK_PRIOR_LOW] = 100000,
     [TASK_PRIOR_MED] = 200000,
@@ -70,6 +70,7 @@ task** prior_to_list[TASK_PRIOR_COUNT] = {
 
 // Initialize kernel task for idle state
 void sched_init() {
+    clk_sys_init(CURRENT -> quantum);
     CURRENT -> entry();
 }
 
@@ -97,6 +98,9 @@ void sched_enqueue(register task* new) {
 
 
 void sched_tick() {
+
+    // printf(".");
+
     // Panic if no current task
     if(CURRENT == NULL)
         _panic("CURRENT task is NULL");
@@ -114,9 +118,9 @@ void sched_tick() {
     if(CURRENT -> state != TASK_STATE_RUNNING)
         return sched_next();
 
-    // Check time quantum and continue if within limits
-    if(t < entry_timestamp + CURRENT -> quantum)
-        return;
+    // // Check time quantum and continue if within limits
+    // if(t < entry_timestamp + CURRENT -> quantum)
+    //     return;
 
     // Set current task as READY after RUNNING
     CURRENT -> state = TASK_STATE_READY;
@@ -172,9 +176,10 @@ void sched_next() {
     _sched_next_prep:
     if(next -> state != TASK_STATE_READY)
         next = &_KERNEL_TASK;
-    else
-        entry_timestamp = clk_sys_epoch();
+    // else
+        // entry_timestamp = clk_sys_epoch();
 
+    clk_sys_isr(next -> quantum);
 
     // Set task as running
     next -> state = TASK_STATE_RUNNING;

@@ -42,13 +42,12 @@ clk_sys_epoch:
 
 .globl clk_sys_init
 clk_sys_init:
-	LDR	R0, =CLK_SYS_BASE		@ Prepare SYS CLK
-	LDR	R1, [R0, #CLK_SYS_CLO]		@
-	LDR	R2, =200000			@
-	ADD	R1, R1, R2			@
-	LDR	R2, =clk_sys_current		@
-	STR	R1, [R2]			@
-	STR	R1, [R0, #CLK_SYS_C1]		@
+	LDR	R2, =CLK_SYS_BASE		@ Prepare SYS CLK
+	LDR	R1, [R2, #CLK_SYS_CLO]		@
+	ADD	R1, R1, R0			@
+	LDR	R0, =clk_sys_current		@
+	STR	R1, [R0]			@
+	STR	R1, [R2, #CLK_SYS_C1]		@
 
 	LDR	R0, =INTERRUPTS_BASE		@ Enable IRQ for SYS CLK compare
 	MOV	R1, #2				@
@@ -59,14 +58,13 @@ clk_sys_init:
 
 .globl clk_sys_isr
 clk_sys_isr:
-	LDR	R0, =clk_sys_current		@ Handle SYS CLK IRQ
-	LDR	R1, [R0]			@
-	LDR	R2, =200000			@
-	ADD	R1, R1, R2			@
-	STR	R1, [R0]			@
-	LDR	R0, =CLK_SYS_BASE		@
-	STR	R1, [R0, #CLK_SYS_C1]		@
+	LDR	R2, =clk_sys_current		@ Handle SYS CLK IRQ
+	LDR	R1, [R2]			@
+	ADD	R1, R1, R0			@
+	STR	R1, [R2]			@
+	LDR	R2, =CLK_SYS_BASE		@
+	STR	R1, [R2, #CLK_SYS_C1]		@
 	MOV	R1, #2				@
-	STR	R1, [R0, #CLK_SYS_CS]		@
+	STR	R1, [R2, #CLK_SYS_CS]		@
 
 	BX	LR				@ Return

@@ -142,12 +142,14 @@ void _low1() {
         syscall_gpio_set(18, 0);
         syscall_gpio_sel(18, 1);
 
-        for(u32 i = 10000; i; i--);
+        for(u32 i = 1000000; i; i--)
+            __asm__("MOV R0, R0");
 
         syscall_gpio_set(18, 1);
         syscall_gpio_sel(18, 1);
 
-        for(u32 i = 10000; i; i--);
+        for(u32 i = 1000000; i; i--)
+            __asm__("MOV R0, R0");
     }
 }
 
@@ -194,16 +196,16 @@ void _kinit(void) {
 
     // Queue initial tasks
     // sched_enqueue(&_LOW0);
-    // sched_enqueue(&_LOW1);
+    sched_enqueue(&_LOW1);
     // sched_enqueue(&_HIGH);
 
     // sched_enqueue(&_KBD);
-    // sched_enqueue(&_SHELL_TASK);
+    sched_enqueue(&_SHELL_TASK);
 
-    shell_init();
+    // shell_init();
 
     // Pass execution control to scheduler
-    // sched_init();
+    sched_init();
 
     // Catch
     _panic("catch scheduler ilegal exit");
