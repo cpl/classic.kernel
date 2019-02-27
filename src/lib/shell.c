@@ -21,6 +21,8 @@
 #include "vfb.h"
 #include "bool.h"
 #include "string.h"
+#include "conv.h"
+#include "gpio.h"
 
 
 task _SHELL_TASK = {
@@ -206,22 +208,59 @@ void _shell_arg_debug(u32 argc, char* argv[]) {
 }
 
 
-// void _cmd_gpio(u32 argc, char* argv[]) {
-//     const char _help[] = "invalid args, usage:\ngpio:<sel|set>:<0-53>:<0-7>";
+void _cmd_gpio(u32 argc, char* argv[]) {
+    const char _help[] = "usage: gpio:<sel|set>:<0-53>:<0-7>";
 
-//     if(argc != 4) {
-//         printf(_help);
-//         return;
-//     }
+    // check for requiered number of arguments
+    if(argc != 4) {
+        printf(_help);
+        return;
+    }
 
-//     if(strequ(argv[1], "sel")) {
+    // read PIN number and validate
+    u32 pin = conv_str_u32(argv[2]);
+    if(pin > MAX_GPIO_PIN) {
+        printf(_help);
+        return;
+    }
 
-//     } else if(strequ(argv[1], "set")) {
+    // read function/value
+    u32 val = conv_str_u32(argv[3]);
 
-//     } else {
-//         printf(_help);
-//     }
+    // check for SEL or SET commands
+    if(strequ(argv[1], "sel")) {
+        // validate max function value
+        if(val > MAX_GPIO_CMD) {
+            printf(_help);
+            return;
+        }
+        // select function mode
+        gpio_fsel(pin, val);
 
+        // OK
+        printf("GPIO PIN %x set to function %x", pin, val);
+        return;
 
-//     return;
-// }
+    } else if(strequ(argv[1], "set")) {
+        // validate HIGH/LOW
+        if(val > GPIO_HIGH) {
+            printf(_help);
+            return;
+        }
+        // set PIN drive to given value
+        gpio_set(pin, val);
+
+        // OK
+        printf("GPIO PIN %x set to ", pin);
+        if(val == 0)
+            printf("LOW");
+        else
+            printf("HIGH");
+
+    // invalid function
+    } else {
+        printf(_help);
+    }
+
+    return;
+}
