@@ -27,6 +27,9 @@
 
 void _low0();
 void _low1();
+void _low2();
+
+
 void _high();
 void _kbd();
 
@@ -76,6 +79,31 @@ task _LOW1 = {
         SP: 0x1400,
         LR: 0x0,
         PC: ((u32)&_low1),
+        CPSR: 0x0000015F,
+    },
+};
+
+
+task _LOW2 = {
+    PID:   2,
+    quantum: 5000,
+    flags: 0,
+
+    size: 0x100,
+    entry: &_low2,
+
+    prior: TASK_PRIOR_LOW,
+    state: TASK_STATE_READY,
+
+    mm_page_count: 0,
+    mm_tables: {NULL},
+
+    next: NULL,
+    context: {
+        0,0,0,0,0,0,0,0,0,0,0,0,0,
+        SP: 0x1400,
+        LR: 0x0,
+        PC: ((u32)&_low2),
         CPSR: 0x0000015F,
     },
 };
@@ -130,11 +158,19 @@ task _KBD = {
 
 
 void _low0() {
-    for(u16 i = 50; i; i--)
-        printf("_low_0(default);\n");
+    while(1) {
+        syscall_gpio_set(23, 0);
+        syscall_gpio_sel(23, 1);
 
-    while(1)
-        printf("_low_0(alternative);\n");
+        for(u32 i = 2000000; i; i--)
+            __asm__("MOV R0, R0");
+
+        syscall_gpio_set(23, 1);
+        syscall_gpio_sel(23, 1);
+
+        for(u32 i = 2000000; i; i--)
+            __asm__("MOV R0, R0");
+    }
 }
 
 void _low1() {
@@ -153,11 +189,27 @@ void _low1() {
     }
 }
 
+void _low2() {
+    while(1) {
+        syscall_gpio_set(24, 0);
+        syscall_gpio_sel(24, 1);
+
+        for(u32 i = 3000000; i; i--)
+            __asm__("MOV R0, R0");
+
+        syscall_gpio_set(24, 1);
+        syscall_gpio_sel(24, 1);
+
+        for(u32 i = 3000000; i; i--)
+            __asm__("MOV R0, R0");
+    }
+}
+
 
 void _high() {
     while(1) {
         for(u16 i = 20; i; i--) {
-            printf("_high(!priority!);");
+            printf("_high(!priority!);\n");
         }
         syscall_sleep(10000);
     }
@@ -194,15 +246,15 @@ void _kinit(void) {
     draw_img((u16*)&logo, 950, 0, 250, 250);
 
 
-    // Queue initial tasks
+    // Queue demo tasks
     // sched_enqueue(&_LOW0);
-    sched_enqueue(&_LOW1);
-    // sched_enqueue(&_HIGH);
+    // sched_enqueue(&_LOW0);
+    // sched_enqueue(&_LOW1);
+    // sched_enqueue(&_LOW2);
 
-    // sched_enqueue(&_KBD);
+
+
     sched_enqueue(&_SHELL_TASK);
-
-    // shell_init();
 
     // Pass execution control to scheduler
     sched_init();
