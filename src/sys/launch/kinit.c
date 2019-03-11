@@ -246,7 +246,8 @@ void _kinit(void) {
         if(fat_getpartition()) {
             printf(" SD MBR: OK\n");
 
-            cluster=fat_getcluster("_CONFI~1TXT");
+            cluster=fat_getcluster("THERE      ");
+            // cluster=fat_getcluster("HELLO   TXT");
             if(cluster) {
                 printf(" SD READ FILE: OK\n");
             }

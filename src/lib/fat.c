@@ -25,6 +25,7 @@
 
 #include "sd.h"
 #include "uart.h"
+#include "vfb.h"
 
 
 // add memory compare
@@ -37,7 +38,7 @@ int _bzt_memcmp(void *s1, void *s2, int n)
 
 
 // get the end of bss segment from linker
-extern unsigned char _bss_end;
+extern unsigned char* _bss_end;
 
 static unsigned int partitionlba = 0;
 
@@ -86,10 +87,10 @@ typedef struct {
  */
 int fat_getpartition(void)
 {
-    unsigned char *mbr=&_bss_end;
-    bpb_t *bpb=(bpb_t*)&_bss_end;
+    unsigned char *mbr= _bss_end;
+    bpb_t *bpb=(bpb_t*) _bss_end;
     // read the partitioning table
-    if(sd_readblock(0,&_bss_end,1)) {
+    if(sd_readblock(0, _bss_end,1)) {
         // check magic
         if(mbr[510]!=0x55 || mbr[511]!=0xAA) {
             uart_send_string("ERROR: Bad magic in MBR\n\r");
@@ -106,10 +107,10 @@ int fat_getpartition(void)
             return 0;
         }
         // should be this, but compiler generates bad code...
-        //partitionlba=*((unsigned int*)((unsigned long)&_bss_end+0x1C6));
+        //partitionlba=*((unsigned int*)((unsigned long) _bss_end+0x1C6));
         partitionlba=mbr[0x1C6] + (mbr[0x1C7]<<8) + (mbr[0x1C8]<<16) + (mbr[0x1C9]<<24);
         // read the boot record
-        if(!sd_readblock(partitionlba,&_bss_end,1)) {
+        if(!sd_readblock(partitionlba, _bss_end,1)) {
             uart_send_string("ERROR: Unable to read boot record\n\r");
             return 0;
         }
@@ -132,8 +133,8 @@ unsigned int fat_getcluster(char *fn)
     uart_send_string("FAT SEARCHING CLUSTER\n\r");
     uart_send_string(fn); uart_clrf();
 
-    bpb_t *bpb=(bpb_t*)&_bss_end;
-    fatdir_t *dir=(fatdir_t*)(&_bss_end+512);
+    bpb_t *bpb=(bpb_t*) _bss_end;
+    fatdir_t *dir=(fatdir_t*)( _bss_end+512);
     unsigned int root_sec, s;
     // find the root directory's LBA
     root_sec=((bpb->spf16?bpb->spf16:bpb->spf32)*bpb->nf)+bpb->rsc;
@@ -145,11 +146,25 @@ unsigned int fat_getcluster(char *fn)
     // add partition LBA
     root_sec+=partitionlba;
     // load the root directory
+
+    uart_send_string("ROOT SECTOR: "); uart_send_hex(root_sec); uart_clrf();
+
     if(sd_readblock(root_sec,(unsigned char*)dir,s/512+1)) {
         // iterate on each entry and check if it's the one we're looking for
         for(;dir->name[0]!=0;dir++) {
             // is it a valid entry?
             if(dir->name[0]==0xE5 || dir->attr[0]==0xF) continue;
+            if(dir->name[0]==0xAA || dir->name[0]==0x55) continue;
+
+
+
+            // ! DEBUG
+            printf("%x : ", dir->name);
+            printf("%x : ", dir->name[0]);
+            vfb_printdump(dir->name, 8);
+            vfb_printdump(dir->ext,  3);
+            vfb_println(":");
+            // ! DEBUG
 
             // filename match?
             if(!_bzt_memcmp(dir->name,fn,11)) {
@@ -177,9 +192,9 @@ unsigned int fat_getcluster(char *fn)
 char *fat_readfile(unsigned int cluster)
 {
     // BIOS Parameter Block
-    bpb_t *bpb=(bpb_t*)&_bss_end;
+    bpb_t *bpb=(bpb_t*) _bss_end;
     // File allocation tables. We choose between FAT16 and FAT32 dynamically
-    unsigned int *fat32=(unsigned int*)(&_bss_end+bpb->rsc*512);
+    unsigned int *fat32=(unsigned int*)( _bss_end+bpb->rsc*512);
     unsigned short *fat16=(unsigned short*)fat32;
     // Data pointers
     unsigned int data_sec, s;
@@ -208,9 +223,9 @@ char *fat_readfile(unsigned int cluster)
     uart_send_hex(data_sec);
     uart_send_string("\n\r");
     // load FAT table
-    s=sd_readblock(partitionlba+1,(unsigned char*)&_bss_end+512,(bpb->spf16?bpb->spf16:bpb->spf32)+bpb->rsc);
+    s=sd_readblock(partitionlba+1,(unsigned char*) _bss_end+512,(bpb->spf16?bpb->spf16:bpb->spf32)+bpb->rsc);
     // end of FAT in memory
-    data=ptr=&_bss_end+512+s;
+    data=ptr= _bss_end+512+s;
     // iterate on cluster chain
     while(cluster>1 && cluster<0xFFF8) {
         // load all sectors in a cluster
