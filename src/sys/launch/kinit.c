@@ -23,6 +23,7 @@
 #include "asm.h"
 #include "draw.h"
 #include "shell.h"
+#include "sd.h"
 
 
 void _low0();
@@ -234,6 +235,13 @@ void _kinit(void) {
     // 0xF1F0CAFE signature on entry
     syscall_uputx(0xF1F0CAFE); syscall_uputnl();
 
+    // Stard microSD drivers
+    if(sd_init() == SD_OK) {
+        printf("SD DRIVERS: OK\n");
+    } else {
+        printf("SD DRIVERS: ERR\n");
+    }
+
     // ! DEBUG mmap intial allocations
     printf("\n MMAP INITIAL ALLOCATIONS\n");
     printf("   PHYS MEM SYS: %x\n",   MM_PHYS_SYS);
@@ -251,7 +259,6 @@ void _kinit(void) {
     // sched_enqueue(&_LOW0);
     // sched_enqueue(&_LOW1);
     // sched_enqueue(&_LOW2);
-
 
 
     sched_enqueue(&_SHELL_TASK);
