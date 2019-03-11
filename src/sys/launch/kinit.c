@@ -24,6 +24,8 @@
 #include "draw.h"
 #include "shell.h"
 #include "sd.h"
+#include "fat.h"
+#include "conv.h"
 
 
 void _low0();
@@ -236,10 +238,24 @@ void _kinit(void) {
     syscall_uputx(0xF1F0CAFE); syscall_uputnl();
 
     // Stard microSD drivers
+    unsigned int cluster;
     if(sd_init() == SD_OK) {
-        printf("SD DRIVERS: OK\n");
+        printf(" SD DRIVERS: OK\n");
+
+        // read the master boot record and find our partition
+        if(fat_getpartition()) {
+            printf(" SD MBR: OK\n");
+
+            cluster=fat_getcluster("_CONFI~1TXT");
+            if(cluster) {
+                printf(" SD READ FILE: OK\n");
+            }
+
+        } else {
+            printf(" SD MBR: ERR!\n");
+        }
     } else {
-        printf("SD DRIVERS: ERR\n");
+        printf(" SD DRIVERS: ERR!\n");
     }
 
     // ! DEBUG mmap intial allocations
@@ -252,7 +268,6 @@ void _kinit(void) {
     printf("   PAGE COUNT: %x\n\n",   MM_PAGES_TTL);
 
     draw_img((u16*)&logo, 950, 0, 250, 250);
-
 
     // Queue demo tasks
     // sched_enqueue(&_LOW0);

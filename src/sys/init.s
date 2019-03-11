@@ -49,7 +49,7 @@ sys_init:
 	BL	uart_clrf		@
 
 	MOV	R0, #1280		@ Initialize framebuffer
-	MOV	R1, #800		@ WxH
+	MOV	R1, #1024		@ WxH
 	MOV	R2, #16			@ 16bit depth
 	BL	fb_init			@
 	TEQ	R0, #0			@ Check for errors
