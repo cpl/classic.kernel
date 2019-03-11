@@ -195,16 +195,50 @@ void _cmd_time(u32 argc, char* argv[]) {
     printf("%x", syscall_time());
 }
 
+void _cmd_mem(u32 argc, char* argv[]) {
+    // _shell_arg_debug(argc, argv);
+
+    if(argc < 3) {
+        return;
+    }
+
+    // Read/Write/Dump/... address
+    u32 addr = conv_hex_u32(argv[2]);
+    printf("using address %x\n", addr);
+
+    if(strequ(argv[1], "write")) {
+        // write
+        u32 value = conv_hex_u32(argv[3]);
+        PUT32(addr, value);
+        printf("write: %x\n", value);
+        printf("read:  %x\n", GET32(addr));
+    } else if(strequ(argv[1], "read")) {
+        // read
+        printf("read: %x\n", GET32(addr));
+    } else if(strequ(argv[1], "dump")) {
+        // u32 count = conv_str_u32(argv[3]);
+        // TODO implement
+    } else {
+        printf("valid commands: read, write, dump\n");
+    }
+
+    return;
+}
+
+
 void _shell_arg_debug(u32 argc, char* argv[]) {
     printf("\n---- ARG DEBUG ----\n");
     printf("command is: "); printf(argv[0]); printf("\n");
     printf("command has %x [argc]\n", argc);
+    printf("----\n");
+    printf("argv:\n");
     printf("----\n");
     for(u32 idx = 1; idx < argc; idx++) {
         printf("%x arg: ", idx);
         printf(argv[idx]);
         printf("\n");
     }
+    printf("----\n");
 }
 
 
