@@ -105,7 +105,7 @@ deploy: $(TARGET)
 	@cp $(TARGET) /Volumes/CLASSIC/
 	@echo OK
 	@sum /Volumes/CLASSIC/$(TARGET)
-	@sudo umount /Volumes/CLASSIC
+	@sudo diskutil unmountDisk disk2
 
 # Clean generated files & directories
 clean :

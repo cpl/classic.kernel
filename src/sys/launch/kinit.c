@@ -235,28 +235,29 @@ void _kbd() {
 
 
 void _kinit(void) {
-    // 0xF1F0CAFE signature on entry
+    // 0xF1F0CAFE signature on entry and draw logo
     syscall_uputx(0xF1F0CAFE); syscall_uputnl();
+    draw_img((u16*)&logo, 950, 0, 250, 250);
 
     // Start microSD drivers
-    unsigned int cluster;
     if(sd_init() == SD_OK) {
         printf(" SD DRIVERS: OK\n");
 
         // read the master boot record and find our partition
-        if(fat_getpartition()) {
+        bpb_t* bpb = fat_get_partition();
+        if(bpb != NULL) {
             printf(" SD MBR: OK\n");
 
-            cluster = fat_getcluster("ROOT       ");
-            if(!cluster) {
-                printf(" SD FAILED TO FIND FS ROOT CLUSTER\n");
-            } else {
-                printf(" SD FS ROOT CLUSTER: %x\n", cluster);
-                char* rdata = fat_readfile(cluster);
-                printf("\n-----------------------------------\n");
-                vfb_printdump(rdata, 512);
-                printf("\n-----------------------------------\n");
-            }
+            // list disk root entries
+            fat_list_dir(bpb);
+
+            u32 root_cluster = fat_get_cluster("ROOT       ", bpb);
+            // u8* file = fat_read_file(root_cluster, bpb);
+
+            // printf("\n-------------------------\n");
+            // vfb_printdump(file, 0x4000);
+            // printf("\n-------------------------\n");
+
         } else {
             printf(" SD MBR: ERR!\n");
         }
@@ -273,27 +274,11 @@ void _kinit(void) {
     printf("   PHYS MEM USR: %x\n\n", MM_PHYS_USR);
     printf("   PAGE COUNT: %x\n\n",   MM_PAGES_TTL);
 
-    draw_img((u16*)&logo, 950, 0, 250, 250);
-
-
     // Queue demo tasks
     // sched_enqueue(&_LOW0);
     // sched_enqueue(&_LOW0);
     // sched_enqueue(&_LOW1);
     // sched_enqueue(&_LOW2);
-
-    printf("\n-----------------------------------\n");
-    vfb_printdump((unsigned char*)0x00200000, 512);
-    printf("\n-----------------------------------\n");
-
-    vfb_printdump((unsigned char*)0x00200000+512, 512);
-    printf("\n-----------------------------------\n");
-
-    vfb_printdump((unsigned char*)0x00200000+1024, 512);
-    printf("\n-----------------------------------\n");
-
-    vfb_printdump((unsigned char*)0x00200000+1536, 512);
-    printf("\n-----------------------------------\n");
 
     // Pass execution control to scheduler
     sched_enqueue(&_SHELL_TASK);
