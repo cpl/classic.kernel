@@ -233,11 +233,12 @@ void _kbd() {
 // ----
 
 
+
 void _kinit(void) {
     // 0xF1F0CAFE signature on entry
     syscall_uputx(0xF1F0CAFE); syscall_uputnl();
 
-    // Stard microSD drivers
+    // Start microSD drivers
     unsigned int cluster;
     if(sd_init() == SD_OK) {
         printf(" SD DRIVERS: OK\n");
@@ -246,12 +247,16 @@ void _kinit(void) {
         if(fat_getpartition()) {
             printf(" SD MBR: OK\n");
 
-            cluster=fat_getcluster("THERE      ");
-            // cluster=fat_getcluster("HELLO   TXT");
-            if(cluster) {
-                printf(" SD READ FILE: OK\n");
+            cluster = fat_getcluster("ROOT       ");
+            if(!cluster) {
+                printf(" SD FAILED TO FIND FS ROOT CLUSTER\n");
+            } else {
+                printf(" SD FS ROOT CLUSTER: %x\n", cluster);
+                char* rdata = fat_readfile(cluster);
+                printf("\n-----------------------------------\n");
+                vfb_printdump(rdata, 512);
+                printf("\n-----------------------------------\n");
             }
-
         } else {
             printf(" SD MBR: ERR!\n");
         }
@@ -270,16 +275,28 @@ void _kinit(void) {
 
     draw_img((u16*)&logo, 950, 0, 250, 250);
 
+
     // Queue demo tasks
     // sched_enqueue(&_LOW0);
     // sched_enqueue(&_LOW0);
     // sched_enqueue(&_LOW1);
     // sched_enqueue(&_LOW2);
 
+    printf("\n-----------------------------------\n");
+    vfb_printdump((unsigned char*)0x00200000, 512);
+    printf("\n-----------------------------------\n");
 
-    sched_enqueue(&_SHELL_TASK);
+    vfb_printdump((unsigned char*)0x00200000+512, 512);
+    printf("\n-----------------------------------\n");
+
+    vfb_printdump((unsigned char*)0x00200000+1024, 512);
+    printf("\n-----------------------------------\n");
+
+    vfb_printdump((unsigned char*)0x00200000+1536, 512);
+    printf("\n-----------------------------------\n");
 
     // Pass execution control to scheduler
+    sched_enqueue(&_SHELL_TASK);
     sched_init();
 
     // Catch

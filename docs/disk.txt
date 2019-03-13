@@ -1,0 +1,20 @@
+Disk: /dev/disk2	geometry: 3781/255/63 [60751872 sectors]
+Offset: 0	Signature: 0xAA55
+         Starting       Ending
+ #: id  cyl  hd sec -  cyl  hd sec [     start -       size]
+------------------------------------------------------------------------
+*1: 0C    0   1   1 - 1023 254  63 [        63 -   60751809] Win95 FAT32L
+ 2: 00    0   0   0 -    0   0   0 [         0 -          0] unused
+ 3: 00    0   0   0 -    0   0   0 [         0 -          0] unused
+ 4: 00    0   0   0 -    0   0   0 [         0 -          0] unused
+
+
+Disk: /dev/disk2s1	geometry: 3781/255/63 [60751809 sectors]
+Offset: 0	Signature: 0xAA55
+         Starting       Ending
+ #: id  cyl  hd sec -  cyl  hd sec [     start -       size]
+------------------------------------------------------------------------
+ 1: 6E   97 115  32 -  107 121  32 [1948285285 - 1701978223] <Unknown ID>
+ 2: 74  370 116  33 -    0  13  10 [         0 -          0] <Unknown ID>
+ 3: 00    0   0   0 -    0   0   0 [         0 -          0] unused
+ 4: 00    0   0   0 -    0   0   0 [         0 -          0] unused
