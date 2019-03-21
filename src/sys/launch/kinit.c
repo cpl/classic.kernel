@@ -251,12 +251,12 @@ void _kinit(void) {
             // list disk root entries
             fat_list_dir(bpb);
 
-            u32 root_cluster = fat_get_cluster("ROOT       ", bpb);
-            // u8* file = fat_read_file(root_cluster, bpb);
+            u32 root_cluster = fat_get_cluster("LICENC~1BRO", bpb);
+            u8* file = fat_read_file(root_cluster, bpb);
 
-            // printf("\n-------------------------\n");
-            // vfb_printdump(file, 0x4000);
-            // printf("\n-------------------------\n");
+            printf("\n-------------------------\n");
+            printf(file);
+            printf("\n-------------------------\n");
 
         } else {
             printf(" SD MBR: ERR!\n");
